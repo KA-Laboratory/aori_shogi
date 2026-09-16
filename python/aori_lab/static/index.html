@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>煽り将棋 Lab</title>
+<style>
+:root{--bg:#fbf6ee;--ink:#2b1b08;--board:#e9c47a;--line:#4e3514;--komadai:#c9974f;--accent:#1e88e5;--muted:#8a7a66;--card:#fff;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #e5d9c6;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+header .sp{flex:1}
+button{font:inherit;border:1px solid #b99b72;background:#fff;border-radius:18px;padding:6px 14px;cursor:pointer}
+button.primary{background:#8b5524;color:#fff;border-color:#8b5524}
+button:disabled{opacity:.45;cursor:default}
+main{display:grid;grid-template-columns:minmax(300px,560px) minmax(300px,1fr);gap:16px;padding:12px 16px;max-width:1200px;margin:auto}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.komadai{height:64px;background:linear-gradient(90deg,#d7a860,var(--komadai));border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;gap:4px;padding:4px 8px}
+.komadai.active{outline:2px solid var(--accent)}
+.komadai .lbl{font-size:12px;min-width:56px;text-align:center}
+.komadai.top{flex-direction:row-reverse}
+.board{position:relative;aspect-ratio:1;background:linear-gradient(135deg,#f0cf8a,var(--board),#ddb05f);border:2px solid var(--line);margin:6px 0;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);box-shadow:0 3px 6px #0004}
+.cell{border:.6px solid #4e3514b0;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cell.last{background:#d2691e33}.cell.check{background:#e5393588}
+.cell.target::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:#1e88e588}
+.cell.target.occ::after{background:none;border:3px solid #1e88e5cc}
+.piece{width:86%;height:94%;clip-path:polygon(50% 0,84% 17%,98% 100%,2% 100%,16% 17%);background:linear-gradient(135deg,#f8e3ae,#e0b665);display:flex;align-items:flex-end;justify-content:center;padding-bottom:14%;font-weight:900;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;filter:drop-shadow(0 1px 1px #0006);position:relative}
+.piece span{font-size:min(4.6vw,34px);line-height:1}
+.piece.w{transform:rotate(180deg)}
+.piece.pro span{color:#c62828}
+.piece.sel{background:linear-gradient(135deg,#fff1c9,#f2c66f);outline:3px solid var(--accent)}
+.piece.k8{width:92%;height:98%}.piece.k1{width:76%;height:84%}
+.hand{position:relative;height:56px;width:48px;display:flex;justify-content:center;cursor:pointer}
+.hand .piece span{font-size:24px}
+.hand .n{position:absolute;right:0;bottom:2px;background:var(--ink);color:#fff;border-radius:8px;font-size:11px;padding:0 4px}
+.status{text-align:center;margin:8px 0;font-weight:bold}
+.card{background:var(--card);border:1px solid #eadfcd;border-radius:12px;padding:12px}
+.gunshi{display:flex;gap:12px}
+.face{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #5d7a8c;flex:none}
+.meters{flex:1}
+.meter{display:flex;align-items:center;gap:6px;font-size:12px;margin:3px 0}
+.meter .bar{flex:1;height:9px;background:#0001;border-radius:5px;overflow:hidden}
+.meter .fill{height:100%;transition:width .5s cubic-bezier(.3,1.6,.5,1)}
+.chat{height:46vh;min-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px}
+.msg{max-width:88%;padding:8px 10px;border-radius:12px;line-height:1.5;font-size:14px;white-space:pre-wrap}
+.msg.gunshi{background:#fff4e0;border:1px solid #ecd2a6;align-self:flex-start}
+.msg.player{background:#e3f0fd;border:1px solid #b9d7f5;align-self:flex-end}
+.msg.system{align-self:center;background:none;color:var(--muted);font-size:12px}
+.msg .meta{font-size:10px;color:var(--muted)}
+.offer{display:none;gap:8px;align-items:center;background:#fff8d6;border:1px solid #e8cf6a;border-radius:10px;padding:8px;margin:6px 0}
+.row{display:flex;gap:8px;margin-top:8px}
+.row input{flex:1;font:inherit;padding:8px 12px;border-radius:18px;border:1px solid #c9b79d}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chips button{font-size:12px;padding:3px 10px}
+.kif{font-size:12px;color:var(--muted);max-height:4.5em;overflow:auto}
+.busy{color:var(--accent);font-size:13px;min-height:1.2em}
+dialog{border:none;border-radius:14px;padding:18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>煽り将棋 Lab</h1>
+  <span class="busy" id="busy"></span>
+  <span class="sp"></span>
+  <select id="side"><option value="white">軍師が後手</option><option value="black">軍師が先手</option></select>
+  <button class="primary" id="newBtn">新規対局</button>
+</header>
+<main>
+  <section>
+    <div class="komadai top" id="handTop"></div>
+    <div class="board" id="board"></div>
+    <div class="komadai" id="handBottom"></div>
+    <div class="status" id="status"></div>
+    <div class="kif" id="kif"></div>
+  </section>
+  <section>
+    <div class="card">
+      <div class="gunshi">
+        <div class="face" id="face"></div>
+        <div class="meters">
+          <div><b id="mood"></b>　形勢: <span id="stance"></span> <span id="eval" style="color:var(--muted);font-size:12px"></span></div>
+          <div class="meter">冷静<div class="bar"><div class="fill" id="mComp" style="background:#2e86c1"></div></div></div>
+          <div class="meter">慢心<div class="bar"><div class="fill" id="mHub" style="background:#b8860b"></div></div></div>
+          <div class="meter">焦り<div class="bar"><div class="fill" id="mPan" style="background:#c0392b"></div></div></div>
+        </div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="offer" id="offer"><span id="offerText" style="flex:1"></span><button class="primary" id="accept">受ける</button><button id="decline">断る</button></div>
+      <div class="row"><input id="input" placeholder="軍師に話しかける・煽る（例: その角タダじゃない？）" maxlength="200"><button class="primary" id="send">送信</button></div>
+      <div class="chips" id="chips"></div>
+      <div class="meta" id="llm" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+    </div>
+  </section>
+</main>
+<dialog id="promo"><p>成りますか？</p><button id="pNo">不成</button> <button class="primary" id="pYes">成る</button></dialog>
+<script>
+const $ = (id) => document.getElementById(id);
+let S = null, sel = null, busy = false;
+const SAMPLES = ["いまの手、悪手でしょ", "その駒、浮いてない？", "玉、危なくない？", "天才軍師（笑）", "さすが天才軍師さま！", "待った！今のなしで", "ヒント教えてよ", "もう投了したら？"];
+
+async function api(path, body) {
+  if (busy) return;
+  setBusy(path === "/api/chat" ? "軍師が考え中…" : "軍師が指し手を考え中…");
+  try {
+    const r = await fetch(path, body === undefined ? {} : {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+    const j = await r.json();
+    if (!r.ok) { alertMsg(j.detail || "エラー"); return; }
+    S = j; sel = null; render();
+  } finally { setBusy(""); }
+}
+function setBusy(t) { busy = !!t; $("busy").textContent = t; for (const b of document.querySelectorAll("button,input,select")) b.disabled = busy; }
+function alertMsg(t) { S && S.chat.push({role: "system", text: t}); render(); }
+
+function render() {
+  const b = S.board, legal = S.legal;
+  const flipTop = 1; // 後手の駒台を上
+  const board = $("board"); board.innerHTML = "";
+  let targets = new Map();
+  if (sel) for (const u of legal) { const from = sel.drop ? u.startsWith(sel.drop + "*") : u.slice(0, 2) === sel.sq; if (from && (sel.drop ? true : u[1] !== "*")) { const to = sel.drop ? u.slice(2, 4) : u.slice(2, 4); if (!targets.has(to)) targets.set(to, []); targets.get(to).push(u); } }
+  const last = S.last_move ? S.last_move.slice(2, 4) : null;
+  for (const c of b.cells) {
+    const d = document.createElement("div"); d.className = "cell";
+    if (c.sq === last) d.classList.add("last");
+    if (targets.has(c.sq)) { d.classList.add("target"); if (c.c) d.classList.add("occ"); }
+    if (c.c) {
+      const p = piece(c.c, c.w, c.pro, c.k);
+      if (sel && sel.sq === c.sq) p.classList.add("sel");
+      if (S.in_check && c.k === 8 && c.w === (b.turn === 1)) d.classList.add("check");
+      d.appendChild(p);
+    }
+    d.onclick = () => clickCell(c, targets);
+    board.appendChild(d);
+  }
+  hand($("handBottom"), 0, "▲" + (S.ai_side === 0 ? "軍師" : "あなた"));
+  hand($("handTop"), 1, "△" + (S.ai_side === 1 ? "軍師" : "あなた"));
+  $("handBottom").classList.toggle("active", b.turn === 0 && !S.result);
+  $("handTop").classList.toggle("active", b.turn === 1 && !S.result);
+  const r = S.result;
+  $("status").textContent = r ? `終局：${r.winner === null ? "引き分け" : (r.winner === S.ai_side ? "軍師の勝ち" : "あなたの勝ち")}（${({checkmate:"詰み",resign:"投了",repetition:"千日手",perpetual_check:"連続王手の千日手",agreement:"合意"})[r.reason] || r.reason}）`
+    : `${S.moves.length + 1}手目 ${b.turn === 0 ? "▲先手" : "△後手"}の番${S.in_check ? "（王手）" : ""}${S.deal_turns ? `　取引中: あと${S.deal_turns}手煽れない` : ""}`;
+  $("kif").textContent = S.kif.join(" ");
+  const m = S.mind;
+  $("face").textContent = S.face; $("mood").textContent = "軍師・" + S.mood_label; $("stance").textContent = S.stance_label;
+  $("eval").textContent = `(${S.eval_ai > 0 ? "+" : ""}${Math.abs(S.eval_ai) > 90000 ? "詰み" : S.eval_ai})`;
+  $("mComp").style.width = (m.composure * 100) + "%"; $("mHub").style.width = (m.hubris * 100) + "%"; $("mPan").style.width = (m.panic * 100) + "%";
+  const chat = $("chat"); chat.innerHTML = "";
+  for (const x of S.chat) {
+    const d = document.createElement("div"); d.className = "msg " + x.role; d.textContent = x.text;
+    if (x.role === "gunshi" && x.source === "template") { const mm = document.createElement("div"); mm.className = "meta"; mm.textContent = "（テンプレート）"; d.appendChild(mm); }
+    chat.appendChild(d);
+  }
+  chat.scrollTop = chat.scrollHeight;
+  $("offer").style.display = S.pending ? "flex" : "none";
+  if (S.pending) $("offerText").textContent = "軍師の提案：" + S.pending.text;
+  $("llm").textContent = S.llm.model ? `LLM: ${S.llm.model}${S.llm.latency ? `（直近 ${S.llm.latency.toFixed(1)}秒）` : ""}` : "LLM なし（テンプレートのみ）";
+}
+function piece(ch, white, pro, k) {
+  const p = document.createElement("div"); p.className = "piece k" + k + (white ? " w" : "") + (pro ? " pro" : "");
+  const s = document.createElement("span"); s.textContent = ch; p.appendChild(s); return p;
+}
+function hand(el, color, label) {
+  el.innerHTML = ""; const l = document.createElement("div"); l.className = "lbl"; l.textContent = label; el.appendChild(l);
+  for (const h of S.board.hands[color]) {
+    const d = document.createElement("div"); d.className = "hand";
+    const p = piece(h.c, color === 1, false, h.k); if (sel && sel.drop === h.usi && S.board.turn === color) p.classList.add("sel");
+    d.appendChild(p);
+    if (h.n > 1) { const n = document.createElement("span"); n.className = "n"; n.textContent = h.n; d.appendChild(n); }
+    d.onclick = () => { if (S.board.turn !== color || !S.legal.length) return; sel = sel && sel.drop === h.usi ? null : {drop: h.usi}; render(); };
+    el.appendChild(d);
+  }
+}
+async function clickCell(c, targets) {
+  if (busy || !S.legal.length) return;
+  if (targets.has(c.sq)) {
+    const us = targets.get(c.sq); let u = us[0];
+    if (us.length === 2) { u = (await askPromo()) ? us.find(x => x.endsWith("+")) : us.find(x => !x.endsWith("+")); if (!u) return; }
+    await api("/api/move", {usi: u}); return;
+  }
+  const mine = c.c && (c.w ? 1 : 0) === S.board.turn;
+  sel = mine && !(sel && sel.sq === c.sq) ? {sq: c.sq} : null; render();
+}
+function askPromo() { return new Promise(res => { const d = $("promo"); d.showModal(); $("pYes").onclick = () => { d.close(); res(true); }; $("pNo").onclick = () => { d.close(); res(false); }; }); }
+async function send() { const t = $("input").value.trim(); if (!t) return; $("input").value = ""; S.chat.push({role: "player", text: t}); render(); await api("/api/chat", {text: t}); }
+$("send").onclick = send; $("input").onkeydown = (e) => { if (e.key === "Enter" && !e.isComposing) send(); };
+$("accept").onclick = () => api("/api/offer", {accept: true}); $("decline").onclick = () => api("/api/offer", {accept: false});
+$("newBtn").onclick = () => api("/api/new", {ai_side: $("side").value});
+for (const t of SAMPLES) { const b = document.createElement("button"); b.textContent = t; b.onclick = () => { $("input").value = t; $("input").focus(); }; $("chips").appendChild(b); }
+api("/api/state");
+</script>
+</body>
+</html>

@@ -1,0 +1,3188 @@
+{
+ "version": 1,
+ "cases": [
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.66,
+    "hubris": 0.68,
+    "panic": 0.94,
+    "resistance": 0.52,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": 500,
+   "out": {
+    "composure": 0.69,
+    "hubris": 0.73,
+    "panic": 0.91,
+    "resistance": 0.52,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1194,
+   "multipv": 8,
+   "temperature": 448.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.6,
+    "hubris": 0.74,
+    "panic": 0.61,
+    "resistance": 0.15,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "threat",
+   "out": {
+    "composure": 0.685,
+    "hubris": 0.825,
+    "panic": 0.61,
+    "resistance": 0.1,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1140,
+   "multipv": 5,
+   "temperature": 373.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.64,
+    "hubris": 0.53,
+    "panic": 0.41,
+    "resistance": 0.08,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "evalAi": 900,
+   "loss": 500,
+   "out": {
+    "composure": 0.67,
+    "hubris": 0.58,
+    "panic": 0.38,
+    "resistance": 0.08,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1176,
+   "multipv": 5,
+   "temperature": 297.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.3,
+    "hubris": 0.53,
+    "panic": 0.71,
+    "resistance": 0.11,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "blunderCall",
+   "truth": 0.5,
+   "prev": "threat",
+   "out": {
+    "composure": 0.18875,
+    "hubris": 0.53,
+    "panic": 0.799,
+    "resistance": 0.06,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 870,
+   "multipv": 8,
+   "temperature": 523.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.26,
+    "hubris": 0.9,
+    "panic": 1.0,
+    "resistance": 0.27,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": -301,
+   "loss": null,
+   "out": {
+    "composure": 0.29,
+    "hubris": 0.87,
+    "panic": 1.0,
+    "resistance": 0.27,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 834,
+   "multipv": 8,
+   "temperature": 626.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.75,
+    "hubris": 0.62,
+    "panic": 0.28,
+    "resistance": 0.3,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "smug"
+   },
+   "evalAi": -301,
+   "loss": 199,
+   "out": {
+    "composure": 0.78,
+    "hubris": 0.59,
+    "panic": 0.31,
+    "resistance": 0.3,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1275,
+   "multipv": 5,
+   "temperature": 214.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.77,
+    "hubris": 0.67,
+    "panic": 0.66,
+    "resistance": 0.29,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 299,
+   "loss": 200,
+   "out": {
+    "composure": 0.8,
+    "hubris": 0.64,
+    "panic": 0.63,
+    "resistance": 0.29,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1293,
+   "multipv": 5,
+   "temperature": 320.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.94,
+    "hubris": 0.37,
+    "panic": 0.74,
+    "resistance": 0.57,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "mock",
+   "truth": 0.3,
+   "prev": "praise",
+   "out": {
+    "composure": 0.92065,
+    "hubris": 0.37,
+    "panic": 0.74645,
+    "resistance": 0.52,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1446,
+   "multipv": 8,
+   "temperature": 276.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.73,
+    "hubris": 0.96,
+    "panic": 0.95,
+    "resistance": 0.25,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -2000,
+   "loss": null,
+   "out": {
+    "composure": 0.76,
+    "hubris": 0.93,
+    "panic": 0.98,
+    "resistance": 0.25,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1257,
+   "multipv": 8,
+   "temperature": 423.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.55,
+    "hubris": 0.2,
+    "panic": 0.99,
+    "resistance": 0.45,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": -301,
+   "loss": null,
+   "out": {
+    "composure": 0.58,
+    "hubris": 0.17,
+    "panic": 1.0,
+    "resistance": 0.45,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1095,
+   "multipv": 8,
+   "temperature": 507.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.88,
+    "hubris": 0.4,
+    "panic": 0.98,
+    "resistance": 0.17,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 1.0,
+   "prev": null,
+   "out": {
+    "composure": 0.7555,
+    "hubris": 0.4,
+    "panic": 1.0,
+    "resistance": 0.12,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1392,
+   "multipv": 8,
+   "temperature": 372.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.39,
+    "hubris": 0.71,
+    "panic": 0.74,
+    "resistance": 0.52,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": -2000,
+   "loss": 199,
+   "out": {
+    "composure": 0.42,
+    "hubris": 0.68,
+    "panic": 0.77,
+    "resistance": 0.52,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 951,
+   "multipv": 8,
+   "temperature": 496.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.54,
+    "hubris": 0.15,
+    "panic": 0.99,
+    "resistance": 0.29,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -50,
+   "loss": null,
+   "out": {
+    "composure": 0.57,
+    "hubris": 0.12,
+    "panic": 0.96,
+    "resistance": 0.29,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1086,
+   "multipv": 8,
+   "temperature": 511.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.1,
+    "hubris": 0.1,
+    "panic": 0.52,
+    "resistance": 0.24,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "blunderCall",
+   "truth": 0.5,
+   "prev": "praise",
+   "out": {
+    "composure": 0.005,
+    "hubris": 0.1,
+    "panic": 0.596,
+    "resistance": 0.19,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 690,
+   "multipv": 5,
+   "temperature": 546.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.36,
+    "hubris": 0.14,
+    "panic": 0.3,
+    "resistance": 0.06,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 0.2895,
+    "hubris": 0.14,
+    "panic": 0.3235,
+    "resistance": 0.01,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 924,
+   "multipv": 5,
+   "temperature": 376.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.48,
+    "hubris": 0.24,
+    "panic": 0.44,
+    "resistance": 0.37,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "praise",
+   "truth": 0.5,
+   "prev": "threat",
+   "out": {
+    "composure": 0.543,
+    "hubris": 0.303,
+    "panic": 0.44,
+    "resistance": 0.32,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1032,
+   "multipv": 5,
+   "temperature": 370.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.71,
+    "hubris": 0.07,
+    "panic": 0.13,
+    "resistance": 0.39,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "hangingPiece",
+   "truth": 1.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.588,
+    "hubris": 0.07,
+    "panic": 0.2215,
+    "resistance": 0.34,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1239,
+   "multipv": 5,
+   "temperature": 185.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.09,
+    "hubris": 0.75,
+    "panic": 0.32,
+    "resistance": 0.23,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": -2000,
+   "loss": 0,
+   "out": {
+    "composure": 0.12,
+    "hubris": 0.72,
+    "panic": 0.35,
+    "resistance": 0.23,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 681,
+   "multipv": 5,
+   "temperature": 490.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.96,
+    "hubris": 0.87,
+    "panic": 0.43,
+    "resistance": 0.3,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 0.3,
+   "prev": "praise",
+   "out": {
+    "composure": 1.0,
+    "hubris": 0.94,
+    "panic": 0.43,
+    "resistance": 0.45,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1464,
+   "multipv": 5,
+   "temperature": 175.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.42,
+    "hubris": 0.37,
+    "panic": 0.56,
+    "resistance": 0.17,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 0,
+   "loss": 500,
+   "out": {
+    "composure": 0.45,
+    "hubris": 0.34,
+    "panic": 0.53,
+    "resistance": 0.17,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 978,
+   "multipv": 5,
+   "temperature": 430.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.48,
+    "hubris": 0.21,
+    "panic": 0.96,
+    "resistance": 0.22,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 300,
+   "loss": null,
+   "out": {
+    "composure": 0.51,
+    "hubris": 0.26,
+    "panic": 0.93,
+    "resistance": 0.22,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1032,
+   "multipv": 8,
+   "temperature": 526.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.89,
+    "hubris": 0.1,
+    "panic": 0.16,
+    "resistance": 0.19,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 0.82925,
+    "hubris": 0.1,
+    "panic": 0.18025,
+    "resistance": 0.14,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1401,
+   "multipv": 5,
+   "temperature": 122.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.97,
+    "hubris": 0.11,
+    "panic": 0.09,
+    "resistance": 0.36,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 1.0,
+    "hubris": 0.174,
+    "panic": 0.09,
+    "resistance": 0.31,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1473,
+   "multipv": 5,
+   "temperature": 69.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.4,
+    "hubris": 0.96,
+    "panic": 0.91,
+    "resistance": 0.36,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "mock",
+   "truth": 1.0,
+   "prev": "hangingPiece",
+   "out": {
+    "composure": 0.45,
+    "hubris": 0.96,
+    "panic": 0.91,
+    "resistance": 0.31,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 960,
+   "multipv": 8,
+   "temperature": 543.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.45,
+    "hubris": 0.9,
+    "panic": 0.19,
+    "resistance": 0.03,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "blunderCall",
+   "truth": 1.0,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.2075,
+    "hubris": 0.9,
+    "panic": 0.384,
+    "resistance": 0.18,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1005,
+   "multipv": 5,
+   "temperature": 307.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.34,
+    "hubris": 0.54,
+    "panic": 0.52,
+    "resistance": 0.08,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": null,
+   "out": {
+    "composure": 0.37,
+    "hubris": 0.59,
+    "panic": 0.49,
+    "resistance": 0.08,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 906,
+   "multipv": 5,
+   "temperature": 450.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.91,
+    "hubris": 0.02,
+    "panic": 0.52,
+    "resistance": 0.13,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 300,
+   "loss": 0,
+   "out": {
+    "composure": 0.94,
+    "hubris": 0.07,
+    "panic": 0.49,
+    "resistance": 0.13,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1419,
+   "multipv": 5,
+   "temperature": 222.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.17,
+    "hubris": 0.35,
+    "panic": 0.81,
+    "resistance": 0.47,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.223,
+    "hubris": 0.403,
+    "panic": 0.81,
+    "resistance": 0.62,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 753,
+   "multipv": 8,
+   "temperature": 605.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.03,
+    "hubris": 0.83,
+    "panic": 0.96,
+    "resistance": 0.4,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "mock",
+   "truth": 0.3,
+   "prev": "mock",
+   "out": {
+    "composure": 0.08,
+    "hubris": 0.83,
+    "panic": 0.96,
+    "resistance": 0.55,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 627,
+   "multipv": 8,
+   "temperature": 706.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.54,
+    "hubris": 0.37,
+    "panic": 0.88,
+    "resistance": 0.59,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.3,
+   "prev": null,
+   "out": {
+    "composure": 0.5277,
+    "hubris": 0.37,
+    "panic": 0.9169,
+    "resistance": 0.54,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1086,
+   "multipv": 8,
+   "temperature": 478.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.57,
+    "hubris": 0.24,
+    "panic": 0.69,
+    "resistance": 0.13,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "threat",
+   "truth": 0.5,
+   "prev": "threat",
+   "out": {
+    "composure": 0.5265,
+    "hubris": 0.24,
+    "panic": 0.8205,
+    "resistance": 0.28,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1113,
+   "multipv": 5,
+   "temperature": 409.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.8,
+    "hubris": 0.26,
+    "panic": 0.72,
+    "resistance": 0.11,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "hangingPiece",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 0.711,
+    "hubris": 0.26,
+    "panic": 0.78675,
+    "resistance": 0.06,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1320,
+   "multipv": 8,
+   "temperature": 326.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.54,
+    "hubris": 0.02,
+    "panic": 0.45,
+    "resistance": 0.59,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": -301,
+   "loss": 200,
+   "out": {
+    "composure": 0.57,
+    "hubris": 0.0,
+    "panic": 0.48,
+    "resistance": 0.59,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1086,
+   "multipv": 5,
+   "temperature": 349.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.23,
+    "hubris": 0.17,
+    "panic": 0.5,
+    "resistance": 0.3,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 0.3,
+   "prev": null,
+   "out": {
+    "composure": 0.3,
+    "hubris": 0.24,
+    "panic": 0.5,
+    "resistance": 0.25,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 807,
+   "multipv": 5,
+   "temperature": 488.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.77,
+    "hubris": 0.82,
+    "panic": 0.7,
+    "resistance": 0.43,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": 199,
+   "out": {
+    "composure": 0.8,
+    "hubris": 0.87,
+    "panic": 0.67,
+    "resistance": 0.43,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1293,
+   "multipv": 5,
+   "temperature": 332.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.35,
+    "hubris": 0.51,
+    "panic": 0.46,
+    "resistance": 0.53,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "mock",
+   "truth": 0.0,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.4,
+    "hubris": 0.56,
+    "panic": 0.46,
+    "resistance": 0.48,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 915,
+   "multipv": 5,
+   "temperature": 428.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.49,
+    "hubris": 0.37,
+    "panic": 0.32,
+    "resistance": 0.11,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "evalAi": -301,
+   "loss": 500,
+   "out": {
+    "composure": 0.52,
+    "hubris": 0.34,
+    "panic": 0.35,
+    "resistance": 0.11,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1041,
+   "multipv": 5,
+   "temperature": 330.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.21,
+    "hubris": 0.77,
+    "panic": 0.2,
+    "resistance": 0.49,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 0.5,
+   "prev": "praise",
+   "out": {
+    "composure": 0.261,
+    "hubris": 0.821,
+    "panic": 0.2,
+    "resistance": 0.64,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 789,
+   "multipv": 5,
+   "temperature": 406.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.79,
+    "hubris": 0.74,
+    "panic": 0.44,
+    "resistance": 0.13,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "blunderCall",
+   "truth": 1.0,
+   "prev": null,
+   "out": {
+    "composure": 0.5725,
+    "hubris": 0.74,
+    "panic": 0.614,
+    "resistance": 0.08,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1311,
+   "multipv": 5,
+   "temperature": 246.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.66,
+    "hubris": 1.0,
+    "panic": 0.48,
+    "resistance": 0.6,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.7,
+    "hubris": 1.0,
+    "panic": 0.48,
+    "resistance": 0.75,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1194,
+   "multipv": 5,
+   "temperature": 310.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.16,
+    "hubris": 0.0,
+    "panic": 0.65,
+    "resistance": 0.32,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "mock",
+   "truth": 1.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.058,
+    "hubris": 0.0,
+    "panic": 0.684,
+    "resistance": 0.27,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 744,
+   "multipv": 5,
+   "temperature": 561.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.82,
+    "hubris": 0.19,
+    "panic": 0.13,
+    "resistance": 0.24,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "blunderCall",
+   "truth": 0.5,
+   "prev": "threat",
+   "out": {
+    "composure": 0.725,
+    "hubris": 0.19,
+    "panic": 0.206,
+    "resistance": 0.19,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1338,
+   "multipv": 5,
+   "temperature": 141.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.27,
+    "hubris": 0.14,
+    "panic": 0.38,
+    "resistance": 0.34,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 0.3,
+   "prev": "praise",
+   "out": {
+    "composure": 0.2403,
+    "hubris": 0.14,
+    "panic": 0.3899,
+    "resistance": 0.29,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 843,
+   "multipv": 5,
+   "temperature": 436.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.79,
+    "hubris": 0.88,
+    "panic": 0.1,
+    "resistance": 0.1,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.3,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.763,
+    "hubris": 0.88,
+    "panic": 0.181,
+    "resistance": 0.05,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1311,
+   "multipv": 5,
+   "temperature": 144.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.66,
+    "hubris": 0.26,
+    "panic": 0.88,
+    "resistance": 0.42,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "blunderCall",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 0.5875,
+    "hubris": 0.26,
+    "panic": 0.938,
+    "resistance": 0.37,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1194,
+   "multipv": 8,
+   "temperature": 430.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.05,
+    "hubris": 0.01,
+    "panic": 0.45,
+    "resistance": 0.39,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 0,
+   "loss": 199,
+   "out": {
+    "composure": 0.08,
+    "hubris": 0.0,
+    "panic": 0.42,
+    "resistance": 0.39,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 645,
+   "multipv": 5,
+   "temperature": 545.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.15,
+    "hubris": 0.9,
+    "panic": 0.75,
+    "resistance": 0.33,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": 199,
+   "out": {
+    "composure": 0.18,
+    "hubris": 0.95,
+    "panic": 0.72,
+    "resistance": 0.33,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 735,
+   "multipv": 8,
+   "temperature": 595.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.85,
+    "hubris": 0.83,
+    "panic": 0.12,
+    "resistance": 0.3,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "blunderCall",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 0.7625,
+    "hubris": 0.83,
+    "panic": 0.19,
+    "resistance": 0.25,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1365,
+   "multipv": 5,
+   "temperature": 126.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.86,
+    "hubris": 0.7,
+    "panic": 0.4,
+    "resistance": 0.18,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "evalAi": 0,
+   "loss": null,
+   "out": {
+    "composure": 0.89,
+    "hubris": 0.67,
+    "panic": 0.37,
+    "resistance": 0.18,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1374,
+   "multipv": 5,
+   "temperature": 206.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.46,
+    "hubris": 0.5,
+    "panic": 0.4,
+    "resistance": 0.43,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "threat",
+   "truth": 1.0,
+   "prev": "mock",
+   "out": {
+    "composure": 0.403,
+    "hubris": 0.5,
+    "panic": 0.571,
+    "resistance": 0.38,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1014,
+   "multipv": 5,
+   "temperature": 366.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.89,
+    "hubris": 0.21,
+    "panic": 0.96,
+    "resistance": 0.06,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -301,
+   "loss": 199,
+   "out": {
+    "composure": 0.92,
+    "hubris": 0.18,
+    "panic": 0.99,
+    "resistance": 0.06,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1401,
+   "multipv": 8,
+   "temperature": 362.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.8,
+    "hubris": 0.8,
+    "panic": 0.89,
+    "resistance": 0.26,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "blunderCall",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.85,
+    "hubris": 0.85,
+    "panic": 0.89,
+    "resistance": 0.21,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1320,
+   "multipv": 8,
+   "temperature": 377.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.45,
+    "hubris": 0.39,
+    "panic": 0.71,
+    "resistance": 0.54,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 299,
+   "loss": 500,
+   "out": {
+    "composure": 0.48,
+    "hubris": 0.36,
+    "panic": 0.68,
+    "resistance": 0.54,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1005,
+   "multipv": 8,
+   "temperature": 463.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.76,
+    "hubris": 0.17,
+    "panic": 0.37,
+    "resistance": 0.31,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "blunderCall",
+   "truth": 1.0,
+   "prev": "mock",
+   "out": {
+    "composure": 0.5875,
+    "hubris": 0.17,
+    "panic": 0.508,
+    "resistance": 0.26,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1284,
+   "multipv": 5,
+   "temperature": 237.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.34,
+    "hubris": 0.72,
+    "panic": 0.11,
+    "resistance": 0.53,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 0,
+   "loss": 500,
+   "out": {
+    "composure": 0.37,
+    "hubris": 0.69,
+    "panic": 0.08,
+    "resistance": 0.53,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 906,
+   "multipv": 5,
+   "temperature": 327.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.62,
+    "hubris": 0.83,
+    "panic": 0.24,
+    "resistance": 0.38,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 299,
+   "loss": 500,
+   "out": {
+    "composure": 0.65,
+    "hubris": 0.8,
+    "panic": 0.21,
+    "resistance": 0.38,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1158,
+   "multipv": 5,
+   "temperature": 254.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.83,
+    "hubris": 0.71,
+    "panic": 0.58,
+    "resistance": 0.59,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "mock",
+   "truth": 0.5,
+   "prev": "praise",
+   "out": {
+    "composure": 0.88,
+    "hubris": 0.71,
+    "panic": 0.58,
+    "resistance": 0.54,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1347,
+   "multipv": 5,
+   "temperature": 272.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.92,
+    "hubris": 0.05,
+    "panic": 0.46,
+    "resistance": 0.08,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "hangingPiece",
+   "truth": 0.5,
+   "prev": "hangingPiece",
+   "out": {
+    "composure": 0.828,
+    "hubris": 0.05,
+    "panic": 0.529,
+    "resistance": 0.23,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1428,
+   "multipv": 5,
+   "temperature": 200.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.43,
+    "hubris": 0.54,
+    "panic": 0.73,
+    "resistance": 0.2,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": -2000,
+   "loss": 200,
+   "out": {
+    "composure": 0.46,
+    "hubris": 0.51,
+    "panic": 0.76,
+    "resistance": 0.2,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 987,
+   "multipv": 8,
+   "temperature": 477.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.82,
+    "hubris": 0.53,
+    "panic": 0.82,
+    "resistance": 0.36,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 0,
+   "loss": 0,
+   "out": {
+    "composure": 0.85,
+    "hubris": 0.5,
+    "panic": 0.79,
+    "resistance": 0.36,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1338,
+   "multipv": 8,
+   "temperature": 348.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.8,
+    "hubris": 0.48,
+    "panic": 0.35,
+    "resistance": 0.5,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "blunderCall",
+   "truth": 0.5,
+   "prev": "threat",
+   "out": {
+    "composure": 0.7375,
+    "hubris": 0.48,
+    "panic": 0.4,
+    "resistance": 0.45,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1320,
+   "multipv": 5,
+   "temperature": 215.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.98,
+    "hubris": 0.44,
+    "panic": 0.57,
+    "resistance": 0.43,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 299,
+   "loss": 200,
+   "out": {
+    "composure": 1.0,
+    "hubris": 0.41,
+    "panic": 0.54,
+    "resistance": 0.43,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1482,
+   "multipv": 5,
+   "temperature": 209.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.44,
+    "hubris": 0.95,
+    "panic": 0.99,
+    "resistance": 0.43,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "blunderCall",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.49,
+    "hubris": 1.0,
+    "panic": 0.99,
+    "resistance": 0.38,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 996,
+   "multipv": 8,
+   "temperature": 551.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.9,
+    "hubris": 0.57,
+    "panic": 0.65,
+    "resistance": 0.14,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 900,
+   "loss": 0,
+   "out": {
+    "composure": 0.93,
+    "hubris": 0.62,
+    "panic": 0.62,
+    "resistance": 0.14,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1410,
+   "multipv": 5,
+   "temperature": 265.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.87,
+    "hubris": 0.68,
+    "panic": 0.94,
+    "resistance": 0.23,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "hangingPiece",
+   "truth": 0.5,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.793,
+    "hubris": 0.68,
+    "panic": 0.99775,
+    "resistance": 0.18,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1383,
+   "multipv": 8,
+   "temperature": 364.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.16,
+    "hubris": 0.58,
+    "panic": 0.7,
+    "resistance": 0.42,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 299,
+   "loss": 200,
+   "out": {
+    "composure": 0.19,
+    "hubris": 0.55,
+    "panic": 0.67,
+    "resistance": 0.42,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 744,
+   "multipv": 5,
+   "temperature": 576.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.55,
+    "hubris": 0.4,
+    "panic": 0.22,
+    "resistance": 0.45,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "praise",
+   "truth": 0.3,
+   "prev": "hangingPiece",
+   "out": {
+    "composure": 0.605,
+    "hubris": 0.455,
+    "panic": 0.22,
+    "resistance": 0.4,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1095,
+   "multipv": 5,
+   "temperature": 276.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.39,
+    "hubris": 0.59,
+    "panic": 0.03,
+    "resistance": 0.35,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 299,
+   "loss": 500,
+   "out": {
+    "composure": 0.42,
+    "hubris": 0.56,
+    "panic": 0.0,
+    "resistance": 0.35,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 951,
+   "multipv": 5,
+   "temperature": 283.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 1.0,
+    "hubris": 0.75,
+    "panic": 0.9,
+    "resistance": 0.03,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -300,
+   "loss": null,
+   "out": {
+    "composure": 1.0,
+    "hubris": 0.72,
+    "panic": 0.93,
+    "resistance": 0.03,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1500,
+   "multipv": 8,
+   "temperature": 300.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.81,
+    "hubris": 0.67,
+    "panic": 0.02,
+    "resistance": 0.44,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "evalAi": -300,
+   "loss": 200,
+   "out": {
+    "composure": 0.84,
+    "hubris": 0.64,
+    "panic": 0.05,
+    "resistance": 0.44,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1329,
+   "multipv": 5,
+   "temperature": 112.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.98,
+    "hubris": 0.85,
+    "panic": 0.46,
+    "resistance": 0.47,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 0.5,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 1.0,
+    "hubris": 0.85,
+    "panic": 0.46,
+    "resistance": 0.42,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1482,
+   "multipv": 5,
+   "temperature": 176.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.12,
+    "hubris": 0.35,
+    "panic": 0.09,
+    "resistance": 0.53,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.3,
+   "prev": "praise",
+   "out": {
+    "composure": 0.1059,
+    "hubris": 0.35,
+    "panic": 0.1323,
+    "resistance": 0.48,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 708,
+   "multipv": 5,
+   "temperature": 409.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.53,
+    "hubris": 0.0,
+    "panic": 0.29,
+    "resistance": 0.35,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "threat",
+   "out": {
+    "composure": 0.595,
+    "hubris": 0.065,
+    "panic": 0.29,
+    "resistance": 0.3,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1077,
+   "multipv": 5,
+   "temperature": 305.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.84,
+    "hubris": 0.75,
+    "panic": 0.71,
+    "resistance": 0.36,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 299,
+   "loss": 199,
+   "out": {
+    "composure": 0.87,
+    "hubris": 0.72,
+    "panic": 0.68,
+    "resistance": 0.36,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1356,
+   "multipv": 8,
+   "temperature": 307.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.08,
+    "hubris": 0.35,
+    "panic": 0.09,
+    "resistance": 0.06,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "praise",
+   "truth": 0.0,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.174,
+    "hubris": 0.444,
+    "panic": 0.09,
+    "resistance": 0.01,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 672,
+   "multipv": 5,
+   "temperature": 425.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.21,
+    "hubris": 0.21,
+    "panic": 0.91,
+    "resistance": 0.46,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.264,
+    "hubris": 0.264,
+    "panic": 0.91,
+    "resistance": 0.41,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 789,
+   "multipv": 8,
+   "temperature": 619.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.28,
+    "hubris": 0.46,
+    "panic": 0.64,
+    "resistance": 0.17,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 1.0,
+   "prev": "hangingPiece",
+   "out": {
+    "composure": 0.1555,
+    "hubris": 0.46,
+    "panic": 0.6815,
+    "resistance": 0.12,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 852,
+   "multipv": 5,
+   "temperature": 510.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.88,
+    "hubris": 0.72,
+    "panic": 0.93,
+    "resistance": 0.22,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -300,
+   "loss": null,
+   "out": {
+    "composure": 0.91,
+    "hubris": 0.69,
+    "panic": 0.96,
+    "resistance": 0.22,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1392,
+   "multipv": 8,
+   "temperature": 357.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.43,
+    "hubris": 0.15,
+    "panic": 0.17,
+    "resistance": 0.29,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": -300,
+   "loss": 199,
+   "out": {
+    "composure": 0.46,
+    "hubris": 0.12,
+    "panic": 0.2,
+    "resistance": 0.29,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 987,
+   "multipv": 5,
+   "temperature": 309.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.18,
+    "hubris": 0.87,
+    "panic": 0.72,
+    "resistance": 0.23,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 299,
+   "loss": 500,
+   "out": {
+    "composure": 0.21,
+    "hubris": 0.84,
+    "panic": 0.69,
+    "resistance": 0.23,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 762,
+   "multipv": 8,
+   "temperature": 574.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.04,
+    "hubris": 0.59,
+    "panic": 0.29,
+    "resistance": 0.11,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": 300,
+   "loss": 199,
+   "out": {
+    "composure": 0.07,
+    "hubris": 0.64,
+    "panic": 0.26,
+    "resistance": 0.11,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 636,
+   "multipv": 5,
+   "temperature": 501.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.62,
+    "hubris": 0.06,
+    "panic": 0.65,
+    "resistance": 0.02,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": -301,
+   "loss": 199,
+   "out": {
+    "composure": 0.65,
+    "hubris": 0.03,
+    "panic": 0.68,
+    "resistance": 0.02,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1158,
+   "multipv": 5,
+   "temperature": 377.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.37,
+    "hubris": 0.51,
+    "panic": 0.2,
+    "resistance": 0.51,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": -50,
+   "loss": 199,
+   "out": {
+    "composure": 0.4,
+    "hubris": 0.48,
+    "panic": 0.17,
+    "resistance": 0.51,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 933,
+   "multipv": 5,
+   "temperature": 342.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.84,
+    "hubris": 0.84,
+    "panic": 0.9,
+    "resistance": 0.41,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": -300,
+   "loss": 0,
+   "out": {
+    "composure": 0.87,
+    "hubris": 0.81,
+    "panic": 0.93,
+    "resistance": 0.41,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1356,
+   "multipv": 8,
+   "temperature": 364.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.42,
+    "hubris": 0.3,
+    "panic": 0.54,
+    "resistance": 0.26,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "hangingPiece",
+   "truth": 1.0,
+   "prev": "mock",
+   "out": {
+    "composure": 0.272,
+    "hubris": 0.3,
+    "panic": 0.651,
+    "resistance": 0.21,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 978,
+   "multipv": 5,
+   "temperature": 424.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.77,
+    "hubris": 0.53,
+    "panic": 0.53,
+    "resistance": 0.54,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "threat",
+   "truth": 0.5,
+   "prev": "mock",
+   "out": {
+    "composure": 0.747,
+    "hubris": 0.53,
+    "panic": 0.599,
+    "resistance": 0.49,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1293,
+   "multipv": 5,
+   "temperature": 281.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.37,
+    "hubris": 0.62,
+    "panic": 0.34,
+    "resistance": 0.12,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": -2000,
+   "loss": 200,
+   "out": {
+    "composure": 0.4,
+    "hubris": 0.59,
+    "panic": 0.37,
+    "resistance": 0.12,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 933,
+   "multipv": 5,
+   "temperature": 384.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.22,
+    "hubris": 0.47,
+    "panic": 0.36,
+    "resistance": 0.26,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 900,
+   "loss": null,
+   "out": {
+    "composure": 0.25,
+    "hubris": 0.52,
+    "panic": 0.33,
+    "resistance": 0.26,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 798,
+   "multipv": 5,
+   "temperature": 450.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.45,
+    "hubris": 0.81,
+    "panic": 0.74,
+    "resistance": 0.14,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": -50,
+   "loss": 200,
+   "out": {
+    "composure": 0.48,
+    "hubris": 0.78,
+    "panic": 0.71,
+    "resistance": 0.14,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1005,
+   "multipv": 8,
+   "temperature": 472.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.15,
+    "hubris": 0.93,
+    "panic": 0.67,
+    "resistance": 0.36,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "hangingPiece",
+   "truth": 1.0,
+   "prev": "mock",
+   "out": {
+    "composure": 0.022,
+    "hubris": 0.93,
+    "panic": 0.766,
+    "resistance": 0.31,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 735,
+   "multipv": 5,
+   "temperature": 571.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.82,
+    "hubris": 0.17,
+    "panic": 0.22,
+    "resistance": 0.18,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": null,
+   "out": {
+    "composure": 0.85,
+    "hubris": 0.22,
+    "panic": 0.19,
+    "resistance": 0.18,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1338,
+   "multipv": 5,
+   "temperature": 168.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.84,
+    "hubris": 0.56,
+    "panic": 0.26,
+    "resistance": 0.54,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": null,
+   "out": {
+    "composure": 0.87,
+    "hubris": 0.61,
+    "panic": 0.23,
+    "resistance": 0.54,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "smug"
+   },
+   "movetime": 1356,
+   "multipv": 5,
+   "temperature": 172.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.64,
+    "hubris": 0.72,
+    "panic": 0.66,
+    "resistance": 0.38,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 299,
+   "loss": 0,
+   "out": {
+    "composure": 0.67,
+    "hubris": 0.69,
+    "panic": 0.63,
+    "resistance": 0.38,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1176,
+   "multipv": 5,
+   "temperature": 372.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.34,
+    "hubris": 0.24,
+    "panic": 0.61,
+    "resistance": 0.42,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": -50,
+   "loss": 200,
+   "out": {
+    "composure": 0.37,
+    "hubris": 0.21,
+    "panic": 0.58,
+    "resistance": 0.42,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 906,
+   "multipv": 5,
+   "temperature": 477.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.14,
+    "hubris": 0.15,
+    "panic": 0.31,
+    "resistance": 0.27,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.213,
+    "hubris": 0.223,
+    "panic": 0.31,
+    "resistance": 0.22,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 726,
+   "multipv": 5,
+   "temperature": 467.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.44,
+    "hubris": 0.96,
+    "panic": 0.92,
+    "resistance": 0.43,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "mock",
+   "truth": 0.5,
+   "prev": "hangingPiece",
+   "out": {
+    "composure": 0.49,
+    "hubris": 0.96,
+    "panic": 0.92,
+    "resistance": 0.38,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 996,
+   "multipv": 8,
+   "temperature": 530.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.05,
+    "hubris": 0.19,
+    "panic": 0.38,
+    "resistance": 0.23,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "threat",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.1,
+    "hubris": 0.24,
+    "panic": 0.38,
+    "resistance": 0.18,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 645,
+   "multipv": 5,
+   "temperature": 524.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.18,
+    "hubris": 0.68,
+    "panic": 0.8,
+    "resistance": 0.19,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "kind": "hangingPiece",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.23,
+    "hubris": 0.73,
+    "panic": 0.8,
+    "resistance": 0.14,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 762,
+   "multipv": 8,
+   "temperature": 598.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.88,
+    "hubris": 0.52,
+    "panic": 0.76,
+    "resistance": 0.35,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.93,
+    "hubris": 0.57,
+    "panic": 0.76,
+    "resistance": 0.3,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1392,
+   "multipv": 8,
+   "temperature": 306.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.88,
+    "hubris": 0.02,
+    "panic": 0.72,
+    "resistance": 0.31,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.3,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.8593,
+    "hubris": 0.02,
+    "panic": 0.7821,
+    "resistance": 0.26,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1392,
+   "multipv": 8,
+   "temperature": 294.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.02,
+    "hubris": 0.76,
+    "panic": 0.35,
+    "resistance": 0.58,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": null,
+   "out": {
+    "composure": 0.062,
+    "hubris": 0.802,
+    "panic": 0.35,
+    "resistance": 0.53,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 618,
+   "multipv": 5,
+   "temperature": 527.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.45,
+    "hubris": 0.34,
+    "panic": 0.11,
+    "resistance": 0.19,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "evalAi": 299,
+   "loss": null,
+   "out": {
+    "composure": 0.48,
+    "hubris": 0.31,
+    "panic": 0.08,
+    "resistance": 0.19,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 1005,
+   "multipv": 5,
+   "temperature": 283.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.23,
+    "hubris": 0.13,
+    "panic": 0.17,
+    "resistance": 0.53,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 299,
+   "loss": 500,
+   "out": {
+    "composure": 0.26,
+    "hubris": 0.1,
+    "panic": 0.14,
+    "resistance": 0.53,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 807,
+   "multipv": 5,
+   "temperature": 389.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.0,
+    "hubris": 0.21,
+    "panic": 0.79,
+    "resistance": 0.51,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -50,
+   "loss": null,
+   "out": {
+    "composure": 0.03,
+    "hubris": 0.18,
+    "panic": 0.76,
+    "resistance": 0.51,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 600,
+   "multipv": 8,
+   "temperature": 667.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.84,
+    "hubris": 0.01,
+    "panic": 0.83,
+    "resistance": 0.35,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.3,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.8205,
+    "hubris": 0.01,
+    "panic": 0.8885,
+    "resistance": 0.3,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1356,
+   "multipv": 8,
+   "temperature": 343.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.74,
+    "hubris": 0.08,
+    "panic": 0.61,
+    "resistance": 0.41,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": -50,
+   "loss": 199,
+   "out": {
+    "composure": 0.77,
+    "hubris": 0.05,
+    "panic": 0.58,
+    "resistance": 0.41,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 1266,
+   "multipv": 5,
+   "temperature": 317.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.65,
+    "hubris": 0.33,
+    "panic": 0.28,
+    "resistance": 0.06,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.744,
+    "hubris": 0.424,
+    "panic": 0.28,
+    "resistance": 0.01,
+    "stance": "dominant",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 1185,
+   "multipv": 5,
+   "temperature": 254.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.66,
+    "hubris": 0.78,
+    "panic": 0.94,
+    "resistance": 0.15,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -2000,
+   "loss": 199,
+   "out": {
+    "composure": 0.69,
+    "hubris": 0.75,
+    "panic": 0.97,
+    "resistance": 0.15,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 1194,
+   "multipv": 8,
+   "temperature": 448.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.09,
+    "hubris": 0.39,
+    "panic": 0.76,
+    "resistance": 0.17,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "threat",
+   "truth": 0.0,
+   "prev": "praise",
+   "out": {
+    "composure": 0.14,
+    "hubris": 0.44,
+    "panic": 0.76,
+    "resistance": 0.12,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 681,
+   "multipv": 8,
+   "temperature": 622.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.59,
+    "hubris": 0.29,
+    "panic": 0.17,
+    "resistance": 0.41,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "mock",
+   "truth": 0.3,
+   "prev": "praise",
+   "out": {
+    "composure": 0.56345,
+    "hubris": 0.29,
+    "panic": 0.17885,
+    "resistance": 0.36,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1131,
+   "multipv": 5,
+   "temperature": 245.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.59,
+    "hubris": 0.55,
+    "panic": 0.79,
+    "resistance": 0.45,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "hangingPiece",
+   "truth": 0.5,
+   "prev": null,
+   "out": {
+    "composure": 0.535,
+    "hubris": 0.55,
+    "panic": 0.83125,
+    "resistance": 0.4,
+    "stance": "even",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1131,
+   "multipv": 8,
+   "temperature": 431.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.56,
+    "hubris": 0.28,
+    "panic": 0.6,
+    "resistance": 0.13,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "hangingPiece",
+   "truth": 0.3,
+   "prev": "blunderCall",
+   "out": {
+    "composure": 0.5078,
+    "hubris": 0.28,
+    "panic": 0.63915,
+    "resistance": 0.08,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 1104,
+   "multipv": 5,
+   "temperature": 386.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.16,
+    "hubris": 0.85,
+    "panic": 0.71,
+    "resistance": 0.11,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "evalAi": 900,
+   "loss": null,
+   "out": {
+    "composure": 0.19,
+    "hubris": 0.9,
+    "panic": 0.68,
+    "resistance": 0.11,
+    "stance": "dominant",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 744,
+   "multipv": 8,
+   "temperature": 579.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.1,
+    "hubris": 0.77,
+    "panic": 0.81,
+    "resistance": 0.38,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 0.0,
+   "prev": null,
+   "out": {
+    "composure": 0.162,
+    "hubris": 0.832,
+    "panic": 0.81,
+    "resistance": 0.33,
+    "stance": "losing",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 690,
+   "multipv": 8,
+   "temperature": 633.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.0,
+    "hubris": 0.79,
+    "panic": 0.73,
+    "resistance": 0.33,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": null,
+   "out": {
+    "composure": 0.067,
+    "hubris": 0.857,
+    "panic": 0.73,
+    "resistance": 0.28,
+    "stance": "dominant",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "movetime": 600,
+   "multipv": 8,
+   "temperature": 649.0
+  },
+  {
+   "op": "taunt",
+   "in": {
+    "composure": 0.43,
+    "hubris": 0.57,
+    "panic": 0.1,
+    "resistance": 0.23,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "kind": "praise",
+   "truth": 1.0,
+   "prev": "mock",
+   "out": {
+    "composure": 0.507,
+    "hubris": 0.647,
+    "panic": 0.1,
+    "resistance": 0.18,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "composed"
+   },
+   "movetime": 987,
+   "multipv": 5,
+   "temperature": 288.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.39,
+    "hubris": 0.17,
+    "panic": 0.84,
+    "resistance": 0.49,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "evalAi": -300,
+   "loss": 0,
+   "out": {
+    "composure": 0.42,
+    "hubris": 0.14,
+    "panic": 0.87,
+    "resistance": 0.49,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "meltdown"
+   },
+   "movetime": 951,
+   "multipv": 8,
+   "temperature": 526.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.38,
+    "hubris": 0.49,
+    "panic": 0.17,
+    "resistance": 0.33,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": -2000,
+   "loss": null,
+   "out": {
+    "composure": 0.41,
+    "hubris": 0.46,
+    "panic": 0.2,
+    "resistance": 0.33,
+    "stance": "losing",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 942,
+   "multipv": 5,
+   "temperature": 329.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.29,
+    "hubris": 0.1,
+    "panic": 0.01,
+    "resistance": 0.09,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "evalAi": 0,
+   "loss": null,
+   "out": {
+    "composure": 0.32,
+    "hubris": 0.07,
+    "panic": 0.0,
+    "resistance": 0.09,
+    "stance": "even",
+    "coverUpTurns": 0,
+    "mood": "rattled"
+   },
+   "movetime": 861,
+   "multipv": 5,
+   "temperature": 317.0
+  },
+  {
+   "op": "update",
+   "in": {
+    "composure": 0.06,
+    "hubris": 0.69,
+    "panic": 0.71,
+    "resistance": 0.33,
+    "stance": "losing",
+    "coverUpTurns": 2,
+    "mood": "coverUp"
+   },
+   "evalAi": 299,
+   "loss": null,
+   "out": {
+    "composure": 0.09,
+    "hubris": 0.66,
+    "panic": 0.68,
+    "resistance": 0.33,
+    "stance": "even",
+    "coverUpTurns": 1,
+    "mood": "coverUp"
+   },
+   "movetime": 654,
+   "multipv": 8,
+   "temperature": 619.0
+  }
+ ]
+}
