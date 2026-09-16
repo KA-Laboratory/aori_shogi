@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/shogi/shogi.dart';
 import 'board_view.dart';
+import 'engine_panel.dart';
 import 'game_controller.dart';
 
 class GamePage extends ConsumerWidget {
@@ -69,7 +70,9 @@ class GamePage extends ConsumerWidget {
             constraints: const BoxConstraints(maxWidth: 520),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Column(children: [
+              child: ListView(children: [
+                const EnginePanel(),
+                const SizedBox(height: 8),
                 const HandView(side: Side.white),
                 const SizedBox(height: 6),
                 BoardView(
@@ -78,10 +81,11 @@ class GamePage extends ConsumerWidget {
                 const HandView(side: Side.black),
                 const SizedBox(height: 12),
                 Text(status,
+                    textAlign: TextAlign.center,
                     key: const ValueKey('status'),
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 12),
-                Wrap(spacing: 8, runSpacing: 8, children: [
+                Wrap(alignment: WrapAlignment.center, spacing: 8, runSpacing: 8, children: [
                   OutlinedButton.icon(
                     onPressed: s.game.moves.isEmpty && result == null
                         ? null
