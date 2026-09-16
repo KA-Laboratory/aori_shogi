@@ -15,9 +15,11 @@ class NnueStore {
   static const expectedSha256 =
       '1141d275bceec911156801f27303dc9ff5beb24f4f59144cc069306c59e80782';
 
-  /// KA-Laboratory/aori_shogi の GitHub Releases に置く gzip 圧縮版。
+  /// KA-Laboratory/aori_shogi の nnue-assets ブランチ（main と独立）に置いた gzip 圧縮版。
+  /// ⚠ リポジトリが非公開の間は取得できない。開発中は adb で files/eval/nn.bin に配置する
+  /// （docs/dev/nnue.md）。
   static const downloadUrl =
-      'https://github.com/KA-Laboratory/aori_shogi/releases/download/nnue-hao-2023-05-08/nn.bin.gz';
+      'https://raw.githubusercontent.com/KA-Laboratory/aori_shogi/nnue-assets/nn.bin.gz';
 
   final Directory? _baseDir;
   final HttpClient Function() _httpClient;
