@@ -106,8 +106,11 @@ class Runner:
                         self.counters["judge_fail"] += 1
                         fails += 1
                         self.log(f"judge fail ({dt:.0f}s): {self.judge.last_error}")
+                        timed_out = "Timeout" in (self.judge.last_error or "")
                         self.latencies.append(dt if dt > 1 else 0)
-                        self.maybe_switch_model(dt)
+                        self.maybe_switch_model(dt, force=timed_out)
+                        if timed_out:
+                            fails = 0
                         if fails >= 3:
                             self.pool.entries.pop(e.id, None)
                             fails = 0
@@ -161,10 +164,10 @@ class Runner:
                 self.latencies.clear()
                 self.log(f"→ {self.args.judge_model} に戻した")
 
-    def maybe_switch_model(self, dt: float) -> None:
+    def maybe_switch_model(self, dt: float, force: bool = False) -> None:
         recent = self.latencies[-5:]
-        if (self.args.auto_fallback and len(recent) >= 3 and sum(recent) / len(recent) > self.args.max_judge_seconds
-                and self.judge.model != self.args.fallback_model):
+        slow = force or (len(recent) >= 3 and sum(recent) / len(recent) > self.args.max_judge_seconds)
+        if self.args.auto_fallback and slow and self.judge.model != self.args.fallback_model:
             self.log(f"judge too slow ({sum(recent)/len(recent):.0f}s) → {self.args.fallback_model} に切替")
             self.judge = OllamaClient(model=self.args.fallback_model, timeout=self.args.llm_timeout)
             self.gen = OllamaClient(model=self.args.fallback_model, timeout=self.args.llm_timeout)
@@ -207,12 +210,12 @@ class Runner:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--hours", type=float, default=8)
-    ap.add_argument("--gen-model", default="gpt-oss:20b")
+    ap.add_argument("--gen-model", default="qwen3:8b")
     ap.add_argument("--judge-model", default="gpt-oss:20b")
     ap.add_argument("--fallback-model", default="qwen3:8b")
     ap.add_argument("--auto-fallback", action=argparse.BooleanOptionalAction, default=True)
     ap.add_argument("--max-judge-seconds", type=float, default=90)
-    ap.add_argument("--llm-timeout", type=float, default=300)
+    ap.add_argument("--llm-timeout", type=float, default=150)
     ap.add_argument("--batch", type=int, default=6)
     ap.add_argument("--movetime", type=int, default=120)
     ap.add_argument("--threads", type=int, default=2)

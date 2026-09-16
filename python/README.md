@@ -53,7 +53,7 @@ uv run python tools/scenario.py out.txt 7g7f "chat:その角タダじゃない�
 powershell -ExecutionPolicy Bypass -File tools\run_learning.ps1 -Hours 10
 # 止める: data\learn\STOP という空ファイルを作る
 ```
-- **Forge**: gpt-oss:20b が煽り文句を生成 → 同モデルが軍師になりきって採点（図星のとき/外れのときの刺さり、逆効果、適切さ、図星/外れの返しセリフ）。遅すぎれば qwen3:8b に自動切替し、30分ごとに戻せるか試す。
+- **Forge**: qwen3:8b が煽り文句を生成（速さと多様さ優先）→ gpt-oss:20b が軍師になりきって採点（図星のとき/外れのときの刺さり、逆効果、適切さ、図星/外れの返しセリフ）。遅すぎれば qwen3:8b に自動切替し、30分ごとに戻せるか試す。
 - **Arena**: 煽り役AI（感情なし、初期値の強さ）vs 軍師AI（感情あり）。煽り役は「種類×図星×形勢」をUCBで選び、その種類の文句をUCB（事前値＝採点）で選ぶ。4局に1局は煽りなしの対照。
 - 報酬 = 冷静さ低下 + 焦り上昇 + 直後の軍師の悪手（評価損/300、最大1.5）± 勝敗0.3。
 - 出力: `data/learn/report.md`（勝率 煽りあり vs 対照、種類別効果、効いた文句）、`data/learn/candidates/`（`taunts_ranked.json`、`gunshi_lines_candidates.json`、`classifier_dataset.jsonl`）。候補は確認してからアプリの assets に反映する。

@@ -1,5 +1,5 @@
 # Start the learning loop in background. Create data\learn\STOP to stop.
-param([double]$Hours = 8, [string]$JudgeModel = 'gpt-oss:20b', [string]$GenModel = 'gpt-oss:20b')
+param([double]$Hours = 8, [string]$JudgeModel = 'gpt-oss:20b', [string]$GenModel = 'qwen3:8b')
 $root = Split-Path -Parent $PSScriptRoot
 New-Item -ItemType Directory -Force (Join-Path $root 'data\learn') | Out-Null
 Remove-Item (Join-Path $root 'data\learn\STOP') -ErrorAction SilentlyContinue
