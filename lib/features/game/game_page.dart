@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/shogi/shogi.dart';
 import 'board_view.dart';
 import 'engine_panel.dart';
+import 'gunshi_panel.dart';
 import 'game_controller.dart';
 
 class GamePage extends ConsumerWidget {
@@ -71,15 +72,17 @@ class GamePage extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: ListView(children: [
-                const EnginePanel(),
+                const GunshiPanel(),
                 const SizedBox(height: 8),
-                const HandView(side: Side.white),
+                KomadaiView(side: Side.white, label: s.mode.isAi(Side.white) ? '軍師' : null),
                 const SizedBox(height: 6),
                 BoardView(
                     onCandidates: (c) => _onCandidates(context, ref, c)),
                 const SizedBox(height: 6),
-                const HandView(side: Side.black),
-                const SizedBox(height: 12),
+                KomadaiView(side: Side.black, label: s.mode.isAi(Side.black) ? '軍師' : null),
+                const SizedBox(height: 8),
+                const TauntBar(),
+                const SizedBox(height: 8),
                 Text(status,
                     textAlign: TextAlign.center,
                     key: const ValueKey('status'),
@@ -104,6 +107,8 @@ class GamePage extends ConsumerWidget {
                     label: const Text('新規対局'),
                   ),
                 ]),
+                const SizedBox(height: 12),
+                const EnginePanel(),
               ]),
             ),
           ),

@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'features/game/game_controller.dart';
 import 'features/game/game_page.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(const ProviderScope(child: AoriShogiApp()));
+  final lines = await loadLineLibrary();
+  runApp(ProviderScope(
+    overrides: [lineLibraryProvider.overrideWithValue(lines)],
+    child: const AoriShogiApp(),
+  ));
 }
 
 class AoriShogiApp extends StatelessWidget {

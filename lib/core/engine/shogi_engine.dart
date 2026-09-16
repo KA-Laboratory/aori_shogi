@@ -79,6 +79,7 @@ class YaneuraOuEngine implements ShogiEngine {
         'NetworkDelay value 0',
         'NetworkDelay2 value 0',
         'MinimumThinkingTime value 100',
+        'RoundUpToFullSecond value false',
         'MultiPV value 1',
       ]) {
         e._send('setoption name $opt');
