@@ -1,5 +1,5 @@
-# やねうら王 V9.00（win64, NNUE halfkp_256x2-32-32, AVX2）と評価関数 Háo を python/engine に配置する。
-# どちらも GPLv3。出典は THIRD_PARTY_NOTICES.md。
+# Download YaneuraOu V9.00 win64 (NNUE halfkp_256, AVX2) and Hao eval into python\engine (GPLv3).
+# See THIRD_PARTY_NOTICES.md.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $engine = Join-Path $root 'engine'

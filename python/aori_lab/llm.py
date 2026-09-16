@@ -35,20 +35,27 @@ class OllamaClient:
         body = {
             "model": self.model,
             "stream": False,
-            "think": False,
+            "think": "low" if self.model.startswith("gpt-oss") else False,
             "format": schema,
             "keep_alive": "30m",
             "options": {"temperature": temperature, "num_ctx": 4096, "num_predict": num_predict,
                         "repeat_penalty": 1.15, "top_p": 0.95},
             "messages": [{"role": "system", "content": system}, *messages],
         }
+        if self.model.startswith("gpt-oss"):
+            # 推論トークンも num_predict を消費するので、出力が空にならないよう余裕を持たせる
+            body["options"]["num_predict"] = max(1500, num_predict * 4)
         t = time.monotonic()
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as c:
                 r = await c.post(f"{self.host}/api/chat", json=body)
                 r.raise_for_status()
-                content = r.json()["message"]["content"]
+                msg = r.json()["message"]
+                content = msg.get("content") or ""
             self.last_latency = time.monotonic() - t
+            if not content.strip():
+                self.last_error = f"empty content (thinking {len(msg.get('thinking') or '')} chars)"
+                return None
             return json.loads(content)
         except Exception as e:  # noqa: BLE001
             self.last_latency = time.monotonic() - t
