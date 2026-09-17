@@ -131,12 +131,8 @@ class Session:
         self.ai_side = ai_side
         self._reset()
         self._log("new_game", ai_side=ai_side)
-        instr, extra = "対局開始の挨拶。自信満々に名乗り、軽く相手を煽る。", ""
-        if self.memory.facts and self.rng.random() < 0.6:
-            f = self.rng.choice(self.memory.facts)
-            instr = f"対局開始の挨拶。前に相手から聞いた『{f.text or f.key + ': ' + f.value}』に、久しぶりに会った知り合いのように一言触れてから、自信満々に勝負を挑む。"
-            extra = self.memory.prompt_block(f.key)
-        await self._speak("start", instr, extra=extra)
+        # 軍師から雑談は振らない（記憶は相手が話題にした時だけ使う）
+        await self._speak("start", "対局開始の挨拶。自信満々に名乗り、軽く相手を煽る。")
         if self.board.turn == self.ai_side:
             await self._ai_turn()
 
@@ -309,11 +305,12 @@ class Session:
         options = options or [dlg.ActionOption("none", "特別な行動はしない")]
         facts = self._facts(extra)
         tmpl = {"start": "start", "ai_move": "move", "taunt_hit": "taunt_hit", "taunt_miss": "taunt_miss",
-                "praised": "praised", "win": "win", "lose": "lose"}.get(trigger, "move")
+                "praised": "praised", "win": "win", "lose": "lose", "smalltalk": "smalltalk", "chat": "chat"}.get(trigger, "move")
         examples = self.lines.lines_for(self.mind.mood.value, tmpl)
-        examples = self.rng.sample(examples, min(3, len(examples))) if examples else []
+        examples = self.rng.sample(examples, min(5, len(examples))) if examples else []
         examples = [e.replace("{move}", "〇〇") for e in examples]
-        reply = await dlg.compose_reply(self.llm if use_llm else None, facts, instruction, options, self.llm_history, examples)
+        reply = await dlg.compose_reply(self.llm if use_llm else None, facts, instruction, options, self.llm_history, examples,
+                                        mood=self.mind.mood.value)
         if reply is None and trigger in GENERIC_FALLBACK:
             reply = dlg.GunshiReply(self.rng.choice(GENERIC_FALLBACK[trigger]), action=options[0].name if options[0].name in OFFER_TEXT else "none", source="template")
         if reply is None:
@@ -486,6 +483,7 @@ class Session:
                 smalltalk = True
                 await self._smalltalk(text, extra_lines)
                 instruction = self._smalltalk_instruction
+                trigger = "smalltalk"
 
         question_bonus = 0.0
         if intent.kind == "question" and not smalltalk:
@@ -563,7 +561,7 @@ class Session:
         ask = f"まだ知らない『{unknown[0]}』を1つだけ、興味を持って聞く。" if unknown else "話を広げる質問を1つだけする。"
         self._smalltalk_instruction = (
             "相手が将棋と関係ない日常の話をしてきた。対局相手の人間として、キャラの口調のまま気さくに共感・ねぎらいを言い、"
-            + ask + " 質問は1つだけで、相手がもう言ったことや覚えていることは聞かない。覚えていることに関係があれば自然に触れる（覚えていないことは知ったかぶりしない）。将棋の話には無理に戻さない。")
+            + ask + " 質問は1つだけで、相手がもう言ったことや覚えていることは聞かない。覚えていることに関係があれば自然に触れる（覚えていないことは知ったかぶりしない）。将棋の話には無理に戻さない。雑談では気分の口癖（伏線・計算どおり・高笑いなど）は控えめにし、盤面の話を持ち出さない。")
 
     def _truth_reason(self, kind: TauntKind, truth: float) -> str:
         if kind == TauntKind.blunderCall:

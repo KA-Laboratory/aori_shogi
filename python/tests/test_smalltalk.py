@@ -31,10 +31,11 @@ def test_extract_requires_grounding_and_blocks_sensitive(tmp_path):
     llm = FakeLLM({"facts": [
         {"topic": "pet", "key": "犬の種類", "value": "柴犬", "text": "柴犬を飼っている", "quote": "柴犬なんだ"},
         {"topic": "pet", "key": "犬の名前", "value": "ポチ", "text": "名前はポチ", "quote": ""},       # 言っていない
-        {"topic": "other", "key": "持病", "value": "腰痛", "text": "腰の病院に通院", "quote": "腰痛"},  # 機微
+        {"topic": "other", "key": "持病", "value": "腰痛", "text": "腰痛で通院している", "quote": "腰痛"},  # 健康はOK
+        {"topic": "place", "key": "住所", "value": "中区", "text": "住所は中区", "quote": "中区"},  # 住所は覚えない
     ], "unknown": ["犬の名前"]})
-    facts, unknown = asyncio.run(st.extract_facts(llm, "うちの柴犬なんだ、腰痛で通院してて散歩つらい", [], mem))
-    assert [f.value for f in facts] == ["柴犬"]
+    facts, unknown = asyncio.run(st.extract_facts(llm, "うちの柴犬なんだ、腰痛で通院してて散歩つらい。住所は中区", [], mem))
+    assert [f.value for f in facts] == ["柴犬", "腰痛"]
     assert unknown == ["犬の名前"]
 
 

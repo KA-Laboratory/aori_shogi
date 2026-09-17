@@ -9,6 +9,9 @@ import re
 from dataclasses import dataclass
 
 from .llm import OllamaClient
+from .tone import ToneProfile
+
+TONE = ToneProfile.load()
 
 # ------------------------------------------------------------------ 分類
 
@@ -180,12 +183,14 @@ def clean_speech(s: str) -> str:
 
 async def compose_reply(llm: OllamaClient | None, facts: str, instruction: str,
                         options: list[ActionOption], history: list[dict],
-                        style_examples: list[str] | None = None) -> GunshiReply | None:
+                        style_examples: list[str] | None = None, mood: str = "composed",
+                        tone_control: bool = True, stats: dict | None = None,
+                        temperature: float = 0.7) -> GunshiReply | None:
     if llm is None:
         return None
     opts = "\n".join(f"- {o.name}: {o.description}" for o in options)
     convo = []
-    for h in history[-8:]:
+    for h in history[-6:]:
         who = "私" if h["role"] == "assistant" else "相手"
         convo.append(f"{who}: {h['content'].replace('[相手の発言] ', '')}")
     my_all = [h["content"] for h in history if h["role"] == "assistant"]
@@ -199,21 +204,32 @@ async def compose_reply(llm: OllamaClient | None, facts: str, instruction: str,
         parts.append("[今の気分の口調の見本（そのまま使わず、今の状況に合わせて新しく言う）]\n" + "\n".join(style_examples))
     parts.append(f"[選べる行動]\n{opts}")
     parts.append(f"[今言うこと] {instruction}")
+    # 長い対話で口調が薄れるので、毎回いちばん最後に口調を念押しする
+    if tone_control:
+        parts.append(TONE.reminder(mood))
     speech, out = None, None
-    for attempt in range(2):
-        prompt = "\n".join(parts)
-        if attempt:
-            prompt += "\n[注意] 前回の案は過去のセリフと似すぎていた。まったく違う言葉・書き出しで言うこと。"
+    feedback = ""
+    for attempt in range(3):
+        prompt = "\n".join(parts) + feedback
         out = await llm.chat_json(PERSONA, [{"role": "user", "content": prompt}],
-                                  reply_schema(options), temperature=0.95 + 0.15 * attempt, num_predict=200)
+                                  reply_schema(options), temperature=temperature + 0.1 * attempt, num_predict=200)
         if not out or not isinstance(out.get("speech"), str):
             return None
-        cand = clean_speech(out["speech"])
+        raw = clean_speech(out["speech"])
+        if stats is not None:
+            stats.setdefault("raw", []).append(raw)
+        cand = TONE.rewrite(raw) if tone_control else raw
         if not cand or NG_WORDS.search(cand):
             return None
-        if not _too_similar(cand, my_all + list(style_examples or [])):
-            speech = cand
-            break
+        bad = TONE.violations(cand, mood) if tone_control else []
+        if bad:
+            feedback = f"\n[注意] 前回の案「{cand}」は口調が崩れていた（{'・'.join(bad)}）。軍師の口調で言い直すこと。"
+            continue
+        if _too_similar(cand, my_all + list(style_examples or [])):
+            feedback = "\n[注意] 前回の案は過去のセリフと似すぎていた。まったく違う言葉・書き出しで言うこと。"
+            continue
+        speech = cand
+        break
     if speech is None:
         return None
     action = out.get("action") if out.get("action") in {o.name for o in options} else "none"
