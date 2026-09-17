@@ -106,7 +106,7 @@ class CommentaryForge:
         prev_cands: list[Candidate] = []
         moments: list[dict] = []
         noise = self.rng.choice([0.05, 0.15, 0.3])
-        while not board.is_game_over() and len(moves) < 220:
+        while not board.is_game_over() and len(moves) < 220 and not (DATA / "STOP").exists():
             res = await self.engine.think(board.sfen(), [], self.args.movetime, multipv=4)
             cands = sorted(res.candidates, key=lambda c: -c.sort_score) or [Candidate(res.bestmove)]
             eval_stm = clamp_score(cands[0])
@@ -250,19 +250,28 @@ class CommentaryForge:
             while not self.done():
                 gid += 1
                 for m in await self.play_and_extract(gid):
-                    if self.done():
-                        break
+                    if (DATA / "STOP").exists():
+                        break  # 途中の節目は捨てる（記録済みの分は jsonl に残っている）
                     if self.advisors:
                         m = await self.consult(m)
                     self.stats["moments"] += 1
                     append(DATA / "moments.jsonl", m)
-                    if self.args.mode == "both":
+                    if self.args.mode == "both" and not (DATA / "STOP").exists():
                         await self.generate_one(m)
                 self.log(f"stats {self.stats}")
         finally:
             for e in [self.engine, *self.advisors]:
                 e.quit()
+            self.write_summary()
             keep_awake(False)
+
+    def write_summary(self) -> None:
+        """停止・終了時に、その回の集計を残す（各レコードは生成のたびに jsonl へ追記済み）。"""
+        rec = {"finished_at": time.strftime("%Y-%m-%d %H:%M:%S"), "mode": self.args.mode, "model": self.args.model,
+               "minutes": round((time.monotonic() - self.started) / 60, 1),
+               "stopped_by_file": (DATA / "STOP").exists(), **self.stats}
+        append(DATA / "runs.jsonl", rec)
+        self.log(f"summary {rec}")
 
     async def generate_pending(self) -> None:
         done_ids = set()
