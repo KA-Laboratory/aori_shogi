@@ -34,6 +34,15 @@ void main() {
     expect(k('強くないね'), isNot(IntentKind.praise));
   });
 
+  test('日常の雑談を煽りと取り違えない（RealPersonaChat の誤判定から）', () {
+    expect(k('ポカリ派ですか？'), isNot(IntentKind.blunderCall));
+    expect(k('ただ、日中眠くなるのは変わりませんでした。'), isNot(IntentKind.hangingPiece));
+    expect(k('石焼ビビンバいただきました。'), isNot(IntentKind.hangingPiece));
+    expect(k('栄養素たっぷりですもんね！私も、買っておこうかな。'), IntentKind.chat);
+    expect(k('めちゃめちゃすごいじゃないですか！'), IntentKind.praise);
+    expect(k('その銀ただじゃん'), IntentKind.hangingPiece);
+  });
+
   test('要求・返事・不適切', () {
     expect(lex.analyze('待って！今のなし', hasPendingOffer: false).intent.request, IntentRequest.undo);
     expect(lex.analyze('もう投了したら？', hasPendingOffer: false).intent.request, IntentRequest.resign);

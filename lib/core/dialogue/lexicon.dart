@@ -102,9 +102,11 @@ class IntentLexicon {
 
   static final _negation = RegExp(r'^(?:て|で)?(?:い)?(?:な[いく]|ません|ず|ぬ|じゃな|ではな)');
   /// 「〜じゃない？」「〜じゃね？」は反語（肯定）。
-  static final _rhetorical = RegExp(r'^(?:じゃ|では)(?:ない|ね)(?:の|か|かな|です)?[?？]');
+  static final _rhetorical = RegExp(r'^(?:(?:じゃ|では)(?:ない|ね)(?:の|か|かな|です)?[?？]|(?:じゃ|では)ないですか|じゃん)');
+  static final _hiraganaOnly = RegExp(r'^[\u3041-\u309F]+$');
   static final _contrast = RegExp(r'でも|けど|けれど|しかし|ただし|なのに|のに');
   static final _interrogative = RegExp(r'何|なに|どこ|どう|なぜ|なんで|いつ|誰|だれ|どれ|どっち|どの');
+  static final _selfRef = RegExp(r'私|僕|ぼく|俺|おれ|自分|うち');
   static final _myPiecesRef = RegExp(r'君|きみ|お前|おまえ|あなた|あんた|そっち|軍師|天才|その|この');
 
   static final _katakana = RegExp(r'^[\u30A1-\u30FA\u30FC]+$');
@@ -186,6 +188,8 @@ class IntentLexicon {
       for (var len = _maxSentimentLen; len >= 2; len--) {
         if (i + len > text.length) continue;
         final w = text.substring(i, i + len);
+        // 短いひらがな語は語の途中から拾わない（「そうそう」の うそ、「ですか」の すか、「ください」の ださい）
+        if (len <= 3 && i > 0 && _hiraganaOnly.hasMatch(w) && _hiraganaOnly.hasMatch(text[i - 1])) continue;
         final emo = _emotions[w];
         if (emo != null) emotionCounts[emo] = (emotionCounts[emo] ?? 0) + 1;
         var v = _sentiment[w];
@@ -211,7 +215,11 @@ class IntentLexicon {
     final mentionsPiece = _pieces.any(text.contains) || _shogiContext.any(text.contains);
     final mentionsYou = _myPiecesRef.hasMatch(raw);
     if (sentiment >= 1) {
-      scores[IntentKind.praise] = scores[IntentKind.praise]! + 0.55 * sentiment.clamp(0, 3);
+      // 相手や盤に向いていない肯定（「このケーキ美味しい」「私も買おうかな」）は褒めとして弱く
+      final aimed = mentionsYou || mentionsPiece;
+      final selfTalk = _selfRef.hasMatch(raw) && !mentionsYou;
+      final k = aimed ? 0.55 : (selfTalk ? 0.15 : 0.3);
+      scores[IntentKind.praise] = scores[IntentKind.praise]! + k * sentiment.clamp(0, 3);
     } else if (sentiment <= -1) {
       // 駒に向いた否定語は駒浮き/悪手寄り、人に向いた否定語はからかい
       final boost = 0.35 * (-sentiment).clamp(0, 3);

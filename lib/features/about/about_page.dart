@@ -14,6 +14,7 @@ class AboutAppPage extends StatelessWidget {
           "Group's licence (CC BY-SA 4.0). https://www.edrdg.org/edrdg/licence.html\n"
           '（加工: jmdict-simplified 版から罵倒・揶揄語と将棋分野語を抽出）'
     ),
+    ('Wikipedia 日本語版', '将棋の戦法・囲い・用語の記事名を用語辞書に利用。CC BY-SA 4.0。https://ja.wikipedia.org/'),
     ('Sudachi 同義語辞書', 'Works Applications。Apache License 2.0。https://github.com/WorksApplications/SudachiDict'),
     ('ML-Ask 感情表現辞書', '中村明「感情表現辞典」に基づく語彙（Ptaszynski ほか）。BSD 3-Clause。https://github.com/ikegami-yukino/pymlask'),
     (

@@ -10,6 +10,8 @@
 | JMdict（EDRDG, jmdict-simplified 3.6.2） | 罵倒・揶揄語、将棋分野語の抽出（`shogi_terms.json` に加工して収録） | CC BY-SA 4.0（帰属表示はアプリ内「このアプリについて」） | https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project |
 | Sudachi 同義語辞書（Works Applications） | 将棋用語の表記ゆれ展開 | Apache License 2.0 | https://github.com/WorksApplications/SudachiDict |
 | ML-Ask 感情表現辞書（pymlask 同梱） | 感情語・強調語 `assets/lexicon/emotion_ja.json`（加工） | BSD 3-Clause | https://github.com/ikegami-yukino/pymlask |
+| Wikipedia 日本語版（Category:将棋の戦法・将棋の囲い・将棋用語） | 戦法・囲い・用語名（`shogi_terms.json` の strategies / shogiContext。tool/fetch_wikipedia_shogi.py） | CC BY-SA 4.0 | https://ja.wikipedia.org/ |
+| RealPersonaChat（名古屋大学 東中研究室 ほか） | 雑談発話の誤判定評価のみ（`tool/eval_chat.dart`）。アプリに同梱しない | CC BY-SA 4.0 | https://github.com/nu-dialogue/real-persona-chat |
 | LLM-jp Toxicity Dataset v2 | 罵倒検出の評価のみ（`tool/eval_toxicity.dart`）。アプリに同梱しない | CC BY 4.0 | https://gitlab.llm-jp.nlp.ec.t.u-tokyo.ac.jp/datasets/llm-jp-toxicity-dataset-v2 |
 | 将棋用語辞書（自作） | `assets/lexicon/shogi_terms.json`。用語の選定に将棋用語一覧（Wikipedia, CC BY-SA）を参照 | 本アプリと同じ | tool/shogi_terms.src.json |
 

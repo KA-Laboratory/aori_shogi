@@ -37,7 +37,11 @@ def stems(word: str, pos: str) -> list[str]:
 INSULT_GLOSS = re.compile(r"\b(fool|idiot|stupid|moron|dunce|dumb|incompetent|unskilled|amateur|novice|coward|loser|weakling|"
                           r"good-for-nothing|blockhead|bumpkin|clumsy|useless|clown|braggart|show-off|big-mouth|wimp|chicken)\b", re.I)
 ABUSE_STOP = {"きさま", "貴様", "おっさん", "おばさん", "おやじ", "ばばあ", "ちょっかい", "ほざく", "やがる", "くたばる", "ミーハー",
-              "スローモー", "エコノミックアニマル", "ピザ", "シュガー", "ハーモニカ", "丸太", "共", "玉", "猿", "芋", "夷"}
+              "スローモー", "エコノミックアニマル", "ピザ", "シュガー", "ハーモニカ", "丸太", "共", "玉", "猿", "芋", "夷",
+              "持ってけ", "抜かせ", "放り出す", "ひり出す", "廃人", "癈人", "番太", "白首", "口でやる", "一発やる",
+              "けつかる", "てやんでい", "てやんでえ", "連れしょん"}
+SHOGI_CTX_STOP = {"打つ", "指す", "成る", "為る", "成り", "為り", "詰む", "詰め", "必死", "拍つ", "搏つ", "撲つ", "擣つ",
+                  "対馬", "弓兵", "教王", "着手", "著手", "局勢", "先着", "対駒", "待ち駒"}
 MOCK_STOP = {"じゃこ", "肩書", "素人", "新米", "初心者", "新人", "未熟", "百姓", "禿げ", "老耄"}
 
 
@@ -52,6 +56,29 @@ def forms(w):
 def ok_len(t: str) -> bool:
     kana_only = re.fullmatch(r"[\u3040-\u30ff\u30fc]+", t) is not None
     return len(t) >= (3 if kana_only else 2)
+
+
+WIKI_SKIP = {"将棋の戦法", "将棋用語一覧", "攻め", "後手", "上手と下手", "成金", "高飛車", "付き人", "番勝負", "盤寿", "定石",
+             "レイティング", "早指し", "公開対局", "待った", "妙手", "B級戦法", "対抗型", "珍玉", "奇襲戦法", "大局観", "棋風",
+             "棋力", "長考", "力戦", "囲い", "居飛車党", "飾り駒", "羽生マジック", "太刀盛り", "持ち時間", "盤外戦", "ハメ手"}
+CASTLE = re.compile(r"囲い|美濃|矢倉$|穴熊$|金無双|中住まい|金開き|箱入り娘|ビッグ4|菱矢倉|土居矢倉|銀立ち矢倉|総矢倉|片矢倉|金矢倉|銀矢倉|右矢倉|天野矢倉|ウソ矢倉|矢倉穴熊|中原囲い")
+
+
+def load_wikipedia():
+    """Wikipedia（CC BY-SA 4.0）の記事名 → 戦法・囲い・用語名。tool/fetch_wikipedia_shogi.py で取得済みの json を読む。"""
+    path = SRC / "wikipedia_shogi.json"
+    if not path.exists():
+        return []
+    out = []
+    for p in json.load(open(path, encoding="utf-8"))["pages"]:
+        name = re.sub(r"\s*\((?:将棋|対中飛車)\)$", "", p["title"])
+        if name in WIKI_SKIP or len(name) < 2:
+            continue
+        kind = p["kind"]
+        if kind == "strategy" and CASTLE.search(name) and "戦法" not in name and "急戦" not in name:
+            kind = "castle"
+        out.append({"name": name, "kind": kind})
+    return out
 
 
 def load_jmdict():
@@ -172,14 +199,21 @@ def main():
     for t in mock:
         if norm(t) not in seen:
             seen.add(norm(t)); src["mock"].append({"t": t, "w": 0.8, "src": "jmdict"}); stats["jmdict_mock"] += 1
-    out["shogiContext"] = sorted({norm(t) for t in shogi if len(norm(t)) >= 2})
+    wiki = load_wikipedia()
+    out["strategies"] = [w for w in wiki if w["kind"] != "term"]
+    shogi = set(shogi) | {w["name"] for w in wiki}
+    out["shogiContext"] = sorted({norm(t) for t in shogi if len(norm(t)) >= 2 and t not in SHOGI_CTX_STOP})
+    stats["wikipedia"] = len(wiki)
     print(stats, "shogiContext", len(out["shogiContext"]))
     for kind in ("blunderCall", "hangingPiece", "threat", "mock", "praise", "question", "abuse"):
         for e in src[kind]:
             # 不適切語はカタカナのまま照合（「カス」を「動かす」に誤爆させない）
-            t = norm(e["t"]) if kind != "abuse" else unicodedata.normalize("NFKC", e["t"]).lower()
+            # 短いカタカナ語も表記のまま照合（「ポカ」→ポカリ、「タダ」→「ただ、」への誤爆防止）
+            nf = unicodedata.normalize("NFKC", e["t"]).lower()
+            raw = kind == "abuse" or (len(nf) <= 3 and re.fullmatch(r"[\u30A1-\u30FA\u30FC]+", nf) is not None)
+            t = nf if raw else norm(e["t"])
             out["terms"].append({"t": t, "k": kind, "w": e["w"], **({"neg": True} if e.get("neg") else {}),
-                                 **({"raw": True} if kind == "abuse" else {})})
+                                 **({"raw": True} if raw else {})})
     out["request"] = {k: [norm(x) for x in v] for k, v in src["request"].items()}
     out["accept"] = [norm(x) for x in src["accept"]]
     out["decline"] = [norm(x) for x in src["decline"]]
