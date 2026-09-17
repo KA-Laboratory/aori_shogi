@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/dialogue/intent.dart';
+import '../../core/dialogue/lexicon.dart';
 import '../../core/dialogue/line_library.dart';
 import '../../core/engine/shogi_engine.dart';
 import '../../core/mind/gunshi_brain.dart';
@@ -117,6 +118,12 @@ class GameViewState {
 
 /// 軍師のセリフ集。main() で読み込んで override する（未設定ならセリフなし）。
 final lineLibraryProvider = Provider<LineLibrary?>((ref) => null);
+
+/// 自由文分類の辞書。main() で読み込んで override する（未設定ならキーワード版）。
+final intentLexiconProvider = Provider<IntentLexicon?>((ref) => null);
+
+Future<IntentLexicon> loadIntentLexicon() async => IntentLexicon.fromJson(
+    await rootBundle.loadString(IntentLexicon.termsAsset), await rootBundle.loadString(IntentLexicon.sentimentAsset));
 
 Future<LineLibrary> loadLineLibrary() async =>
     LineLibrary.fromJsonString(await rootBundle.loadString(LineLibrary.assetPath));
@@ -372,7 +379,8 @@ class GameController extends Notifier<GameViewState> {
     }
     final intent = forcedKind != null
         ? PlayerIntent(kind: IntentKind.values.byName(forcedKind.name), intensity: 1.0)
-        : classifyKeywords(text, hasPendingOffer: _pending != null);
+        : (ref.read(intentLexiconProvider)?.analyze(text, hasPendingOffer: _pending != null).intent ??
+            classifyKeywords(text, hasPendingOffer: _pending != null));
 
     if (_pending != null && (intent.request == IntentRequest.accept || intent.request == IntentRequest.decline)) {
       respondOffer(intent.request == IntentRequest.accept);

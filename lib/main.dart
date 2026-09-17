@@ -9,8 +9,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final lines = await loadLineLibrary();
+  final lexicon = await loadIntentLexicon();
   runApp(ProviderScope(
-    overrides: [lineLibraryProvider.overrideWithValue(lines)],
+    overrides: [
+      lineLibraryProvider.overrideWithValue(lines),
+      intentLexiconProvider.overrideWithValue(lexicon),
+    ],
     child: const AoriShogiApp(),
   ));
 }

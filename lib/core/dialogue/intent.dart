@@ -1,4 +1,4 @@
-/// 自由文の分類（端末内 LLM 導入までのキーワード版。Python: dialogue.classify_keywords と同じ規則）。
+/// 自由文の分類。通常は lexicon.dart の IntentLexicon（辞書版）を使い、辞書が読めない時だけこのキーワード版。
 library;
 
 enum IntentKind { blunderCall, hangingPiece, threat, mock, praise, question, chat, abuse }
