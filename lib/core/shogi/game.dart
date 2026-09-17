@@ -1,8 +1,9 @@
+import 'declaration.dart';
 import 'move.dart';
 import 'piece.dart';
 import 'position.dart';
 
-enum GameEndReason { checkmate, resign, repetition, perpetualCheck, agreement }
+enum GameEndReason { checkmate, resign, repetition, perpetualCheck, agreement, declaration, timeUp }
 
 class GameResult {
   const GameResult(this.reason, {this.winner});
@@ -17,6 +18,8 @@ class GameResult {
     GameEndReason.repetition => '千日手（引き分け）',
     GameEndReason.perpetualCheck => '連続王手の千日手（${winner!.label}の勝ち）',
     GameEndReason.agreement => '合意により引き分け',
+    GameEndReason.declaration => '入玉宣言（${winner!.label}の勝ち）',
+    GameEndReason.timeUp => '時間切れ（${winner!.label}の勝ち）',
   };
 }
 
@@ -56,6 +59,21 @@ class ShogiGame {
   void resign({Side? side}) {
     if (isOver) return;
     _result = GameResult(GameEndReason.resign, winner: (side ?? position.turn).opponent);
+  }
+
+  /// 入玉宣言。条件を満たしていれば宣言側の勝ちで終局し、満たしていなければ何もせず false。
+  bool declareWin({Side? side}) {
+    if (isOver) return false;
+    final me = side ?? position.turn;
+    if (!checkDeclaration(position, side: me).canDeclare) return false;
+    _result = GameResult(GameEndReason.declaration, winner: me);
+    return true;
+  }
+
+  /// 持ち時間切れ。[side] の負け。
+  void timeUp(Side side) {
+    if (isOver) return;
+    _result = GameResult(GameEndReason.timeUp, winner: side.opponent);
   }
 
   /// 合意による引き分け。

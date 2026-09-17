@@ -13,6 +13,7 @@ class AiTurn {
     required this.move,
     required this.choice,
     required this.evalAi,
+    this.bestUsi,
     required this.mindBefore,
     required this.mindAfter,
     this.playerBlundered = false,
@@ -24,6 +25,9 @@ class AiTurn {
 
   /// 着手前の AI 視点評価値（sortScore）。
   final int evalAi;
+
+  /// エンジンの最善手（感想戦で「本当はこう指すべきだった」に使う）。
+  final String? bestUsi;
   final MindState mindBefore, mindAfter;
 
   /// 直前のプレイヤーの手が悪手だった（AI 視点で 150cp 以上得した）。
@@ -122,6 +126,7 @@ class GunshiBrain {
       move: Move.fromUsi(choice.candidate.usi),
       choice: choice,
       evalAi: evalAi,
+      bestUsi: cands.first.usi,
       mindBefore: before,
       mindAfter: mind,
       playerBlundered: playerBlundered,

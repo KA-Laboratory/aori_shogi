@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 class AboutAppPage extends StatelessWidget {
   const AboutAppPage({super.key});
 
+  /// この版のソースの入手先（ストア公開時は公開したタグの URL にする）。
+  static const sourceUrl = 'https://github.com/KA-Laboratory/aori_shogi';
+
   static const credits = <(String, String)>[
     ('やねうら王 (YaneuraOu)', '思考エンジン。GPLv3。https://github.com/yaneurao/YaneuraOu'),
     ('Háo（tanuki- NNUE評価関数）', '評価関数。GPLv3。https://github.com/nodchip/tanuki-'),
@@ -34,6 +37,12 @@ class AboutAppPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           const Text('煽り将棋は GNU General Public License v3 で公開しています。'),
+          const SizedBox(height: 8),
+          const SelectableText(
+            'この版と同じソースは次の場所で入手できます（GPLv3 第6条）。\n$sourceUrl\n'
+            '思考エンジン「やねうら王」は改変せず FFI から呼び出しています。'
+            '呼び出し部分（native/bridge, packages/yaneuraou_ffi）は本アプリの一部で、同じライセンスです。',
+          ),
           const SizedBox(height: 16),
           for (final (name, body) in credits)
             Padding(

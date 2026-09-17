@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
@@ -54,6 +55,32 @@ enum OpponentMode {
   };
 }
 
+/// 感想戦の1手分。
+class ReviewEntry {
+  ReviewEntry({
+    required this.ply,
+    required this.side,
+    required this.kif,
+    required this.byGunshi,
+    this.bestKif,
+    this.lossCp,
+  });
+
+  /// 0 始まりの手数。
+  final int ply;
+  final Side side;
+  final String kif;
+  final bool byGunshi;
+
+  /// エンジンの最善手（同じなら null）。
+  final String? bestKif;
+
+  /// 最善との差（cp）。分からないときは null。
+  int? lossCp;
+
+  bool get isBlunder => (lossCp ?? 0) >= 150;
+}
+
 enum ChatRole { gunshi, player, system }
 
 class ChatEntry {
@@ -73,6 +100,9 @@ class GameViewState {
     this.legalTargets = const {},
     this.mode = OpponentMode.human,
     this.level = SkillLevel.normal,
+    this.clock,
+    this.declaration,
+    this.review = const [],
     this.thinking = false,
     this.observing = false,
     this.lastSearch,
@@ -96,6 +126,15 @@ class GameViewState {
 
   /// 軍師の棋力レベル。
   final SkillLevel level;
+
+  /// 両者の残り時間（持ち時間なしのときも入る）。
+  final GameClock? clock;
+
+  /// 手番側の入玉宣言の可否（宣言ボタンの出し分けに使う）。
+  final Declaration? declaration;
+
+  /// 感想戦の材料（対局中も溜まる）。
+  final List<ReviewEntry> review;
   final bool thinking;
 
   /// AI の手の直後に局面を解析中（煽りの図星判定の準備中）。
@@ -148,6 +187,11 @@ class GameController extends Notifier<GameViewState> {
   List<Move> _legal = const [];
   OpponentMode _mode = OpponentMode.human;
   SkillLevel _level = SkillLevel.normal;
+  TimeControl _timeControl = TimeControl.none;
+  GameClock _clock = GameClock(TimeControl.none);
+  Timer? _ticker;
+  DateTime? _turnStartedAt;
+  Side? _clockSide;
   bool _thinking = false;
   bool _observing = false;
   SearchResult? _lastSearch;
@@ -159,6 +203,8 @@ class GameController extends Notifier<GameViewState> {
   int _effectsLeft = effectsPerTurn;
   final _rng = math.Random();
   final List<ChatEntry> _chat = [];
+  final List<ReviewEntry> _review = [];
+  String? _playerBestUsi;
   OfferKind? _pending;
   final Map<OfferKind, int> _offerCounts = {};
   int _lastOfferPly = -99;
@@ -169,6 +215,7 @@ class GameController extends Notifier<GameViewState> {
 
   @override
   GameViewState build() {
+    ref.onDispose(() => _ticker?.cancel());
     final game = ShogiGame();
     _legal = game.position.legalMoves();
     return GameViewState(game: game, revision: 0);
@@ -200,6 +247,9 @@ class GameController extends Notifier<GameViewState> {
       legalTargets: targets,
       mode: _mode,
       level: _level,
+      clock: _clock,
+      declaration: _game.isOver ? null : checkDeclaration(_game.position),
+      review: List.unmodifiable(_review),
       thinking: _thinking,
       observing: _observing,
       lastSearch: _lastSearch,
@@ -218,6 +268,72 @@ class GameController extends Notifier<GameViewState> {
       pendingOffer: _pending,
       dealTurns: _dealTurns,
     );
+  }
+
+  // ------------------------------------------------------------ 持ち時間
+  /// 持ち時間の設定。対局中に変えると時計を入れ替えて次の手から数え直す。
+  void setTimeControl(TimeControl control) {
+    _timeControl = control;
+    _clock = GameClock(control);
+    _startClockForTurn();
+    _refresh();
+  }
+
+  TimeControl get timeControl => _timeControl;
+
+  void _startClockForTurn() {
+    _stopClock();
+    if (_timeControl.unlimited || _game.isOver) return;
+    final side = _game.position.turn;
+    _clockSide = side;
+    _clock.startTurn(side);
+    _turnStartedAt = DateTime.now();
+    _ticker = Timer.periodic(const Duration(milliseconds: 200), (_) => _onTick());
+  }
+
+  void _stopClock() {
+    _ticker?.cancel();
+    _ticker = null;
+    _chargeElapsed();
+    _clockSide = null;
+  }
+
+  /// 前回の計測時から経った分を手番側から引く。
+  void _chargeElapsed() {
+    final side = _clockSide;
+    final since = _turnStartedAt;
+    if (side == null || since == null) return;
+    final now = DateTime.now();
+    _clock.tick(side, now.difference(since).inMilliseconds);
+    _turnStartedAt = now;
+  }
+
+  void _onTick() {
+    final side = _clockSide;
+    if (side == null) return;
+    _chargeElapsed();
+    if (_clock.of(side).flagged) {
+      _stopClock();
+      _game.timeUp(side);
+      _legal = const [];
+      _pending = null;
+      _onGameOverIfNeeded();
+    }
+    _refresh();
+  }
+
+  // ------------------------------------------------------------ 入玉宣言
+  /// 入玉宣言。条件を満たしていれば終局し true。
+  bool declareWin() {
+    if (_game.isOver || !_humanToMove) return false;
+    final ok = _game.declareWin(side: _game.position.turn);
+    if (!ok) return false;
+    _stopClock();
+    _legal = const [];
+    _pending = null;
+    _onGameOverIfNeeded();
+    _refresh();
+    return true;
   }
 
   // ------------------------------------------------------------ セリフ
@@ -252,6 +368,23 @@ class GameController extends Notifier<GameViewState> {
   String _kifOfUsi(String usi) {
     final prev = _game.moves.isEmpty ? null : _game.moves.last;
     return kifMoveText(_game.position, Move.fromUsi(usi), previous: prev).replaceAll(RegExp(r'\(\d+\)'), '');
+  }
+
+  /// [moveIndex] の局面で指したことにして棋譜表記にする（感想戦の「最善手」用）。
+  String _kifOfUsiAt(int moveIndex, String usi) {
+    final positions = _game.positions;
+    if (moveIndex < 0 || moveIndex >= positions.length) return '';
+    return kifMoveText(
+      positions[moveIndex],
+      Move.fromUsi(usi),
+      previous: moveIndex > 0 ? _game.moves[moveIndex - 1] : null,
+    ).replaceAll(RegExp(r'\(\d+\)'), '');
+  }
+
+  /// 感想戦で添える軍師のひとこと。
+  String reviewComment(ReviewEntry e) {
+    if (!e.isBlunder) return '';
+    return _line(e.byGunshi ? LineTrigger.blunderSelf : LineTrigger.blunderPlayer, vars: {'move': e.kif});
   }
 
   bool get _humanToMove => !_thinking && !_mode.isAi(state.position.turn);
@@ -293,7 +426,19 @@ class GameController extends Notifier<GameViewState> {
   /// 人間の着手。
   void play(Move move) {
     _checkExploit(move);
+    final best = _playerBestUsi;
+    _playerBestUsi = null;
+    final side = _game.position.turn;
     _applyMove(move);
+    _review.add(
+      ReviewEntry(
+        ply: _game.moves.length - 1,
+        side: side,
+        kif: _kifOf(_game.moves.length - 1),
+        byGunshi: false,
+        bestKif: best == null || best == move.toUsi() ? null : _kifOfUsiAt(_game.moves.length - 1, best),
+      ),
+    );
     if (_dealTurns > 0) _dealTurns--;
     _startNewPlayerTurnState();
     _refresh();
@@ -309,10 +454,16 @@ class GameController extends Notifier<GameViewState> {
   void _applyMove(Move move) {
     _game.play(move);
     _legal = _game.isOver ? const [] : _game.position.legalMoves();
+    if (_game.isOver) {
+      _stopClock();
+    } else {
+      _startClockForTurn();
+    }
     _onGameOverIfNeeded();
   }
 
   void _onGameOverIfNeeded() {
+    if (_game.isOver) _stopClock();
     final r = _game.result;
     final g = _gunshi;
     if (r == null || g == null) return;
@@ -381,6 +532,8 @@ class GameController extends Notifier<GameViewState> {
     _speech = null;
     _lastTaunt = null;
     _chat.clear();
+    _review.clear();
+    _playerBestUsi = null;
     _pending = null;
     _offerCounts.clear();
     _lastOfferPly = -99;
@@ -672,8 +825,30 @@ class GameController extends Notifier<GameViewState> {
       await Future<void>.delayed(const Duration(milliseconds: 50));
       if (gameId != _gameId) return;
       _applyMove(turn.move!);
+      final aiIndex = _game.moves.length - 1;
+      final aiBest = turn.bestUsi;
+      _review.add(
+        ReviewEntry(
+          ply: aiIndex,
+          side: brain.side,
+          kif: _kifOf(aiIndex),
+          byGunshi: brain == _gunshi,
+          bestKif: aiBest == null || aiBest == turn.move!.toUsi() ? null : _kifOfUsiAt(aiIndex, aiBest),
+          lossCp: turn.choice!.lossCp,
+        ),
+      );
+      // 直前のプレイヤーの手の損（＝軍師の得）が分かるのはこの時点
+      final gain = brain.lastPlayerGainCp;
+      if (gain != null) {
+        for (final e in _review.reversed) {
+          if (!e.byGunshi && e.lossCp == null) {
+            e.lossCp = math.max(0, gain);
+            break;
+          }
+        }
+      }
       if (brain == _gunshi && !_game.isOver) {
-        final aiText = _kifOf(_game.moves.length - 1);
+        final aiText = _kifOf(aiIndex);
         final reaction = _exploitReaction;
         _exploitReaction = null;
         if (reaction != null) _say(reaction);
@@ -711,6 +886,7 @@ class GameController extends Notifier<GameViewState> {
     _refresh();
     try {
       await g.observePlayerTurn(_game);
+      _playerBestUsi = g.tauntContext?.playerCandidates.firstOrNull?.usi;
     } catch (e) {
       _engineError = '$e';
     } finally {
@@ -736,14 +912,16 @@ class GameController extends Notifier<GameViewState> {
 
   void newGame() {
     _gameId++;
+    _clock = GameClock(_timeControl);
     _thinking = false;
     _observing = false;
     _lastSearch = null;
     _engineError = null;
     final game = ShogiGame();
     _legal = game.position.legalMoves();
-    state = GameViewState(game: game, revision: state.revision + 1, mode: _mode);
+    state = GameViewState(game: game, revision: state.revision + 1, mode: _mode, level: _level, clock: _clock);
     _resetBrains();
+    _startClockForTurn();
     _refresh();
     _maybeAiMove();
     _observeIfNeeded();

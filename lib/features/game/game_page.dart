@@ -8,6 +8,7 @@ import 'board_view.dart';
 import 'engine_panel.dart';
 import 'gunshi_panel.dart';
 import 'memory_sheet.dart';
+import 'review_page.dart';
 import 'game_controller.dart';
 
 class GamePage extends ConsumerWidget {
@@ -52,6 +53,11 @@ class GamePage extends ConsumerWidget {
             tooltip: 'このアプリについて',
             icon: const Icon(Icons.info_outline),
             onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AboutAppPage())),
+          ),
+          IconButton(
+            tooltip: '感想戦',
+            icon: const Icon(Icons.history_edu_outlined),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ReviewPage())),
           ),
           IconButton(
             tooltip: '軍師が覚えていること',

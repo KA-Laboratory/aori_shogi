@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/mind/move_policy.dart';
+import '../../core/shogi/shogi.dart';
 import 'engine_controller.dart';
 import 'game_controller.dart';
 
@@ -79,6 +80,44 @@ class EnginePanel extends ConsumerWidget {
                 gameCtl.setMode(mode);
               },
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Row(
+                children: [
+                  const Text('持ち時間'),
+                  const SizedBox(width: 8),
+                  DropdownButton<String>(
+                    key: const ValueKey('timeControl'),
+                    value: gameCtl.timeControl.label,
+                    isDense: true,
+                    items: [
+                      for (final c in const [TimeControl.none, TimeControl.threeMinutes, TimeControl.tenMinutes])
+                        DropdownMenuItem(value: c.label, child: Text(c.label)),
+                    ],
+                    onChanged: (v) {
+                      for (final c in const [TimeControl.none, TimeControl.threeMinutes, TimeControl.tenMinutes]) {
+                        if (c.label == v) gameCtl.setTimeControl(c);
+                      }
+                    },
+                  ),
+                  const Spacer(),
+                  if (game.clock != null && !game.clock!.control.unlimited)
+                    Text(
+                      '▲ ${game.clock!.of(Side.black).text} / △ ${game.clock!.of(Side.white).text}',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                ],
+              ),
+            ),
+            if (game.declaration != null && game.declaration!.canDeclare && !game.game.isOver)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: FilledButton.tonal(
+                  key: const ValueKey('declare'),
+                  onPressed: gameCtl.declareWin,
+                  child: Text('入玉宣言（${game.declaration!.points}点）'),
+                ),
+              ),
             if (game.mode != OpponentMode.human)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
