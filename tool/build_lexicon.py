@@ -192,6 +192,11 @@ def main():
                         seen.add(n)
                         src[kind].append({"t": syn, "w": round(e["w"] * 0.85, 2), "src": "sudachi"})
                         stats["sudachi"] += 1
+    idioms = json.load(open(ROOT / "tool" / "idioms.src.json", encoding="utf-8"))["items"]
+    for it in idioms:
+        for stem in it["stems"]:
+            if norm(stem) not in seen:
+                seen.add(norm(stem)); src[it["kind"]].append({"t": stem, "w": it["w"], "src": "idiom"}); stats["idioms"] = stats.get("idioms", 0) + 1
     abuse, mock, shogi = load_jmdict()
     for t in abuse:
         if norm(t) not in seen:

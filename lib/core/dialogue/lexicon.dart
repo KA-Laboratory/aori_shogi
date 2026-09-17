@@ -128,6 +128,31 @@ class IntentLexicon {
     }
   }
 
+  static final _kanji = RegExp(r'[一-鿿々]');
+  static const _pieceFollow = {'が', 'を', 'に', 'は', 'で', 'も', 'の', 'と', 'だ', 'じ', 'ち', 'さ', 'く', '、', '。', '!', '?', 'ー', '成', '打'};
+
+  /// 1文字の駒名（金・角・歩・馬…）は「金額」「歩く」「馬鹿」「貯金」を除くため、前後を見る。
+  bool _mentionsPiece(String text) {
+    if (_shogiContext.any(text.contains)) return true;
+    for (final p in _pieces) {
+      if (p.length >= 2) {
+        if (text.contains(p)) return true;
+        continue;
+      }
+      var from = 0;
+      while (true) {
+        final i = text.indexOf(p, from);
+        if (i < 0) break;
+        from = i + 1;
+        final prevKanji = i > 0 && _kanji.hasMatch(text[i - 1]) && !'二三四五六七八九同一'.contains(text[i - 1]);
+        final next = i + 1 < text.length ? text[i + 1] : null;
+        if (prevKanji) continue;
+        if (next == null || _pieceFollow.contains(next)) return true;
+      }
+    }
+    return false;
+  }
+
   IntentAnalysis analyze(String raw, {required bool hasPendingOffer}) {
     final text = normalizeJa(raw);
     final rawText = normalizeJa(raw, foldKana: false);
@@ -212,7 +237,11 @@ class IntentLexicon {
       }
       i += hit > 0 ? hit : 1;
     }
-    final mentionsPiece = _pieces.any(text.contains) || _shogiContext.any(text.contains);
+    final mentionsPiece = _mentionsPiece(text);
+    // 駒の話をしている時の「遊んでる」「泣いてる」「プレゼント」は駒浮き寄り
+    if (mentionsPiece && scores[IntentKind.hangingPiece]! > 0) {
+      scores[IntentKind.hangingPiece] = scores[IntentKind.hangingPiece]! + 0.15;
+    }
     final mentionsYou = _myPiecesRef.hasMatch(raw);
     if (sentiment >= 1) {
       // 相手や盤に向いていない肯定（「このケーキ美味しい」「私も買おうかな」）は褒めとして弱く

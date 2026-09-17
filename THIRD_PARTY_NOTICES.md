@@ -12,6 +12,10 @@
 | ML-Ask 感情表現辞書（pymlask 同梱） | 感情語・強調語 `assets/lexicon/emotion_ja.json`（加工） | BSD 3-Clause | https://github.com/ikegami-yukino/pymlask |
 | Wikipedia 日本語版（Category:将棋の戦法・将棋の囲い・将棋用語） | 戦法・囲い・用語名（`shogi_terms.json` の strategies / shogiContext。tool/fetch_wikipedia_shogi.py） | CC BY-SA 4.0 | https://ja.wikipedia.org/ |
 | RealPersonaChat（名古屋大学 東中研究室 ほか） | 雑談発話の誤判定評価のみ（`tool/eval_chat.dart`）。アプリに同梱しない | CC BY-SA 4.0 | https://github.com/nu-dialogue/real-persona-chat |
+| 日本語WordNet（NICT, Francis Bond, Takayuki Kuribayashi） | 煽り語・褒め語の言い換え候補（opus-5 が選別して tool/shogi_terms.src.json に追加、src=wordnet+opus） | WordNet 型ライセンス（出典表示） | https://bond-lab.github.io/wnja/ |
+| ウィクショナリー日本語版（日本語 慣用句・ことわざ） | 慣用句の見出し・語義（tool/idioms.src.json。意図ラベルは opus-5） | CC BY-SA 4.0 | https://ja.wiktionary.org/ |
+| 青空文庫：吉川英治『三国志』 | 軍師口調の見本 python/aori_lab/style/gunshi_quotes.json（研究用プロンプトの味付け） | 著作権保護期間満了 | https://www.aozora.gr.jp/cards/001562/ |
+| Tatoeba（日本語文） | 雑談の誤判定評価のみ。同梱しない | CC BY 2.0 FR | https://tatoeba.org/ |
 | LLM-jp Toxicity Dataset v2 | 罵倒検出の評価のみ（`tool/eval_toxicity.dart`）。アプリに同梱しない | CC BY 4.0 | https://gitlab.llm-jp.nlp.ec.t.u-tokyo.ac.jp/datasets/llm-jp-toxicity-dataset-v2 |
 | 将棋用語辞書（自作） | `assets/lexicon/shogi_terms.json`。用語の選定に将棋用語一覧（Wikipedia, CC BY-SA）を参照 | 本アプリと同じ | tool/shogi_terms.src.json |
 

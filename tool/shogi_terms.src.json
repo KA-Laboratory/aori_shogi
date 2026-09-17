@@ -256,7 +256,7 @@
   },
   {
    "t": "遊んで",
-   "w": 0.7,
+   "w": 0.45,
    "neg": true
   },
   {
@@ -286,7 +286,7 @@
   },
   {
    "t": "見捨て",
-   "w": 0.7
+   "w": 0.45
   },
   {
    "t": "孤立",
@@ -310,7 +310,7 @@
   },
   {
    "t": "泣いて",
-   "w": 0.7,
+   "w": 0.45,
    "neg": true
   },
   {
@@ -355,11 +355,11 @@
   },
   {
    "t": "プレゼント",
-   "w": 0.6
+   "w": 0.45
   },
   {
    "t": "取り残",
-   "w": 0.7
+   "w": 0.45
   },
   {
    "t": "使えてない",
@@ -414,14 +414,6 @@
   {
    "t": "受けなし",
    "w": 1
-  },
-  {
-   "t": "寄り",
-   "w": 0.6
-  },
-  {
-   "t": "寄せ",
-   "w": 0.6
   },
   {
    "t": "一手一手",
@@ -548,6 +540,30 @@
   {
    "t": "崩壊",
    "w": 0.7
+  },
+  {
+   "t": "の寄り",
+   "w": 0.6
+  },
+  {
+   "t": "寄り筋",
+   "w": 0.6
+  },
+  {
+   "t": "寄せが",
+   "w": 0.6
+  },
+  {
+   "t": "寄せの",
+   "w": 0.6
+  },
+  {
+   "t": "寄せ筋",
+   "w": 0.6
+  },
+  {
+   "t": "寄せ合い",
+   "w": 0.6
   }
  ],
  "mock": [
@@ -661,7 +677,7 @@
   },
   {
    "t": "笑",
-   "w": 0.5
+   "w": 0.3
   },
   {
    "t": "草",
@@ -710,6 +726,171 @@
   {
    "t": "軍師(笑)",
    "w": 1
+  },
+  {
+   "t": "愚昧",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "間ぬけ",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "間抜け",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "薄ばか",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "薄馬鹿",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "頓痴気",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "へっぽこ",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "素人臭い",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "小心者",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "弱味噌",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "弱虫",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "怖がり",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "意気地なし",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "意気地無し",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "腰抜け",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "腰ぬけ",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "臆病者",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "泣き虫",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "泣き味噌",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "小者",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "能無し",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "甲斐性なし",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "無能",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "役立たず",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "見掛け倒し",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "見かけ倒し",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "負け犬",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "浅はか",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "浅墓",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "見苦しい",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "見下げ果てた",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "ほら吹き",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "大ぼら",
+   "w": 0.7,
+   "src": "wordnet+opus"
   }
  ],
  "praise": [
@@ -876,6 +1057,176 @@
   {
    "t": "すばらし",
    "w": 0.9
+  },
+  {
+   "t": "あっぱれ",
+   "w": 0.9,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "天晴れ",
+   "w": 0.9,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "感心",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "鬼才",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "神童",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "秀才",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "俊才",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "異才",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "巧妙",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "腕利き",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "至妙",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "達人",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "巨匠",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "達者",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "卓抜",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "抜群",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "出色",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "秀逸",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "鮮やか",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "圧巻",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "聡明",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "賢明",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "頭の切れる",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "慧眼",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "炯眼",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "非凡",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "卓越",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "立派",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "恐れ入",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "脱帽",
+   "w": 0.9,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "感服",
+   "w": 0.8,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "敵わない",
+   "w": 0.7,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "かなわない",
+   "w": 0.6,
+   "src": "wordnet+opus"
+  },
+  {
+   "t": "お手上げ",
+   "w": 0.6,
+   "src": "wordnet+opus"
   }
  ],
  "question": [

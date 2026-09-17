@@ -28,6 +28,9 @@ from ..usi import Candidate
 from .runner import keep_awake
 
 DATA = Path(__file__).resolve().parents[2] / "data" / "learn_commentary"
+_STYLE = Path(__file__).resolve().parents[1] / "style" / "gunshi_quotes.json"
+# 青空文庫（吉川英治『三国志』、著作権保護期間満了）から抜いた軍師らしい言い回し
+STYLE_QUOTES = [q["text"] for q in json.load(open(_STYLE, encoding="utf-8"))["quotes"]] if _STYLE.exists() else []
 KINDS = ["blunderCall", "hangingPiece", "threat", "mock", "praise"]
 MOODS = ["smug", "composed", "rattled", "panic"]
 MOVE_RE = re.compile(r"(?:同\s*|[１-９1-9][一二三四五六七八九])(?:成香|成桂|成銀|歩|香|桂|銀|金|角|飛|玉|王|と|馬|龍|竜)(?:成|不成|打)?")
@@ -174,9 +177,13 @@ class CommentaryForge:
 
     # ---- 2. 生成と検証
     async def generate(self, m: dict) -> dict:
+        style = ""
+        if STYLE_QUOTES:
+            picks = self.rng.sample(STYLE_QUOTES, k=min(3, len(STYLE_QUOTES)))
+            style = "\n\n【軍師の口調の味付け（古典の言い回し。そのまま写さず、少しだけ混ぜる）】\n" + "\n".join(f"・{q}" for q in picks)
         msgs = [{"role": "user", "content": "【事実】\n" + FEWSHOT_FACTS},
                 {"role": "assistant", "content": json.dumps(FEWSHOT_OUT, ensure_ascii=False)},
-                {"role": "user", "content": "【事実】\n" + m["facts"]}]
+                {"role": "user", "content": "【事実】\n" + m["facts"] + style}]
         out = await self.llm.chat_json(SYSTEM, msgs, SCHEMA, temperature=0.6, num_predict=self.args.num_predict,
                                          repeat_penalty=1.0)
         self.stats["generated"] += 1

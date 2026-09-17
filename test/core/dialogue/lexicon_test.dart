@@ -43,6 +43,16 @@ void main() {
     expect(k('その銀ただじゃん'), IntentKind.hangingPiece);
   });
 
+  test('慣用句・言い換え（Wiktionary / WordNet）', () {
+    expect(k('猿も木から落ちるってやつ？'), IntentKind.blunderCall);
+    expect(k('もう袋の鼠だね'), IntentKind.threat);
+    expect(k('口ほどにもないな'), IntentKind.mock);
+    expect(k('参った、兜を脱ぐよ'), IntentKind.praise);
+    expect(k('とんだ腰抜け軍師だ'), IntentKind.mock);
+    expect(k('借金の金額が増えた'), IntentKind.chat); // 1文字の駒名は「金額」を拾わない
+    expect(k('立ち寄りたい店がある'), isNot(IntentKind.threat));
+  });
+
   test('要求・返事・不適切', () {
     expect(lex.analyze('待って！今のなし', hasPendingOffer: false).intent.request, IntentRequest.undo);
     expect(lex.analyze('もう投了したら？', hasPendingOffer: false).intent.request, IntentRequest.resign);
