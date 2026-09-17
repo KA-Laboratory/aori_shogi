@@ -52,3 +52,14 @@ def test_arena_game_and_report(tmp_path):
     ex = export_candidates(pool, tmp_path / "cand")
     assert ex["dataset"] == len(pool.entries)
     assert (tmp_path / "report.md").read_text(encoding="utf-8").startswith("# 煽り学習レポート")
+
+
+def test_commentary_validate_rejects_invented_moves():
+    from aori_lab.learn.commentary import validate
+    m = {"allowed_moves": ["４五桂", "６六角", "同　歩"]}
+    good = {"commentary": "▲４五桂は勢いがあるが、▲６六角で中央を支えるのが本筋。形勢は後手に傾いた。",
+            "taunts": [{"kind": "blunderCall", "text": "今の４五桂は勇み足でしょ"}] * 3,
+            "gunshi": {"mood": "rattled", "text": "計算通りなのだ…たぶん"}}
+    assert validate(good, m) == []
+    bad = {**good, "commentary": "▲４五桂より▲２四歩が良かった。ここから形勢は後手に大きく傾いてしまった。"}
+    assert any("unknown move" in e for e in validate(bad, m))

@@ -31,7 +31,8 @@ class OllamaClient:
             return False
 
     async def chat_json(self, system: str, messages: list[dict], schema: dict,
-                        temperature: float = 0.8, num_predict: int = 256) -> dict | None:
+                        temperature: float = 0.8, num_predict: int = 256,
+                        repeat_penalty: float = 1.15) -> dict | None:
         body = {
             "model": self.model,
             "stream": False,
@@ -39,12 +40,13 @@ class OllamaClient:
             "format": schema,
             "keep_alive": "30m",
             "options": {"temperature": temperature, "num_ctx": 4096, "num_predict": num_predict,
-                        "repeat_penalty": 1.15, "top_p": 0.95},
+                        "repeat_penalty": repeat_penalty, "top_p": 0.95},
             "messages": [{"role": "system", "content": system}, *messages],
         }
         if self.model.startswith("gpt-oss"):
             # 推論トークンも num_predict を消費するので、出力が空にならないよう余裕を持たせる
             body["options"]["num_predict"] = max(1500, num_predict * 4)
+            body["options"]["num_ctx"] = 8192
         t = time.monotonic()
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as c:
