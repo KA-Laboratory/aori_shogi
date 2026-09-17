@@ -106,6 +106,24 @@ async def offer(req: OfferReq):
     return await _run(sess().respond_offer(req.accept))
 
 
+@app.get("/api/memory")
+async def memory():
+    return {"facts": [f.__dict__ for f in sess().memory.facts]}
+
+
+@app.delete("/api/memory/{fact_id}")
+async def memory_delete(fact_id: str):
+    if not sess().memory.delete(fact_id):
+        raise HTTPException(404, "not found")
+    return sess().state()
+
+
+@app.delete("/api/memory")
+async def memory_clear():
+    sess().memory.clear()
+    return sess().state()
+
+
 class DebugOffer(BaseModel):
     kind: str
 

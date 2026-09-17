@@ -27,7 +27,12 @@ class FakeEngine:
 
 
 def make(score=0):
-    return Session(engine=FakeEngine(score), llm=None, lines=LineLibrary.load(), seed=1, base_movetime_ms=10, observe_ms=10)
+    import tempfile
+    from pathlib import Path
+    from aori_lab.smalltalk import MemoryStore
+    mem = MemoryStore(Path(tempfile.mkdtemp()) / "mem.json")
+    return Session(engine=FakeEngine(score), llm=None, lines=LineLibrary.load(), seed=1, base_movetime_ms=10, observe_ms=10,
+                   memory=mem)
 
 
 def run(c):
@@ -91,3 +96,14 @@ def test_resign_request_when_losing():
     assert s._request_allowed("resign")
     run(s._grant_request("resign"))
     assert s.result["winner"] == cshogi.BLACK
+
+
+def test_smalltalk_remembers_pet_without_llm():
+    s = make()
+    run(s.new_game(cshogi.WHITE))
+    lips0 = s.mind.loose_lips
+    run(s.player_chat("今日犬の散歩一旦だけど疲れた"))
+    assert [f.value for f in s.memory.facts] == ["犬"]
+    assert s.mind.loose_lips > lips0
+    assert s.chat[-1]["role"] == "gunshi"
+    assert s.state()["memory"][0]["key"] == "ペット"

@@ -12,6 +12,7 @@ from pathlib import Path
 import cshogi
 
 from . import dialogue as dlg
+from . import smalltalk as st
 from .engine import UsiEngine
 from .lines import LineLibrary
 from .llm import OllamaClient
@@ -66,9 +67,12 @@ class Session:
     observe_ms: int = 300
     chatty: bool = True  # False: 毎手のセリフは LLM を使わずテンプレート（ボロ・持ちかけ時だけ LLM）
     id: str = field(default_factory=lambda: time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6])
+    memory: st.MemoryStore | None = None  # 相手について覚えていること（対局をまたいで残る）
 
     def __post_init__(self) -> None:
         self.rng = random.Random(self.seed)
+        if self.memory is None:
+            self.memory = st.MemoryStore()
         self.lock = asyncio.Lock()
         self._reset()
 
@@ -127,7 +131,12 @@ class Session:
         self.ai_side = ai_side
         self._reset()
         self._log("new_game", ai_side=ai_side)
-        await self._speak("start", "対局開始の挨拶。自信満々に名乗り、軽く相手を煽る。")
+        instr, extra = "対局開始の挨拶。自信満々に名乗り、軽く相手を煽る。", ""
+        if self.memory.facts and self.rng.random() < 0.6:
+            f = self.rng.choice(self.memory.facts)
+            instr = f"対局開始の挨拶。前に相手から聞いた『{f.text or f.key + ': ' + f.value}』に、久しぶりに会った知り合いのように一言触れてから、自信満々に勝負を挑む。"
+            extra = self.memory.prompt_block(f.key)
+        await self._speak("start", instr, extra=extra)
         if self.board.turn == self.ai_side:
             await self._ai_turn()
 
@@ -467,8 +476,19 @@ class Session:
         trigger = "chat"
         instruction = "相手の発言に、キャラらしく返す。"
 
+        smalltalk = False
+        if intent.kind in ("chat", "question") and intent.request == "none" and not self.pending:
+            if st.asks_if_ai(text):
+                smalltalk = True
+                instruction = ("AIなのか・人間なのかを聞かれた。人間だと断言も、AIだと認めることもせず、"
+                               "『天才軍師に向かって失礼な』のようにキャラらしくはぐらかし、勝負に話を戻す。")
+            elif st.is_smalltalk(text):
+                smalltalk = True
+                await self._smalltalk(text, extra_lines)
+                instruction = self._smalltalk_instruction
+
         question_bonus = 0.0
-        if intent.kind == "question":
+        if intent.kind == "question" and not smalltalk:
             m = self.mind
             question_bonus = 0.1 + 0.25 * max(0.0, m.hubris - 0.4) + 0.15 * m.loose_lips
             self.mind = m.copy_with(loose_lips=m.loose_lips + SP.lips_per_question * (0.5 + m.hubris))
@@ -529,6 +549,21 @@ class Session:
         reply = await self._speak(trigger, instruction, options, "\n".join(extra_lines), slip=sl)
         if req in ("undo", "hint", "draw", "resign") and reply.action == "accept" and self._request_allowed(req):
             await self._grant_request(req)
+
+    async def _smalltalk(self, text: str, extra_lines: list[str]) -> None:
+        """将棋と関係ない話: 事実を覚え、共感して、まだ知らないことを1つ聞き返す。"""
+        recent = [c["text"] for c in self.chat if c["role"] == "player"][-4:-1]
+        facts, unknown = await st.extract_facts(self.llm, text, recent, self.memory)
+        saved = [self.memory.upsert(f) for f in facts]
+        self._log("memory", saved=[f.__dict__ for f in saved], unknown=unknown)
+        # 楽しい雑談で少し気が緩み、口が軽くなる（煽りほどは効かない）
+        m = self.mind
+        self.mind = m.copy_with(composure=m.composure + 0.02, loose_lips=m.loose_lips + 0.04)
+        extra_lines.append(self.memory.prompt_block(text))
+        ask = f"まだ知らない『{unknown[0]}』を1つだけ、興味を持って聞く。" if unknown else "話を広げる質問を1つだけする。"
+        self._smalltalk_instruction = (
+            "相手が将棋と関係ない日常の話をしてきた。対局相手の人間として、キャラの口調のまま気さくに共感・ねぎらいを言い、"
+            + ask + " 質問は1つだけで、相手がもう言ったことや覚えていることは聞かない。覚えていることに関係があれば自然に触れる（覚えていないことは知ったかぶりしない）。将棋の話には無理に戻さない。")
 
     def _truth_reason(self, kind: TauntKind, truth: float) -> str:
         if kind == TauntKind.blunderCall:
@@ -610,6 +645,7 @@ class Session:
             "chat": self.chat[-60:],
             "pending": {"kind": self.pending.kind, "text": OFFER_TEXT[self.pending.kind]} if self.pending else None,
             "deal_turns": self.deal_turns,
+            "memory": [f.__dict__ for f in self.memory.facts],
             "result": self.result,
             "llm": {"model": self.llm.model if self.llm else None, "latency": self.llm.last_latency if self.llm else None,
                     "error": self.llm.last_error if self.llm else None},

@@ -92,6 +92,10 @@ dialog{border:none;border-radius:14px;padding:18px}
       <div class="row"><input id="input" placeholder="軍師に話しかける・煽る（例: その角タダじゃない？）" maxlength="200"><button class="primary" id="send">送信</button></div>
       <div class="chips" id="chips"></div>
       <div class="meta" id="llm" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+      <details id="memBox" style="margin-top:8px;font-size:13px"><summary>軍師が覚えていること（<span id="memCount">0</span>）</summary>
+        <ul id="memList" style="padding-left:18px;margin:6px 0"></ul>
+        <button id="memClear">すべて忘れさせる</button>
+      </details>
     </div>
   </section>
 </main>
@@ -99,7 +103,7 @@ dialog{border:none;border-radius:14px;padding:18px}
 <script>
 const $ = (id) => document.getElementById(id);
 let S = null, sel = null, busy = false;
-const SAMPLES = ["次どこ指すつもり？", "本当は苦しいんでしょ？", "さすが！天才！最強！", "いまの手、悪手でしょ", "その駒、浮いてない？", "玉、危なくない？", "天才軍師（笑）", "さすが天才軍師さま！", "待った！今のなしで", "ヒント教えてよ", "もう投了したら？"];
+const SAMPLES = ["今日犬の散歩一旦だけど疲れた", "柴犬で名前はコタロウ", "ねえ、あなたってAIなの？", "次どこ指すつもり？", "本当は苦しいんでしょ？", "さすが！天才！最強！", "いまの手、悪手でしょ", "その駒、浮いてない？", "玉、危なくない？", "天才軍師（笑）", "さすが天才軍師さま！", "待った！今のなしで", "ヒント教えてよ", "もう投了したら？"];
 
 async function api(path, body) {
   if (busy) return;
@@ -156,6 +160,13 @@ function render() {
   chat.scrollTop = chat.scrollHeight;
   $("offer").style.display = S.pending ? "flex" : "none";
   if (S.pending) $("offerText").textContent = "軍師の提案：" + S.pending.text;
+  const ml = $("memList"); ml.innerHTML = ""; $("memCount").textContent = (S.memory || []).length;
+  for (const f of (S.memory || [])) {
+    const li = document.createElement("li"); li.textContent = `${f.text || (f.key + ": " + f.value)}（${f.first_seen.slice(0, 10)}） `;
+    const b = document.createElement("button"); b.textContent = "忘れる"; b.style.fontSize = "11px";
+    b.onclick = async () => { const r = await fetch("/api/memory/" + f.id, {method: "DELETE"}); if (r.ok) { S = await r.json(); render(); } };
+    li.appendChild(b); ml.appendChild(li);
+  }
   $("llm").textContent = S.llm.model ? `LLM: ${S.llm.model}${S.llm.latency ? `（直近 ${S.llm.latency.toFixed(1)}秒）` : ""}` : "LLM なし（テンプレートのみ）";
 }
 function piece(ch, white, pro, k) {
@@ -184,6 +195,7 @@ async function clickCell(c, targets) {
   sel = mine && !(sel && sel.sq === c.sq) ? {sq: c.sq} : null; render();
 }
 function askPromo() { return new Promise(res => { const d = $("promo"); d.showModal(); $("pYes").onclick = () => { d.close(); res(true); }; $("pNo").onclick = () => { d.close(); res(false); }; }); }
+$("memClear") && ($("memClear").onclick = async () => { if (!confirm("覚えていることをすべて消しますか？")) return; const r = await fetch("/api/memory", {method: "DELETE"}); if (r.ok) { S = await r.json(); render(); } });
 async function send() { const t = $("input").value.trim(); if (!t) return; $("input").value = ""; S.chat.push({role: "player", text: t}); render(); await api("/api/chat", {text: t}); }
 $("send").onclick = send; $("input").onkeydown = (e) => { if (e.key === "Enter" && !e.isComposing) send(); };
 $("accept").onclick = () => api("/api/offer", {accept: true}); $("decline").onclick = () => api("/api/offer", {accept: false});
