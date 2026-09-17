@@ -7,6 +7,10 @@
 | やねうら王 (YaneuraOu) | 思考エンジン（`native/yaneuraou`, submodule） | GPLv3 | https://github.com/yaneurao/YaneuraOu |
 | Háo（tanuki- 標準NNUE評価関数 halfkp_256x2-32-32, 2023-05-08） | 評価関数 `nn.bin`（初回起動時にダウンロード。アプリには同梱しない） | GPLv3 | https://github.com/nodchip/tanuki-/releases/tag/tanuki-.halfkp_256x2-32-32.2023-05-08 |
 | 日本語評価極性辞書（用言編・名詞編, 東北大学 乾・岡崎研究室） | 自由文の褒め/けなし判定 `assets/lexicon/sentiment_ja.json`（加工） | 出典明記で商用利用可 | https://www.cl.ecei.tohoku.ac.jp/Open_Resources-Japanese_Sentiment_Polarity_Dictionary.html |
+| JMdict（EDRDG, jmdict-simplified 3.6.2） | 罵倒・揶揄語、将棋分野語の抽出（`shogi_terms.json` に加工して収録） | CC BY-SA 4.0（帰属表示はアプリ内「このアプリについて」） | https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project |
+| Sudachi 同義語辞書（Works Applications） | 将棋用語の表記ゆれ展開 | Apache License 2.0 | https://github.com/WorksApplications/SudachiDict |
+| ML-Ask 感情表現辞書（pymlask 同梱） | 感情語・強調語 `assets/lexicon/emotion_ja.json`（加工） | BSD 3-Clause | https://github.com/ikegami-yukino/pymlask |
+| LLM-jp Toxicity Dataset v2 | 罵倒検出の評価のみ（`tool/eval_toxicity.dart`）。アプリに同梱しない | CC BY 4.0 | https://gitlab.llm-jp.nlp.ec.t.u-tokyo.ac.jp/datasets/llm-jp-toxicity-dataset-v2 |
 | 将棋用語辞書（自作） | `assets/lexicon/shogi_terms.json`。用語の選定に将棋用語一覧（Wikipedia, CC BY-SA）を参照 | 本アプリと同じ | tool/shogi_terms.src.json |
 
 日本語評価極性辞書の出典:

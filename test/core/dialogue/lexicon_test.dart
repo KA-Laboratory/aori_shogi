@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final lex = IntentLexicon.fromJson(File('assets/lexicon/shogi_terms.json').readAsStringSync(),
-      File('assets/lexicon/sentiment_ja.json').readAsStringSync());
+      File('assets/lexicon/sentiment_ja.json').readAsStringSync(), File('assets/lexicon/emotion_ja.json').readAsStringSync());
   IntentKind k(String s) => lex.analyze(s, hasPendingOffer: false).intent.kind;
 
   test('正規化', () {
@@ -42,5 +42,9 @@ void main() {
     expect(lex.analyze('お断りだね', hasPendingOffer: true).intent.request, IntentRequest.decline);
     expect(k('消えろ'), IntentKind.abuse);
     expect(k('今日はいい天気'), isNot(IntentKind.abuse));
+    expect(k('この駒カスだな'), IntentKind.abuse);
+    expect(k('ハイビスカスが綺麗'), isNot(IntentKind.abuse)); // カタカナ語の中は別語
+    expect(k('カスタム盤を買った'), isNot(IntentKind.abuse));
+    expect(k('そう簡単には死ねない'), isNot(IntentKind.abuse)); // 否定
   });
 }

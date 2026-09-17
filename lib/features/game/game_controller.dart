@@ -123,7 +123,9 @@ final lineLibraryProvider = Provider<LineLibrary?>((ref) => null);
 final intentLexiconProvider = Provider<IntentLexicon?>((ref) => null);
 
 Future<IntentLexicon> loadIntentLexicon() async => IntentLexicon.fromJson(
-    await rootBundle.loadString(IntentLexicon.termsAsset), await rootBundle.loadString(IntentLexicon.sentimentAsset));
+    await rootBundle.loadString(IntentLexicon.termsAsset),
+    await rootBundle.loadString(IntentLexicon.sentimentAsset),
+    await rootBundle.loadString(IntentLexicon.emotionAsset));
 
 Future<LineLibrary> loadLineLibrary() async =>
     LineLibrary.fromJsonString(await rootBundle.loadString(LineLibrary.assetPath));

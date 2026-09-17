@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/shogi/shogi.dart';
+import '../about/about_page.dart';
 import 'board_view.dart';
 import 'engine_panel.dart';
 import 'gunshi_panel.dart';
@@ -51,6 +52,12 @@ class GamePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('煽り将棋'),
         actions: [
+          IconButton(
+            tooltip: 'このアプリについて',
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute<void>(builder: (_) => const AboutAppPage())),
+          ),
           IconButton(
             tooltip: '棋譜(KIF)をコピー',
             icon: const Icon(Icons.copy_all),

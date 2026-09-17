@@ -16,7 +16,7 @@ void main(List<String> args) {
       .map((l) => jsonDecode(l) as Map<String, dynamic>)
       .toList();
   final lex = IntentLexicon.fromJson(File('assets/lexicon/shogi_terms.json').readAsStringSync(),
-      File('assets/lexicon/sentiment_ja.json').readAsStringSync());
+      File('assets/lexicon/sentiment_ja.json').readAsStringSync(), File('assets/lexicon/emotion_ja.json').readAsStringSync());
   final sw = Stopwatch()..start();
   var kw = 0, lx = 0, kwChat = 0, lxChat = 0;
   final confusion = <String, Map<String, int>>{};

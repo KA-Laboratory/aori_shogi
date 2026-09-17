@@ -6,7 +6,7 @@ import 'package:aori_shogi/core/dialogue/lexicon.dart';
 void main(List<String> argv) {
   final args = argv.isNotEmpty ? argv : File("build/intent_debug_in.txt").readAsLinesSync().where((l) => l.trim().isNotEmpty).toList();
   final lex = IntentLexicon.fromJson(File('assets/lexicon/shogi_terms.json').readAsStringSync(),
-      File('assets/lexicon/sentiment_ja.json').readAsStringSync());
+      File('assets/lexicon/sentiment_ja.json').readAsStringSync(), File('assets/lexicon/emotion_ja.json').readAsStringSync());
   final out = StringBuffer();
   for (final a in args) {
     final r = lex.analyze(a, hasPendingOffer: false);
