@@ -30,7 +30,10 @@ from .runner import keep_awake
 DATA = Path(__file__).resolve().parents[2] / "data" / "learn_commentary"
 _STYLE = Path(__file__).resolve().parents[1] / "style" / "gunshi_quotes.json"
 # 青空文庫（吉川英治『三国志』、著作権保護期間満了）から抜いた軍師らしい言い回し
-STYLE_QUOTES = [q["text"] for q in json.load(open(_STYLE, encoding="utf-8"))["quotes"]] if _STYLE.exists() else []
+_NAMES = re.compile(r"孔明|玄徳|劉備|関羽|張飛|曹|仲達|司馬|魏|蜀|呉|漢|孟獲|魯粛|周瑜|趙雲|馬超|黄忠|丞相|先生|陛下|臣|成都|荊州|赤壁|南蛮|※")
+# 固有名詞を含む台詞は外す（生成に三国志の話題が混ざるのを防ぐ）
+STYLE_QUOTES = [q["text"] for q in json.load(open(_STYLE, encoding="utf-8"))["quotes"]
+                if not _NAMES.search(q["text"]) and len(q["text"]) <= 40] if _STYLE.exists() else []
 KINDS = ["blunderCall", "hangingPiece", "threat", "mock", "praise"]
 MOODS = ["smug", "composed", "rattled", "panic"]
 MOVE_RE = re.compile(r"(?:同\s*|[１-９1-9][一二三四五六七八九])(?:成香|成桂|成銀|歩|香|桂|銀|金|角|飛|玉|王|と|馬|龍|竜)(?:成|不成|打)?")
@@ -49,7 +52,7 @@ SYSTEM = """あなたは将棋の解説者兼、対局アプリ「煽り将棋�
 与えられた【事実】だけを根拠に書きます。事実にない指し手・駒・評価を作ってはいけません。
 - 「エンジン合議」で意見が割れている時は断定せず「有力」「一説には」とぼかす。
 - commentary: 観戦者向けの解説。60〜100字。指し手は事実に書かれた表記（例: ７六歩、同　角成）だけを使う。
-- taunts: プレイヤーが相手（自称天才軍師のAI）に言う煽りを3つ。各10〜35字、口語。kind は
+- taunts: プレイヤーが、この手を指した軍師（自称天才のAI）に向かって言う煽りを3つ。「相手の玉」ではなく「お前の玉」「その銀」のように軍師に直接言う。各10〜35字、口語。kind は
   blunderCall=悪手の指摘 / hangingPiece=駒が浮いている・タダ / threat=詰み・寄せの脅し / mock=からかい / praise=褒め殺し。
   局面に合う kind を選ぶ（悪手の直後なら blunderCall、詰み筋なら threat など）。3つのうち最低2つは事実に即した指摘にする。
 - gunshi: 煽られた軍師（尊大だが抜けているポンコツ）の一言。10〜40字。mood は形勢に合わせる（有利=smug、互角=composed、不利=rattled、大差や詰み=panic）。
@@ -116,7 +119,7 @@ class CommentaryForge:
                 mover = 1 - board.turn
                 was_best = bool(prev_cands) and prev_cands[0].usi == last
                 decided = abs(prev_eval) >= 1500
-                interesting = (loss >= 150 and not was_best and not decided) or bool(cands[0].mate_in)
+                interesting = not decided and ((loss >= 150 and not was_best) or bool(cands[0].mate_in))
                 if interesting and len([m for m in moments if m["ply"] > len(moves) - 6]) == 0:
                     moments.append(self._facts(gid, moves, prev_cands, prev_eval, eval_stm, loss, mover))
             pick = cands[0]
@@ -161,7 +164,7 @@ class CommentaryForge:
         def verdict(v: int) -> str:
             v = sign * v
             return "互角" if abs(v) < 300 else ("有利" if v > 0 else "不利") + ("（大差）" if abs(v) >= 1500 else "")
-        lines = [f"手番: {mark}{SIDE_LABEL[mover]} {ply}手目",
+        lines = [f"手番: {mark}{SIDE_LABEL[mover]} {ply}手目（指したのは軍師＝AI。煽るプレイヤーはその対戦相手）",
                  f"指した側から見た形勢: {verdict(before_black)} → {verdict(after_black)}",
                  f"形勢(先手から): {before_black:+d} → {after_black:+d}" + (f"（悪手、損失{loss}）" if loss >= 150 else ""),
                  f"指した手: {mark}{played_kif}" + ("（最善手と同じ）" if best and best.usi == played else ""),
@@ -180,7 +183,7 @@ class CommentaryForge:
         style = ""
         if STYLE_QUOTES:
             picks = self.rng.sample(STYLE_QUOTES, k=min(3, len(STYLE_QUOTES)))
-            style = "\n\n【軍師の口調の味付け（古典の言い回し。そのまま写さず、少しだけ混ぜる）】\n" + "\n".join(f"・{q}" for q in picks)
+            style = "\n\n【軍師の口調の味付け（古風な語尾や言い回しの雰囲気だけ借りる。文をそのまま写さない。人名・国名・三国志の話題は出さない）】\n" + "\n".join(f"・{q}" for q in picks)
         msgs = [{"role": "user", "content": "【事実】\n" + FEWSHOT_FACTS},
                 {"role": "assistant", "content": json.dumps(FEWSHOT_OUT, ensure_ascii=False)},
                 {"role": "user", "content": "【事実】\n" + m["facts"] + style}]
@@ -190,6 +193,7 @@ class CommentaryForge:
         if out is None:
             self.stats["llm_fail"] += 1
             return {**m, "ok": False, "errors": [f"llm: {self.llm.last_error}"]}
+        out = salvage(out)
         errors = validate(out, m)
         if not errors:
             self.stats["valid"] += 1
@@ -300,6 +304,21 @@ def append(path: Path, rec: dict) -> None:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
+_DEBRIS = re.compile(r'[」』]?\s*[}\]\[{"].*$')
+
+
+def salvage(out: dict) -> dict:
+    """よくある崩れ（末尾に JSON の切れ端、煽りが4つ以上）を直す。内容は変えない。"""
+    def clean(t: str) -> str:
+        return _DEBRIS.sub("", t).strip()
+    out = dict(out)
+    out["commentary"] = clean(out.get("commentary", ""))
+    out["taunts"] = [{**t, "text": clean(t.get("text", ""))} for t in out.get("taunts", []) if isinstance(t, dict)][:3]
+    if isinstance(out.get("gunshi"), dict):
+        out["gunshi"] = {**out["gunshi"], "text": clean(out["gunshi"].get("text", ""))}
+    return out
+
+
 def validate(out: dict, m: dict) -> list[str]:
     errs = []
     c = out.get("commentary", "")
@@ -315,7 +334,7 @@ def validate(out: dict, m: dict) -> list[str]:
             if not any(norm == a or a.startswith(norm) or norm.startswith(a) for a in allowed):
                 errs.append(f"unknown move {mv}")
     taunts = out.get("taunts", [])
-    if len(taunts) != 3:
+    if len(taunts) < 2:
         errs.append(f"taunts {len(taunts)}")
     for t in taunts:
         if not 6 <= len(t.get("text", "")) <= 45:
@@ -325,7 +344,7 @@ def validate(out: dict, m: dict) -> list[str]:
     if any(re.search(r'[{}\[\]"]', t) for t in texts):
         errs.append("json debris in text")
     g = out.get("gunshi", {}).get("text", "")
-    if not 6 <= len(g) <= 50:
+    if not 6 <= len(g) <= 80:
         errs.append(f"gunshi length {len(g)}")
     return errs
 
