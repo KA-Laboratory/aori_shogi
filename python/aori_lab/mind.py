@@ -69,7 +69,7 @@ class MindState:
     stance: Stance = Stance.even
     cover_up_turns: int = 0
     # ---- 自由会話用（Python 版で先行。Dart 版は未移植）
-    loose_lips: float = 0.1  # 口の軽さ: 褒め倒し・慢心・焦りで上がり、ボロ（情報漏洩）が出やすくなる
+    loose_lips: float = 0.1  # Dart SlipParams.initialLooseLips と同値。口の軽さ: 褒め倒し・慢心・焦りで上がり、ボロ（情報漏洩）が出やすくなる
     suspicion: float = 0.0  # 警戒心: 褒めすぎ・漏らした手を突かれると上がり、嘘のボロ（ブラフ）が増える
     praise_streak: int = 0  # 連続で褒められた回数
 

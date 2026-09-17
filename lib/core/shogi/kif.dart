@@ -77,6 +77,9 @@ String toKif(
       case GameEndReason.repetition:
         sb.writeln('${n.toString().padLeft(4)} 千日手');
         sb.writeln('まで${moves.length}手で千日手');
+      case GameEndReason.agreement:
+        sb.writeln('${n.toString().padLeft(4)} 中断');
+        sb.writeln('まで${moves.length}手で引き分け（合意）');
       case GameEndReason.perpetualCheck:
         sb.writeln('${n.toString().padLeft(4)} 反則負け');
         sb.writeln('まで${moves.length}手で${result.winner!.label}の勝ち（連続王手の千日手）');

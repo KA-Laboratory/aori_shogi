@@ -81,7 +81,7 @@ class GamePage extends ConsumerWidget {
                 const SizedBox(height: 6),
                 KomadaiView(side: Side.black, label: s.mode.isAi(Side.black) ? '軍師' : null),
                 const SizedBox(height: 8),
-                const TauntBar(),
+                const ChatPanel(),
                 const SizedBox(height: 8),
                 Text(status,
                     textAlign: TextAlign.center,

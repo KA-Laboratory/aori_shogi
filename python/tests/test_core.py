@@ -33,12 +33,13 @@ def test_shared_vectors_are_current():
     data = json.loads(Path(VECTORS).read_text(encoding="utf-8"))
     for c in data["cases"]:
         i = c["in"]
-        s = MindState(i["composure"], i["hubris"], i["panic"], i["resistance"], Stance(i["stance"]), i["coverUpTurns"])
+        s = MindState(i["composure"], i["hubris"], i["panic"], i["resistance"], Stance(i["stance"]), i["coverUpTurns"],
+                      i["looseLips"], i["suspicion"], i["praiseStreak"])
         if c["op"] == "update":
             out = update_on_ai_turn(s, c["evalAi"], c["loss"])
         else:
             prev = TauntKind(c["prev"]) if c["prev"] else None
-            out = apply_taunt(s, TauntKind(c["kind"]), c["truth"], prev).after
+            out = apply_taunt(s, TauntKind(c["kind"]), c["truth"], prev, intensity=c["intensity"]).after
         assert st(out) == c["out"]
         assert movetime_for(s) == c["movetime"]
 

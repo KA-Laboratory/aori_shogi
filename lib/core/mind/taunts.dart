@@ -56,8 +56,10 @@ class TauntOutcome {
 }
 
 /// 煽りを感情に反映する。[previousKind] は直前に受けた煽りの種類（耐性計算用）。
-TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth, {TauntKind? previousKind}) {
-  final resistanceFactor = 1 - s.resistance;
+/// [intensity] は自由文の強さ（定型スタンプは 1.0）。
+TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth,
+    {TauntKind? previousKind, double intensity = 1.0}) {
+  final resistanceFactor = (1 - s.resistance) * intensity;
   var next = s;
   if (kind == TauntKind.praise) {
     final e = TauntTable.hit[kind]!;
@@ -85,5 +87,22 @@ TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth, {TauntKind? p
       ? MindParams.resistanceSameKind
       : MindParams.resistanceOtherKind;
   next = next.copyWith(resistance: next.resistance + dr);
+  if (kind == TauntKind.praise) {
+    final streak = s.praiseStreak + 1;
+    final lips = SlipParams.lipsPerPraise + SlipParams.lipsPerPraiseStreak * (streak < 4 ? streak : 4);
+    final sus = streak >= SlipParams.praiseSuspicionFrom
+        ? SlipParams.praiseSuspicionStep * (streak - SlipParams.praiseSuspicionFrom + 1)
+        : 0.0;
+    next = next.copyWith(
+      praiseStreak: streak,
+      looseLips: next.looseLips + lips * intensity,
+      suspicion: next.suspicion + sus,
+    );
+  } else {
+    next = next.copyWith(
+      praiseStreak: 0,
+      looseLips: next.looseLips + (truth > 0 ? SlipParams.lipsPerHit * truth * intensity : 0),
+    );
+  }
   return TauntOutcome(before: s, after: next, truth: truth, kind: kind);
 }

@@ -3,10 +3,13 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/dialogue/intent.dart';
 import '../../core/dialogue/line_library.dart';
 import '../../core/engine/shogi_engine.dart';
 import '../../core/mind/gunshi_brain.dart';
 import '../../core/mind/mind_state.dart';
+import '../../core/mind/negotiation.dart';
+import '../../core/mind/slips.dart';
 import '../../core/mind/taunts.dart';
 import '../../core/shogi/shogi.dart';
 import 'engine_controller.dart';
@@ -48,6 +51,17 @@ enum OpponentMode {
       };
 }
 
+enum ChatRole { gunshi, player, system }
+
+class ChatEntry {
+  const ChatEntry(this.role, this.text, {this.slip = false});
+  final ChatRole role;
+  final String text;
+
+  /// 口が滑った発言（本当か嘘かは表示しない）。
+  final bool slip;
+}
+
 class GameViewState {
   const GameViewState({
     required this.game,
@@ -63,6 +77,9 @@ class GameViewState {
     this.speech,
     this.lastTaunt,
     this.tauntAvailable = false,
+    this.chat = const [],
+    this.pendingOffer,
+    this.dealTurns = 0,
   });
 
   final ShogiGame game;
@@ -84,8 +101,15 @@ class GameViewState {
   final String? speech;
   final TauntOutcome? lastTaunt;
 
-  /// いま煽りを送れるか（プレイヤーの手番につき1回）。
+  /// いま煽り・話しかけで感情を動かせるか（プレイヤーの手番につき最大3回）。
   final bool tauntAvailable;
+  final List<ChatEntry> chat;
+
+  /// 軍師からの持ちかけ（受ける/断るを待っている）。
+  final OfferKind? pendingOffer;
+
+  /// 取引中: あと何手煽らない約束か。
+  final int dealTurns;
 
   Position get position => game.position;
   Move? get lastMove => game.moves.isEmpty ? null : game.moves.last;
@@ -100,6 +124,8 @@ Future<LineLibrary> loadLineLibrary() async =>
 final gameControllerProvider = NotifierProvider<GameController, GameViewState>(GameController.new);
 
 class GameController extends Notifier<GameViewState> {
+  static const effectsPerTurn = 3;
+
   List<Move> _legal = const [];
   OpponentMode _mode = OpponentMode.human;
   bool _thinking = false;
@@ -110,8 +136,16 @@ class GameController extends Notifier<GameViewState> {
   final Map<Side, GunshiBrain> _brains = {};
   String? _speech;
   TauntOutcome? _lastTaunt;
-  bool _tauntUsed = false;
-  final _lineRng = math.Random();
+  int _effectsLeft = effectsPerTurn;
+  final _rng = math.Random();
+  final List<ChatEntry> _chat = [];
+  OfferKind? _pending;
+  final Map<OfferKind, int> _offerCounts = {};
+  int _lastOfferPly = -99;
+  int _dealTurns = 0;
+  int _undoCount = 0;
+  Slip? _slipThisTurn;
+  LineTrigger? _exploitReaction;
 
   @override
   GameViewState build() {
@@ -125,16 +159,18 @@ class GameController extends Notifier<GameViewState> {
 
   void _refresh({Selection? selection}) {
     Set<int> targets = const {};
-    if (selection is SquareSelection) {
-      targets = {for (final m in _legal) if (m.from == selection.square) m.to};
-    } else if (selection is HandSelection) {
-      targets = {for (final m in _legal) if (m.drop == selection.type) m.to};
+    if (_pending == null) {
+      if (selection is SquareSelection) {
+        targets = {for (final m in _legal) if (m.from == selection.square) m.to};
+      } else if (selection is HandSelection) {
+        targets = {for (final m in _legal) if (m.drop == selection.type) m.to};
+      }
     }
     final g = _gunshi;
     state = GameViewState(
       game: _game,
       revision: state.revision + 1,
-      selection: selection,
+      selection: _pending == null ? selection : null,
       legalTargets: targets,
       mode: _mode,
       thinking: _thinking,
@@ -145,26 +181,54 @@ class GameController extends Notifier<GameViewState> {
       speech: _speech,
       lastTaunt: _lastTaunt,
       tauntAvailable: g != null &&
-          !_tauntUsed &&
+          _effectsLeft > 0 &&
           !_thinking &&
           !_game.isOver &&
           _game.position.turn != g.side &&
           g.canReceiveTaunt,
+      chat: List.unmodifiable(_chat),
+      pendingOffer: _pending,
+      dealTurns: _dealTurns,
     );
   }
 
-  String _say(LineTrigger trigger, {Map<String, String> vars = const {}}) {
+  // ------------------------------------------------------------ セリフ
+  String _line(LineTrigger trigger, {Map<String, String> vars = const {}}) {
     final lib = ref.read(lineLibraryProvider);
     final g = _gunshi;
     if (lib == null || g == null) return '';
-    return lib.pick(g.mind.mood, trigger, _lineRng, vars: vars);
+    return lib.pick(g.mind.mood, trigger, _rng, vars: vars);
+  }
+
+  void _gunshiSays(String text, {bool slip = false}) {
+    if (text.isEmpty) return;
+    _speech = text;
+    _chat.add(ChatEntry(ChatRole.gunshi, text, slip: slip));
+    if (_chat.length > 80) _chat.removeRange(0, _chat.length - 80);
+  }
+
+  void _system(String text) => _chat.add(ChatEntry(ChatRole.system, text));
+
+  void _say(LineTrigger trigger, {Map<String, String> vars = const {}}) => _gunshiSays(_line(trigger, vars: vars));
+
+  String _kifOf(int moveIndex) {
+    final positions = _game.positions;
+    final moves = _game.moves;
+    return kifMoveText(positions[moveIndex], moves[moveIndex], previous: moveIndex > 0 ? moves[moveIndex - 1] : null)
+        .replaceAll(RegExp(r'\(\d+\)'), '');
+  }
+
+  String _kifOfUsi(String usi) {
+    final prev = _game.moves.isEmpty ? null : _game.moves.last;
+    return kifMoveText(_game.position, Move.fromUsi(usi), previous: prev).replaceAll(RegExp(r'\(\d+\)'), '');
   }
 
   bool get _humanToMove => !_thinking && !_mode.isAi(state.position.turn);
 
+  // ------------------------------------------------------------ 盤の操作
   /// マスをタップ。移動先として確定できる候補手を返す（成/不成の2択なら2件）。
   List<Move> tapSquare(int sq) {
-    if (_game.isOver || !_humanToMove) return const [];
+    if (_game.isOver || !_humanToMove || _pending != null) return const [];
     final sel = state.selection;
     if (sel != null && state.legalTargets.contains(sq)) {
       return [
@@ -188,7 +252,7 @@ class GameController extends Notifier<GameViewState> {
   }
 
   void tapHand(Side side, PieceType type) {
-    if (_game.isOver || side != state.position.turn || !_humanToMove) return;
+    if (_game.isOver || side != state.position.turn || !_humanToMove || _pending != null) return;
     if (state.position.handCount(side, type) == 0) return;
     final sel = state.selection;
     final same = sel is HandSelection && sel.type == type;
@@ -197,35 +261,63 @@ class GameController extends Notifier<GameViewState> {
 
   /// 人間の着手。
   void play(Move move) {
+    _checkExploit(move);
     _applyMove(move);
-    _tauntUsed = false;
-    _gunshi?.tauntContext = null;
+    if (_dealTurns > 0) _dealTurns--;
+    _startNewPlayerTurnState();
     _refresh();
     _maybeAiMove();
+  }
+
+  void _startNewPlayerTurnState() {
+    _effectsLeft = effectsPerTurn;
+    _slipThisTurn = null;
+    _gunshi?.tauntContext = null;
   }
 
   void _applyMove(Move move) {
     _game.play(move);
     _legal = _game.isOver ? const [] : _game.position.legalMoves();
+    _onGameOverIfNeeded();
+  }
+
+  void _onGameOverIfNeeded() {
     final r = _game.result;
     final g = _gunshi;
-    if (r != null && g != null) {
-      _speech = r.winner == null
-          ? '……千日手か。きょうはこのくらいにしておいてやろう。'
-          : _say(r.winner == g.side ? LineTrigger.win : LineTrigger.lose);
+    if (r == null || g == null) return;
+    if (r.winner == null) {
+      _gunshiSays('……引き分けか。きょうはこのくらいにしておいてやろう。');
+    } else {
+      _say(r.winner == g.side ? LineTrigger.win : LineTrigger.lose);
+    }
+  }
+
+  /// 漏らした『こわい手』を相手が指したか。
+  void _checkExploit(Move move) {
+    final g = _gunshi;
+    final sl = _slipThisTurn;
+    if (g == null || sl == null || sl.kind != SlipKind.fear || sl.moveUsi != move.toUsi()) return;
+    final m = g.mind;
+    if (sl.truthful) {
+      g.mind = m.copyWith(
+          suspicion: m.suspicion + SlipParams.suspicionOnExploit, panic: m.panic + 0.15, composure: m.composure - 0.1);
+      _exploitReaction = LineTrigger.exploitedTrue;
+    } else {
+      g.mind = m.copyWith(hubris: m.hubris + 0.15, composure: m.composure + 0.05);
+      _exploitReaction = LineTrigger.exploitedFalse;
     }
   }
 
   void undo() {
     if (_thinking) return;
+    if (_pending != null) _pending = null;
     if (!_game.undo()) return;
     // AI 対局では人間の手番まで戻す。
     while (_mode != OpponentMode.aiBoth && _mode.isAi(_game.position.turn) && _game.moves.isNotEmpty) {
       _game.undo();
     }
     _legal = _game.position.legalMoves();
-    _gunshi?.tauntContext = null;
-    _tauntUsed = false;
+    _startNewPlayerTurnState();
     _refresh();
     _observeIfNeeded();
     _maybeAiMove();
@@ -245,43 +337,241 @@ class GameController extends Notifier<GameViewState> {
     _brains.clear();
     _speech = null;
     _lastTaunt = null;
-    _tauntUsed = false;
+    _chat.clear();
+    _pending = null;
+    _offerCounts.clear();
+    _lastOfferPly = -99;
+    _dealTurns = 0;
+    _undoCount = 0;
+    _exploitReaction = null;
+    _startNewPlayerTurnState();
     final status = ref.read(engineControllerProvider);
     if (status is! EngineReady) return;
     for (final side in Side.values) {
       if (_mode.isAi(side)) {
-        _brains[side] = GunshiBrain(
-          engine: status.engine,
-          side: side,
-          seed: DateTime.now().microsecondsSinceEpoch,
-        );
+        _brains[side] = GunshiBrain(engine: status.engine, side: side, seed: DateTime.now().microsecondsSinceEpoch);
       }
     }
-    if (_gunshi != null) _speech = _say(LineTrigger.start);
+    if (_gunshi != null) _say(LineTrigger.start);
   }
 
-  /// 煽りスタンプを送る。
-  void sendTaunt(TauntStamp stamp) {
+  // ------------------------------------------------------------ 煽り・自由会話
+  /// 定型スタンプ。
+  void sendTaunt(TauntStamp stamp) => sendChat(stamp.text, forcedKind: stamp.kind);
+
+  /// 自由文で話しかける。
+  void sendChat(String raw, {TauntKind? forcedKind}) {
+    final text = raw.trim();
     final g = _gunshi;
-    if (g == null || !state.tauntAvailable) return;
-    final out = g.receiveTaunt(stamp.kind);
-    _lastTaunt = out;
-    _tauntUsed = true;
-    _speech = _say(stamp.kind == TauntKind.praise
-        ? LineTrigger.praised
-        : (out.hit ? LineTrigger.tauntHit : LineTrigger.tauntMiss));
+    if (text.isEmpty || g == null || _game.isOver) return;
+    _chat.add(ChatEntry(ChatRole.player, text));
+    if (_thinking || _game.position.turn == g.side) {
+      _gunshiSays('今は考え中だ、話しかけるな。');
+      _refresh();
+      return;
+    }
+    final intent = forcedKind != null
+        ? PlayerIntent(kind: IntentKind.values.byName(forcedKind.name), intensity: 1.0)
+        : classifyKeywords(text, hasPendingOffer: _pending != null);
+
+    if (_pending != null && (intent.request == IntentRequest.accept || intent.request == IntentRequest.decline)) {
+      respondOffer(intent.request == IntentRequest.accept);
+      return;
+    }
+
+    var questionBonus = 0.0;
+    if (intent.kind == IntentKind.abuse) {
+      _say(LineTrigger.abuse);
+    } else if (intent.isTaunt) {
+      _handleTaunt(TauntKind.values.byName(intent.kind.name), intent.intensity, forced: forcedKind != null);
+    } else if (intent.kind == IntentKind.question) {
+      final m = g.mind;
+      questionBonus = 0.1 + 0.25 * math.max(0.0, m.hubris - 0.4) + 0.15 * m.looseLips;
+      g.mind = m.copyWith(looseLips: m.looseLips + SlipParams.lipsPerQuestion * (0.5 + m.hubris));
+      _say(LineTrigger.questionDodge);
+    } else if (intent.request == IntentRequest.none) {
+      _say(LineTrigger.chat);
+    }
+
+    if (intent.request != IntentRequest.none &&
+        intent.request != IntentRequest.accept &&
+        intent.request != IntentRequest.decline) {
+      _handleRequest(PlayerRequest.values.byName(intent.request.name));
+    }
+    if (intent.kind != IntentKind.abuse && !_game.isOver) _maybeSlip(questionBonus: questionBonus);
     _refresh();
   }
 
-  String _kifOf(int moveIndex) {
-    final positions = _game.positions;
-    final moves = _game.moves;
-    return kifMoveText(positions[moveIndex], moves[moveIndex],
-            previous: moveIndex > 0 ? moves[moveIndex - 1] : null)
-        .replaceAll(RegExp(r'\(\d+\)'), '');
+  void _handleTaunt(TauntKind kind, double intensity, {required bool forced}) {
+    final g = _gunshi!;
+    if (_dealTurns > 0 && kind != TauntKind.praise) {
+      g.mind = g.mind.copyWith(composure: g.mind.composure + 0.1, hubris: g.mind.hubris + 0.1);
+      _dealTurns = 0;
+      _say(LineTrigger.dealBroken);
+      return;
+    }
+    if (_effectsLeft <= 0 || !g.canReceiveTaunt) {
+      _gunshiSays(g.canReceiveTaunt ? 'しつこいぞ。同じ手番にそう何度も言われても動じん。' : '……ちょっと待て、盤面を確認中だ。');
+      return;
+    }
+    _effectsLeft--;
+    final out = g.receiveTaunt(kind, intensity: forced ? 1.0 : 0.6 + 0.6 * intensity);
+    _lastTaunt = out;
+    final m = g.mind;
+    if (kind == TauntKind.praise) {
+      if (m.praiseStreak >= SlipParams.praiseSuspicionFrom && m.suspicion >= 0.25) {
+        _say(LineTrigger.praiseSuspicious);
+      } else if (m.praiseStreak >= 3) {
+        _say(LineTrigger.praiseFlood);
+      } else {
+        _say(LineTrigger.praised);
+      }
+    } else {
+      _say(out.hit ? LineTrigger.tauntHit : LineTrigger.tauntMiss);
+    }
   }
 
-  Future<void> _maybeAiMove() async {
+  void _handleRequest(PlayerRequest req) {
+    final g = _gunshi!;
+    final ctx = g.tauntContext;
+    final allowed = requestAllowed(req, g.mind,
+        evalAi: g.lastEvalAi, undoCount: _undoCount, hasCandidates: ctx != null && ctx.playerCandidates.isNotEmpty);
+    final undoPossible = _game.moves.length >= 2;
+    if (!allowed || (req == PlayerRequest.undo && !undoPossible)) {
+      _say(LineTrigger.requestRefuse);
+      return;
+    }
+    _say(LineTrigger.requestAccept);
+    switch (req) {
+      case PlayerRequest.undo:
+        _game.undo();
+        _game.undo();
+        _undoCount++;
+        g.mind = g.mind.copyWith(hubris: g.mind.hubris + 0.1);
+        _legal = _game.position.legalMoves();
+        _system('軍師が待ったを認めました（あなたの手と軍師の応手を戻しました）');
+        _startNewPlayerTurnState();
+        _observeIfNeeded();
+      case PlayerRequest.hint:
+        _system('軍師のヒント：${_kifOfUsi(ctx!.playerCandidates.first.usi)}');
+      case PlayerRequest.draw:
+        _game.agreeDraw();
+        _legal = const [];
+      case PlayerRequest.resign:
+        _game.resign(side: g.side);
+        _legal = const [];
+        _say(LineTrigger.lose);
+    }
+  }
+
+  void _maybeSlip({double questionBonus = 0}) {
+    final g = _gunshi;
+    final ctx = g?.tauntContext;
+    if (g == null || ctx == null || _slipThisTurn != null || _pending != null) return;
+    final sl = decideSlip(
+      mind: g.mind,
+      position: _game.position,
+      playerCandidates: ctx.playerCandidates,
+      aiLossCp: g.lastAiMoveLossCp,
+      prevUsi: _game.moves.isEmpty ? null : _game.moves.last.toUsi(),
+      rng: _rng,
+      questionBonus: questionBonus,
+      ply: _game.moves.length,
+    );
+    if (sl == null) return;
+    _slipThisTurn = sl;
+    g.mind = g.mind.copyWith(looseLips: g.mind.looseLips + SlipParams.lipsAfterSlip);
+    _gunshiSays(_line(LineTrigger.slip, vars: {'fact': sl.fact}), slip: true);
+  }
+
+  // ------------------------------------------------------------ 軍師からの持ちかけ
+  void _maybeOffer() {
+    final g = _gunshi;
+    if (g == null || _pending != null || _game.isOver || _game.position.turn == g.side) return;
+    final offers = availableOffers(NegotiationContext(
+      mind: g.mind,
+      ply: _game.moves.length,
+      playerGainCp: g.lastPlayerGainCp,
+      aiLossCp: g.lastAiMoveLossCp,
+      lastOfferPly: _lastOfferPly,
+      counts: _offerCounts,
+    ));
+    for (final o in offers) {
+      if (_rng.nextDouble() < offerGate[o]!) {
+        _pending = o;
+        _offerCounts[o] = (_offerCounts[o] ?? 0) + 1;
+        _lastOfferPly = _game.moves.length;
+        _say(switch (o) {
+          OfferKind.offerPlayerUndo => LineTrigger.offerPlayerUndo,
+          OfferKind.requestRedo => LineTrigger.requestRedo,
+          OfferKind.proposeDeal => LineTrigger.proposeDeal,
+          OfferKind.proposeDraw => LineTrigger.proposeDraw,
+        });
+        return;
+      }
+    }
+  }
+
+  void respondOffer(bool accept) {
+    final g = _gunshi;
+    final o = _pending;
+    if (g == null || o == null) return;
+    _pending = null;
+    _system('あなたは提案を${accept ? '受けた' : '断った'}：${o.text}');
+    final m = g.mind;
+    switch (o) {
+      case OfferKind.offerPlayerUndo:
+        if (accept && _game.moves.length >= 2) {
+          _game.undo();
+          _game.undo();
+          g.mind = m.copyWith(hubris: m.hubris + 0.1);
+          _legal = _game.position.legalMoves();
+          _say(LineTrigger.offerAccepted);
+          _startNewPlayerTurnState();
+          _refresh();
+          _observeIfNeeded();
+          return;
+        }
+        g.mind = m.copyWith(hubris: m.hubris - 0.05, composure: m.composure - 0.03);
+        _say(LineTrigger.offerDeclined);
+      case OfferKind.requestRedo:
+        if (accept && _game.moves.isNotEmpty) {
+          _game.undo();
+          _legal = _game.position.legalMoves();
+          g.mind = m.copyWith(composure: m.composure + 0.15, panic: m.panic - 0.1, coverUpTurns: 0);
+          _refresh();
+          _maybeAiMove(forceBest: true);
+          return;
+        }
+        g.mind = m.copyWith(panic: m.panic + 0.15, composure: m.composure - 0.1);
+        _say(LineTrigger.offerDeclined);
+      case OfferKind.proposeDeal:
+        if (accept) {
+          _dealTurns = 3;
+          g.mind = m.copyWith(composure: m.composure + 0.1);
+          final cands = g.tauntContext?.playerCandidates ?? const [];
+          final secret = cands.isEmpty ? '玉は包むように寄せよ' : '${_kifOfUsi(cands.last.usi)}が妙手らしい';
+          _say(LineTrigger.dealSecret, vars: {'fact': secret});
+          _system('軍師の秘密情報：$secret');
+        } else {
+          g.mind = m.copyWith(panic: m.panic + 0.05);
+          _say(LineTrigger.offerDeclined);
+        }
+      case OfferKind.proposeDraw:
+        if (accept) {
+          _game.agreeDraw();
+          _legal = const [];
+          _onGameOverIfNeeded();
+        } else {
+          g.mind = m.copyWith(panic: m.panic + 0.1);
+          _say(LineTrigger.offerDeclined);
+        }
+    }
+    _refresh();
+  }
+
+  // ------------------------------------------------------------ AI の手番
+  Future<void> _maybeAiMove({bool forceBest = false}) async {
     if (_thinking || _game.isOver || !_mode.isAi(_game.position.turn)) return;
     final brain = _brains[_game.position.turn];
     if (brain == null) {
@@ -294,32 +584,34 @@ class GameController extends Notifier<GameViewState> {
     _thinking = true;
     _refresh();
     try {
-      final turn = await brain.takeTurn(_game);
+      final turn = await brain.takeTurn(_game, forceBest: forceBest);
       if (gameId != _gameId || ply != _game.moves.length) return;
       _thinking = false;
       if (turn.resign) {
         _game.resign();
         _legal = const [];
-        if (brain == _gunshi) _speech = _say(LineTrigger.lose);
+        if (brain == _gunshi) _say(LineTrigger.lose);
         _refresh();
         return;
       }
-      _lastSearch = SearchResult(
-        bestMove: BestMove(turn.move!.toUsi()),
-        candidates: [turn.choice!.candidate],
-      );
+      _lastSearch = SearchResult(bestMove: BestMove(turn.move!.toUsi()), candidates: [turn.choice!.candidate]);
       final playerMoveText = ply > 0 ? _kifOf(ply - 1) : '';
       await Future<void>.delayed(const Duration(milliseconds: 50));
       if (gameId != _gameId) return;
       _applyMove(turn.move!);
       if (brain == _gunshi && !_game.isOver) {
         final aiText = _kifOf(_game.moves.length - 1);
-        if (turn.playerBlundered) {
-          _speech = _say(LineTrigger.blunderPlayer, vars: {'move': playerMoveText});
+        final reaction = _exploitReaction;
+        _exploitReaction = null;
+        if (reaction != null) _say(reaction);
+        if (forceBest) {
+          _say(LineTrigger.redoDone);
+        } else if (turn.playerBlundered) {
+          _say(LineTrigger.blunderPlayer, vars: {'move': playerMoveText});
         } else if (turn.choice!.lossCp >= 150) {
-          _speech = _say(LineTrigger.blunderSelf, vars: {'move': aiText});
+          _say(LineTrigger.blunderSelf, vars: {'move': aiText});
         } else {
-          _speech = _say(LineTrigger.move, vars: {'move': aiText});
+          _say(LineTrigger.move, vars: {'move': aiText});
         }
       }
       _refresh();
@@ -336,7 +628,7 @@ class GameController extends Notifier<GameViewState> {
     }
   }
 
-  /// プレイヤーの手番になったら、軍師が局面を解析して図星判定の準備をする。
+  /// プレイヤーの手番になったら、軍師が局面を解析して図星判定・ボロ・持ちかけの準備をする。
   Future<void> _observeIfNeeded() async {
     final g = _gunshi;
     if (g == null || _game.isOver || _game.position.turn == g.side || g.canReceiveTaunt || _observing) return;
@@ -351,6 +643,8 @@ class GameController extends Notifier<GameViewState> {
     } finally {
       _observing = false;
       if (gameId == _gameId && ply == _game.moves.length) {
+        _maybeOffer();
+        if (_pending == null) _maybeSlip();
         _refresh();
       } else {
         g.tauntContext = null;
@@ -360,10 +654,10 @@ class GameController extends Notifier<GameViewState> {
 
   void resign() {
     if (_thinking) return;
+    _pending = null;
     _game.resign();
     _legal = const [];
-    final g = _gunshi;
-    if (g != null) _speech = _say(LineTrigger.win);
+    if (_gunshi != null) _say(LineTrigger.win);
     _refresh();
   }
 

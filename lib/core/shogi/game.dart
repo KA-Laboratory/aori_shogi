@@ -2,7 +2,7 @@ import 'move.dart';
 import 'piece.dart';
 import 'position.dart';
 
-enum GameEndReason { checkmate, resign, repetition, perpetualCheck }
+enum GameEndReason { checkmate, resign, repetition, perpetualCheck, agreement }
 
 class GameResult {
   const GameResult(this.reason, {this.winner});
@@ -16,6 +16,7 @@ class GameResult {
         GameEndReason.resign => '投了（${winner!.label}の勝ち）',
         GameEndReason.repetition => '千日手（引き分け）',
         GameEndReason.perpetualCheck => '連続王手の千日手（${winner!.label}の勝ち）',
+        GameEndReason.agreement => '合意により引き分け',
       };
 }
 
@@ -52,14 +53,21 @@ class ShogiGame {
 
   void playUsi(String usi) => play(Move.fromUsi(usi));
 
-  void resign() {
+  /// 投了。[side] 省略時は手番側が投了する。
+  void resign({Side? side}) {
     if (isOver) return;
-    _result = GameResult(GameEndReason.resign, winner: position.turn.opponent);
+    _result = GameResult(GameEndReason.resign, winner: (side ?? position.turn).opponent);
+  }
+
+  /// 合意による引き分け。
+  void agreeDraw() {
+    if (isOver) return;
+    _result = const GameResult(GameEndReason.agreement);
   }
 
   /// 待った。投了は取り消し、それ以外は1手戻す。
   bool undo() {
-    if (_result?.reason == GameEndReason.resign) {
+    if (_result?.reason == GameEndReason.resign || _result?.reason == GameEndReason.agreement) {
       _result = null;
       return true;
     }

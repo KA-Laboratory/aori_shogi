@@ -51,6 +51,21 @@ abstract final class MindParams {
   static const coverUpTurns = 2;
 }
 
+/// 口の軽さ・警戒心（自由会話とボロ）。Python: aori_lab/mind.py の SP と同値。
+abstract final class SlipParams {
+  static const initialLooseLips = 0.1;
+  static const lipsDecayPerMove = 0.04;
+  static const suspicionDecayPerMove = 0.02;
+  static const lipsPerPraise = 0.10;
+  static const lipsPerPraiseStreak = 0.05;
+  static const praiseSuspicionFrom = 4;
+  static const praiseSuspicionStep = 0.08;
+  static const lipsPerHit = 0.05;
+  static const lipsPerQuestion = 0.06;
+  static const lipsAfterSlip = -0.20;
+  static const suspicionOnExploit = 0.25;
+}
+
 class MindState {
   const MindState({
     this.composure = MindParams.initialComposure,
@@ -59,6 +74,9 @@ class MindState {
     this.resistance = 0,
     this.stance = Stance.even,
     this.coverUpTurns = 0,
+    this.looseLips = SlipParams.initialLooseLips,
+    this.suspicion = 0,
+    this.praiseStreak = 0,
   });
 
   final double composure;
@@ -70,6 +88,15 @@ class MindState {
   /// 取り繕いモードの残り手数。
   final int coverUpTurns;
 
+  /// 口の軽さ 0..1: 褒め倒し・慢心・焦りで上がり、ボロが出やすくなる。
+  final double looseLips;
+
+  /// 警戒心 0..1: 褒めすぎ・漏らした手を突かれると上がり、嘘のボロが増える。
+  final double suspicion;
+
+  /// 連続で褒められた回数。
+  final int praiseStreak;
+
   Mood get mood => moodFor(this);
 
   MindState copyWith({
@@ -79,6 +106,9 @@ class MindState {
     double? resistance,
     Stance? stance,
     int? coverUpTurns,
+    double? looseLips,
+    double? suspicion,
+    int? praiseStreak,
   }) =>
       MindState(
         composure: _clip(composure ?? this.composure),
@@ -87,6 +117,9 @@ class MindState {
         resistance: _clip(resistance ?? this.resistance),
         stance: stance ?? this.stance,
         coverUpTurns: coverUpTurns ?? this.coverUpTurns,
+        looseLips: _clip(looseLips ?? this.looseLips),
+        suspicion: _clip(suspicion ?? this.suspicion),
+        praiseStreak: praiseStreak ?? this.praiseStreak,
       );
 
   Map<String, Object> toJson() => {
@@ -96,6 +129,9 @@ class MindState {
         'resistance': resistance,
         'stance': stance.name,
         'coverUpTurns': coverUpTurns,
+        'looseLips': looseLips,
+        'suspicion': suspicion,
+        'praiseStreak': praiseStreak,
         'mood': mood.name,
       };
 
@@ -137,5 +173,7 @@ MindState updateOnAiTurn(MindState s, {required int evalAi, int? lastAiMoveLossC
     panic: p,
     stance: stance,
     coverUpTurns: cover,
+    looseLips: s.looseLips - SlipParams.lipsDecayPerMove,
+    suspicion: s.suspicion - SlipParams.suspicionDecayPerMove,
   );
 }

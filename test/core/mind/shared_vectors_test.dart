@@ -14,6 +14,9 @@ MindState _state(Map<String, dynamic> j) => MindState(
       resistance: (j['resistance'] as num).toDouble(),
       stance: Stance.values.byName(j['stance'] as String),
       coverUpTurns: j['coverUpTurns'] as int,
+      looseLips: (j['looseLips'] as num).toDouble(),
+      suspicion: (j['suspicion'] as num).toDouble(),
+      praiseStreak: j['praiseStreak'] as int,
     );
 
 void main() {
@@ -30,7 +33,7 @@ void main() {
       } else {
         final prev = c['prev'] == null ? null : TauntKind.values.byName(c['prev'] as String);
         out = applyTaunt(s, TauntKind.values.byName(c['kind'] as String), (c['truth'] as num).toDouble(),
-                previousKind: prev)
+                previousKind: prev, intensity: (c['intensity'] as num).toDouble())
             .after;
       }
       final e = c['out'] as Map<String, dynamic>;
@@ -41,6 +44,9 @@ void main() {
       expect(out.stance.name, e['stance'], reason: 'case $i stance');
       expect(out.coverUpTurns, e['coverUpTurns'], reason: 'case $i cover');
       expect(out.mood.name, e['mood'], reason: 'case $i mood');
+      expect(out.looseLips, closeTo((e['looseLips'] as num).toDouble(), 1e-9), reason: 'case $i lips');
+      expect(out.suspicion, closeTo((e['suspicion'] as num).toDouble(), 1e-9), reason: 'case $i suspicion');
+      expect(out.praiseStreak, e['praiseStreak'], reason: 'case $i streak');
       expect(movetimeFor(s), c['movetime'], reason: 'case $i movetime');
       expect(multiPvFor(s), c['multipv'], reason: 'case $i multipv');
       expect(temperatureFor(s), closeTo((c['temperature'] as num).toDouble(), 1e-9), reason: 'case $i temp');

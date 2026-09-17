@@ -77,6 +77,8 @@ class GunshiPanel extends ConsumerWidget {
               _Meter(label: '冷静', value: mind.composure, color: const Color(0xFF2E86C1), delta: taunt?.composureDelta),
               _Meter(label: '慢心', value: mind.hubris, color: const Color(0xFFB8860B)),
               _Meter(label: '焦り', value: mind.panic, color: const Color(0xFFC0392B), delta: taunt?.panicDelta),
+              _Meter(label: '口軽', value: mind.looseLips, color: const Color(0xFF8E44AD)),
+              _Meter(label: '警戒', value: mind.suspicion, color: const Color(0xFF34495E)),
             ]),
           ),
         ]),
@@ -128,32 +130,137 @@ class _Meter extends StatelessWidget {
   }
 }
 
-/// 煽りスタンプ列。
-class TauntBar extends ConsumerWidget {
-  const TauntBar({super.key});
+/// 軍師との会話: ログ・持ちかけへの返事・自由入力・定型スタンプ。
+class ChatPanel extends ConsumerStatefulWidget {
+  const ChatPanel({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatPanel> createState() => _ChatPanelState();
+}
+
+class _ChatPanelState extends ConsumerState<ChatPanel> {
+  final _input = TextEditingController();
+  final _scroll = ScrollController();
+
+  static const _samples = ['次どこ指すつもり？', '本当は苦しいんでしょ？', 'さすが！天才！最強！', '待った！今のなしで', 'ヒント教えてよ', 'もう投了したら？'];
+
+  @override
+  void dispose() {
+    _input.dispose();
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _send([String? text]) {
+    final t = (text ?? _input.text).trim();
+    if (t.isEmpty) return;
+    ref.read(gameControllerProvider.notifier).sendChat(t);
+    _input.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final s = ref.watch(gameControllerProvider);
     if (s.mind == null) return const SizedBox.shrink();
     final ctl = ref.read(gameControllerProvider.notifier);
+    final theme = Theme.of(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scroll.hasClients) _scroll.jumpTo(_scroll.position.maxScrollExtent);
+    });
     final myTurn = !s.thinking && !s.game.isOver && !s.mode.isAi(s.position.turn);
     final hint = s.observing
         ? '軍師が局面を確認中…'
-        : s.tauntAvailable
-            ? '煽る（1手に1回）'
-            : (myTurn && s.lastTaunt != null ? 'この手番はもう煽りました' : 'あなたの手番に煽れます');
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(hint, style: Theme.of(context).textTheme.labelSmall),
-      const SizedBox(height: 4),
-      Wrap(spacing: 6, runSpacing: 6, children: [
-        for (final t in tauntStamps)
-          ActionChip(
-            key: ValueKey('taunt-${t.id}'),
-            label: Text(t.text),
-            onPressed: s.tauntAvailable ? () => ctl.sendTaunt(t) : null,
+        : s.dealTurns > 0
+            ? '取引中: あと${s.dealTurns}手は煽らない約束'
+            : (s.tauntAvailable ? '話しかける・煽る（感情が動くのは1手に3回まで）' : (myTurn ? 'この手番はもう十分煽った' : 'あなたの手番に話しかけられます'));
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          SizedBox(
+            height: 160,
+            child: ListView.builder(
+              controller: _scroll,
+              itemCount: s.chat.length,
+              itemBuilder: (_, i) {
+                final c = s.chat[i];
+                final align = switch (c.role) {
+                  ChatRole.player => Alignment.centerRight,
+                  ChatRole.gunshi => Alignment.centerLeft,
+                  ChatRole.system => Alignment.center,
+                };
+                final color = switch (c.role) {
+                  ChatRole.player => const Color(0xFFE3F0FD),
+                  ChatRole.gunshi => const Color(0xFFFFF4E0),
+                  ChatRole.system => Colors.transparent,
+                };
+                return Align(
+                  alignment: align,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                      Text(c.text,
+                          style: c.role == ChatRole.system
+                              ? theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline)
+                              : theme.textTheme.bodySmall),
+                      if (c.slip)
+                        Text('（口が滑った…？）', style: theme.textTheme.labelSmall?.copyWith(color: const Color(0xFF8E44AD))),
+                    ]),
+                  ),
+                );
+              },
+            ),
           ),
-      ]),
-    ]);
+          if (s.pendingOffer != null)
+            Container(
+              key: const ValueKey('offer'),
+              margin: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(color: const Color(0xFFFFF8D6), borderRadius: BorderRadius.circular(8)),
+              child: Row(children: [
+                Expanded(child: Text('軍師の提案：${s.pendingOffer!.text}', style: theme.textTheme.bodySmall)),
+                FilledButton(onPressed: () => ctl.respondOffer(true), child: const Text('受ける')),
+                const SizedBox(width: 6),
+                OutlinedButton(onPressed: () => ctl.respondOffer(false), child: const Text('断る')),
+              ]),
+            ),
+          const SizedBox(height: 6),
+          Text(hint, style: theme.textTheme.labelSmall),
+          Row(children: [
+            Expanded(
+              child: TextField(
+                key: const ValueKey('chat-input'),
+                controller: _input,
+                enabled: myTurn,
+                maxLength: 100,
+                decoration: const InputDecoration(
+                    isDense: true, counterText: '', hintText: '軍師に話しかける（例: その角タダじゃない？）'),
+                onSubmitted: (_) => _send(),
+              ),
+            ),
+            IconButton(onPressed: myTurn ? _send : null, icon: const Icon(Icons.send)),
+          ]),
+          const SizedBox(height: 4),
+          Wrap(spacing: 6, runSpacing: 4, children: [
+            for (final t in tauntStamps)
+              ActionChip(
+                key: ValueKey('taunt-${t.id}'),
+                label: Text(t.text, style: const TextStyle(fontSize: 12)),
+                onPressed: myTurn ? () => ctl.sendTaunt(t) : null,
+              ),
+            for (final t in _samples)
+              ActionChip(
+                label: Text(t, style: const TextStyle(fontSize: 12)),
+                onPressed: myTurn ? () => _send(t) : null,
+              ),
+          ]),
+        ]),
+      ),
+    );
   }
 }

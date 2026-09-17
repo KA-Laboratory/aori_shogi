@@ -63,6 +63,12 @@ class GunshiBrain {
   int? _bestScoreBeforeAiMove;
   int? _expectedEvalAi;
   int? lastAiMoveLossCp;
+
+  /// 直前のプレイヤーの手で AI が得した量（プレイヤーの損）。
+  int? lastPlayerGainCp;
+
+  /// 直近の AI 視点評価値。
+  int lastEvalAi = 0;
   TauntContext? tauntContext;
   TauntKind? _previousTaunt;
 
@@ -70,11 +76,12 @@ class GunshiBrain {
 
   List<String> _usiMoves(ShogiGame g) => [for (final m in g.moves) m.toUsi()];
 
-  Future<AiTurn> takeTurn(ShogiGame game) async {
+  /// [forceBest] は置き直し（最善で指し直す）用。
+  Future<AiTurn> takeTurn(ShogiGame game, {bool forceBest = false}) async {
     final pos = game.position;
     if (pos.turn != side) throw StateError('not AI turn');
     final before = mind;
-    final multiPv = modulate ? multiPvFor(mind) : 1;
+    final multiPv = modulate && !forceBest ? multiPvFor(mind) : 1;
     final movetime = fixedMovetimeMs ?? movetimeFor(mind, baseMs: baseMovetimeMs);
     await engine.setPosition(game.startPosition.toSfen(), _usiMoves(game));
     final result = await engine.think(movetimeMs: movetime, multiPv: multiPv);
@@ -93,11 +100,13 @@ class GunshiBrain {
     final evalAi = cands.first.sortScore;
     final expected = _expectedEvalAi;
     final playerBlundered = expected != null && evalAi - expected >= 150;
-    if (!_fixed) {
+    if (!forceBest) lastPlayerGainCp = expected == null ? null : evalAi - expected;
+    lastEvalAi = evalAi;
+    if (!_fixed && !forceBest) {
       mind = updateOnAiTurn(mind, evalAi: evalAi);
     }
     log.add(mind);
-    final choice = chooseMove(candidates: cands, pos: pos, mind: mind, rng: _rng, modulate: modulate);
+    final choice = chooseMove(candidates: cands, pos: pos, mind: mind, rng: _rng, modulate: modulate && !forceBest);
     _bestScoreBeforeAiMove = cands.first.sortScore.clamp(-PolicyParams.scoreClampCp, PolicyParams.scoreClampCp);
     tauntContext = null;
     return AiTurn(
@@ -129,10 +138,10 @@ class GunshiBrain {
 
   bool get canReceiveTaunt => tauntContext != null;
 
-  TauntOutcome receiveTaunt(TauntKind kind) {
+  TauntOutcome receiveTaunt(TauntKind kind, {double intensity = 1.0}) {
     final ctx = tauntContext;
     final truth = ctx == null ? 0.0 : judgeTruth(kind, ctx);
-    final out = applyTaunt(mind, kind, truth, previousKind: _previousTaunt);
+    final out = applyTaunt(mind, kind, truth, previousKind: _previousTaunt, intensity: intensity);
     _previousTaunt = kind;
     if (!_fixed) mind = out.after;
     return out;
