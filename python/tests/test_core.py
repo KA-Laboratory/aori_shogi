@@ -66,7 +66,7 @@ def test_policy():
     assert avg(MindState(composure=1, panic=0, hubris=0)) < avg(MindState()) < avg(MindState(composure=0.2, panic=0.8, hubris=0))
     mate = [Candidate("2g2f", mate_in=1), Candidate("7g7f", 3000)]
     assert choose_move(mate, b, MindState(composure=0, panic=0.85), random.Random(3)).reason == Reason.mate
-    assert abs(temperature_for(MindState(composure=0.2, panic=0.8)) - 590) < 1e-9
+    assert abs(temperature_for(MindState(composure=0.2, panic=0.8)) - 910) < 1e-9  # ふつう(350)＋感情
 
 
 def test_truth_and_kif():

@@ -13,9 +13,28 @@ from .shogi_util import is_attacking_move
 from .usi import Candidate
 
 
+@dataclass(frozen=True)
+class SkillLevel:
+    """棋力レベル（Dart move_policy.dart / shared/skill_levels.json と一致させる）。"""
+    name: str
+    label: str
+    temp: float
+    multi_pv: int
+    movetime_scale: float
+
+
+LEVELS: dict[str, SkillLevel] = {
+    "beginner": SkillLevel("beginner", "入門", 900.0, 10, 0.3),
+    "easy": SkillLevel("easy", "やさしい", 600.0, 8, 0.5),
+    "normal": SkillLevel("normal", "ふつう", 350.0, 6, 0.8),
+    "strong": SkillLevel("strong", "強い", 120.0, 5, 1.2),
+    "allOut": SkillLevel("allOut", "全力", 30.0, 3, 2.0),
+}
+NORMAL = LEVELS["normal"]
+
+
 class PP:
     base_movetime_ms = 1500
-    temp_base = 30.0
     temp_composure = 400.0
     temp_panic = 300.0
     hubris_threshold = 0.6
@@ -26,21 +45,21 @@ class PP:
     blunder_max_loss_cp = 600
     mate_miss_panic = 0.9
     mate_miss_rate = 0.3
-    normal_multipv = 5
-    panic_multipv = 8
+    panic_multipv_bonus = 3
     score_clamp_cp = 5000
 
 
-def movetime_for(s: MindState, base_ms: int = PP.base_movetime_ms) -> int:
-    return round(base_ms * (0.4 + 0.6 * s.composure))
+def movetime_for(s: MindState, base_ms: int = PP.base_movetime_ms, level: SkillLevel = NORMAL) -> int:
+    return round(base_ms * level.movetime_scale * (0.4 + 0.6 * s.composure))
 
 
-def multipv_for(s: MindState) -> int:
-    return PP.panic_multipv if s.panic > PP.blunder_panic_threshold else PP.normal_multipv
+def multipv_for(s: MindState, level: SkillLevel = NORMAL) -> int:
+    return level.multi_pv + PP.panic_multipv_bonus if s.panic > PP.blunder_panic_threshold else level.multi_pv
 
 
-def temperature_for(s: MindState) -> float:
-    return PP.temp_base + PP.temp_composure * (1 - s.composure) + PP.temp_panic * s.panic
+def temperature_for(s: MindState, level: SkillLevel = NORMAL) -> float:
+    """棋力レベルの基準温度に、平静さの欠けと焦りの分を足す。"""
+    return level.temp + PP.temp_composure * (1 - s.composure) + PP.temp_panic * s.panic
 
 
 class Reason(str, Enum):
@@ -70,6 +89,7 @@ def choose_move(
     mind: MindState,
     rng: random.Random,
     modulate: bool = True,
+    level: SkillLevel = NORMAL,
 ) -> Choice:
     if not candidates:
         raise ValueError("no candidates")
@@ -103,7 +123,7 @@ def choose_move(
             return pick(pool[rng.randrange(len(pool))], Reason.blunder)
 
     hubris_on = mind.hubris > PP.hubris_threshold
-    t = temperature_for(mind)
+    t = temperature_for(mind, level)
     scores, bonus = [], []
     for c in candidates:
         s = float(clamped(c))

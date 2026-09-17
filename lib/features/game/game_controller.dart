@@ -4,12 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/dialogue/intent.dart';
-import '../../core/dialogue/player_memory.dart';
 import '../../core/dialogue/lexicon.dart';
+import '../../core/dialogue/player_memory.dart';
 import '../../core/dialogue/line_library.dart';
 import '../../core/engine/shogi_engine.dart';
 import '../../core/mind/gunshi_brain.dart';
 import '../../core/mind/mind_state.dart';
+import '../../core/mind/move_policy.dart';
 import '../../core/mind/negotiation.dart';
 import '../../core/mind/slips.dart';
 import '../../core/mind/taunts.dart';
@@ -71,6 +72,7 @@ class GameViewState {
     this.selection,
     this.legalTargets = const {},
     this.mode = OpponentMode.human,
+    this.level = SkillLevel.normal,
     this.thinking = false,
     this.observing = false,
     this.lastSearch,
@@ -91,6 +93,9 @@ class GameViewState {
   final Selection? selection;
   final Set<int> legalTargets;
   final OpponentMode mode;
+
+  /// 軍師の棋力レベル。
+  final SkillLevel level;
   final bool thinking;
 
   /// AI の手の直後に局面を解析中（煽りの図星判定の準備中）。
@@ -142,6 +147,7 @@ class GameController extends Notifier<GameViewState> {
 
   List<Move> _legal = const [];
   OpponentMode _mode = OpponentMode.human;
+  SkillLevel _level = SkillLevel.normal;
   bool _thinking = false;
   bool _observing = false;
   SearchResult? _lastSearch;
@@ -193,6 +199,7 @@ class GameController extends Notifier<GameViewState> {
       selection: _pending == null ? selection : null,
       legalTargets: targets,
       mode: _mode,
+      level: _level,
       thinking: _thinking,
       observing: _observing,
       lastSearch: _lastSearch,
@@ -350,6 +357,15 @@ class GameController extends Notifier<GameViewState> {
     _maybeAiMove();
   }
 
+  /// 棋力レベルの切り替え。対局中でも次の手から効く。
+  void setLevel(SkillLevel level) {
+    _level = level;
+    for (final b in _brains.values) {
+      b.level = level;
+    }
+    _refresh();
+  }
+
   /// 対局相手の切り替え。新しい軍師を用意する。
   void setMode(OpponentMode mode) {
     _mode = mode;
@@ -376,7 +392,12 @@ class GameController extends Notifier<GameViewState> {
     if (status is! EngineReady) return;
     for (final side in Side.values) {
       if (_mode.isAi(side)) {
-        _brains[side] = GunshiBrain(engine: status.engine, side: side, seed: DateTime.now().microsecondsSinceEpoch);
+        _brains[side] = GunshiBrain(
+          engine: status.engine,
+          side: side,
+          seed: DateTime.now().microsecondsSinceEpoch,
+          level: _level,
+        );
       }
     }
     if (_gunshi != null) _say(LineTrigger.start);

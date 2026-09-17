@@ -4,10 +4,32 @@ import '../engine/usi_protocol.dart';
 import '../shogi/shogi.dart';
 import 'mind_state.dart';
 
+/// 棋力レベル。人間が自分に合う強さを選べるようにする（感情の変調はこの上に乗る）。
+/// 数値は shared/skill_levels.json と一致させる（Python policy.py と共通）。
+enum SkillLevel {
+  beginner('入門', 900, 10, 0.3),
+  easy('やさしい', 600, 8, 0.5),
+  normal('ふつう', 350, 6, 0.8),
+  strong('強い', 120, 5, 1.2),
+  allOut('全力', 30, 3, 2.0);
+
+  const SkillLevel(this.label, this.temp, this.multiPv, this.movetimeScale);
+
+  final String label;
+
+  /// softmax の基準温度。大きいほど最善から離れた手を選ぶ。
+  final double temp;
+
+  /// エンジンに出させる候補手の数。
+  final int multiPv;
+
+  /// 思考時間の倍率。
+  final double movetimeScale;
+}
+
 /// 感情でエンジンの着手を変調する（設計書 §4.4）。
 abstract final class PolicyParams {
   static const baseMovetimeMs = 1500;
-  static const tempBase = 30.0;
   static const tempComposure = 400.0;
   static const tempPanic = 300.0;
   static const hubrisThreshold = 0.6;
@@ -18,21 +40,23 @@ abstract final class PolicyParams {
   static const blunderMaxLossCp = 600;
   static const mateMissPanic = 0.9;
   static const mateMissRate = 0.3;
-  static const normalMultiPv = 5;
-  static const panicMultiPv = 8;
+
+  /// 焦っているときに候補手を広げる分。
+  static const panicMultiPvBonus = 3;
 
   /// 評価差を数値化するときの詰みの上限（sortScore が ±100000 近くになるため）。
   static const scoreClampCp = 5000;
 }
 
-int movetimeFor(MindState s, {int baseMs = PolicyParams.baseMovetimeMs}) =>
-    (baseMs * (0.4 + 0.6 * s.composure)).round();
+int movetimeFor(MindState s, {int baseMs = PolicyParams.baseMovetimeMs, SkillLevel level = SkillLevel.normal}) =>
+    (baseMs * level.movetimeScale * (0.4 + 0.6 * s.composure)).round();
 
-int multiPvFor(MindState s) =>
-    s.panic > PolicyParams.blunderPanicThreshold ? PolicyParams.panicMultiPv : PolicyParams.normalMultiPv;
+int multiPvFor(MindState s, {SkillLevel level = SkillLevel.normal}) =>
+    s.panic > PolicyParams.blunderPanicThreshold ? level.multiPv + PolicyParams.panicMultiPvBonus : level.multiPv;
 
-double temperatureFor(MindState s) =>
-    PolicyParams.tempBase + PolicyParams.tempComposure * (1 - s.composure) + PolicyParams.tempPanic * s.panic;
+/// 棋力レベルの基準温度に、平静さの欠けと焦りの分を足す。
+double temperatureFor(MindState s, {SkillLevel level = SkillLevel.normal}) =>
+    level.temp + PolicyParams.tempComposure * (1 - s.composure) + PolicyParams.tempPanic * s.panic;
 
 enum PolicyReason { best, softmax, hubrisAttack, blunder, mate, mateMissed }
 
@@ -62,6 +86,7 @@ PolicyChoice chooseMove({
   required MindState mind,
   required math.Random rng,
   bool modulate = true,
+  SkillLevel level = SkillLevel.normal,
 }) {
   if (candidates.isEmpty) throw ArgumentError('no candidates');
   final best = candidates.first;
@@ -107,7 +132,7 @@ PolicyChoice chooseMove({
 
   // softmax（慢心なら攻め手に見かけのボーナス）。
   final hubrisOn = mind.hubris > PolicyParams.hubrisThreshold;
-  final t = temperatureFor(mind);
+  final t = temperatureFor(mind, level: level);
   final scores = <double>[];
   final bonus = <bool>[];
   for (final c in candidates) {

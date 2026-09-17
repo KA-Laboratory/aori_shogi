@@ -23,17 +23,27 @@ import cshogi
 
 from ..engine import ENGINE_PRESETS, engine_from_preset
 from ..llm import OllamaClient
+from ..tone import ToneProfile
 from ..shogi_util import PIECE_KANJI, SIDE_LABEL, captured_name, kif_text
 from ..usi import Candidate
 from .runner import keep_awake
 
 DATA = Path(__file__).resolve().parents[2] / "data" / "learn_commentary"
-_STYLE = Path(__file__).resolve().parents[1] / "style" / "gunshi_quotes.json"
-# 青空文庫（吉川英治『三国志』、著作権保護期間満了）から抜いた軍師らしい言い回し
-_NAMES = re.compile(r"孔明|玄徳|劉備|関羽|張飛|曹|仲達|司馬|魏|蜀|呉|漢|孟獲|魯粛|周瑜|趙雲|馬超|黄忠|丞相|先生|陛下|臣|成都|荊州|赤壁|南蛮|※")
-# 固有名詞を含む台詞は外す（生成に三国志の話題が混ざるのを防ぐ）
-STYLE_QUOTES = [q["text"] for q in json.load(open(_STYLE, encoding="utf-8"))["quotes"]
-                if not _NAMES.search(q["text"]) and len(q["text"]) <= 40] if _STYLE.exists() else []
+# 見本は自分のアプリのセリフ（assets/lines/gunshi_lines.json）から取る。
+# 2026-09-18: 以前は青空文庫『三国志』の言い回しを味付けに渡していたが、生成が文語に寄り
+# 「金を打つは、戦場の風を読む術なり」のような使えないセリフばかりになったのでやめた（下の CLASSIC で弾く）。
+_LINES = Path(__file__).resolve().parents[3] / "assets" / "lines" / "gunshi_lines.json"
+STYLE_LINES: list[str] = []
+if _LINES.exists():
+    _t = json.load(open(_LINES, encoding="utf-8"))
+    STYLE_LINES = [ln for mood in _t.values() for trig in ("move", "taunt_hit", "taunt_miss", "blunder_self")
+                   for ln in mood.get(trig, []) if "{" not in ln and len(ln) <= 45]
+# 文語・三国志が混ざった生成は落とす
+CLASSIC = re.compile(r"孔明|玄徳|劉備|関羽|張飛|曹操|仲達|司馬|蜀|丞相|馬謖|孟獲|魯粛|周瑜|趙雲|馬超|黄忠|"
+                     r"貴殿|総帥|わが一族|軍法|剣印|献じ|そむく|匹夫|陛下|臣下|なり[。！]|べきである|ぬ[。！]|"
+                     r"[^ぁ-ん]じゃ[。！]|我[はがも、。]|吾|余は")
+
+TONE = ToneProfile.load()
 KINDS = ["blunderCall", "hangingPiece", "threat", "mock", "praise"]
 MOODS = ["smug", "composed", "rattled", "panic"]
 MOVE_RE = re.compile(r"(?:同\s*|[１-９1-9][一二三四五六七八九])(?:成香|成桂|成銀|歩|香|桂|銀|金|角|飛|玉|王|と|馬|龍|竜)(?:成|不成|打)?")
@@ -182,9 +192,10 @@ class CommentaryForge:
     async def generate(self, m: dict) -> dict:
         style = ""
         picks: list[str] = []
-        if STYLE_QUOTES:
-            picks = self.rng.sample(STYLE_QUOTES, k=min(3, len(STYLE_QUOTES)))
-            style = "\n\n【軍師の口調の味付け（古風な語尾や言い回しの雰囲気だけ借りる。文をそのまま写さない。人名・国名・三国志の話題は出さない）】\n" + "\n".join(f"・{q}" for q in picks)
+        if STYLE_LINES:
+            picks = self.rng.sample(STYLE_LINES, k=min(4, len(STYLE_LINES)))
+            style = ("\n\n【軍師の口調の見本（このアプリのセリフ。言い回しを写さず、口調だけ合わせる。"
+                     "一人称は「私」、相手は「君」。古文・文語・人名は使わない）】\n" + "\n".join(f"・{q}" for q in picks))
         msgs = [{"role": "user", "content": "【事実】\n" + FEWSHOT_FACTS},
                 {"role": "assistant", "content": json.dumps(FEWSHOT_OUT, ensure_ascii=False)},
                 {"role": "user", "content": "【事実】\n" + m["facts"] + style}]
@@ -370,6 +381,15 @@ def validate(out: dict, m: dict) -> list[str]:
     g = out.get("gunshi", {}).get("text", "")
     if not 6 <= len(g) <= 80:
         errs.append(f"gunshi length {len(g)}")
+    for t in texts:
+        if CLASSIC.search(t):
+            errs.append("classic/archaic wording")
+            break
+    mood = out.get("gunshi", {}).get("mood")
+    if g and mood:
+        v = TONE.violations(g, {"panic": "meltdown"}.get(mood, mood))
+        if v:
+            errs.append("gunshi tone: " + ",".join(v))
     return errs
 
 

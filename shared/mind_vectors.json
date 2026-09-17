@@ -31,9 +31,9 @@
     "suspicion": 0.85,
     "praiseStreak": 5
    },
-   "movetime": 1194,
-   "multipv": 8,
-   "temperature": 448.0
+   "movetime": 955,
+   "multipv": 9,
+   "temperature": 768.0
   },
   {
    "op": "update",
@@ -63,9 +63,9 @@
     "suspicion": 0.58,
     "praiseStreak": 0
    },
-   "movetime": 996,
-   "multipv": 5,
-   "temperature": 389.0
+   "movetime": 797,
+   "multipv": 6,
+   "temperature": 709.0
   },
   {
    "op": "taunt",
@@ -97,9 +97,9 @@
     "suspicion": 0.68,
     "praiseStreak": 0
    },
-   "movetime": 870,
-   "multipv": 8,
-   "temperature": 523.0
+   "movetime": 696,
+   "multipv": 9,
+   "temperature": 843.0
   },
   {
    "op": "update",
@@ -129,9 +129,9 @@
     "suspicion": 0.7,
     "praiseStreak": 0
    },
-   "movetime": 1230,
-   "multipv": 5,
-   "temperature": 165.0
+   "movetime": 984,
+   "multipv": 6,
+   "temperature": 485.0
   },
   {
    "op": "taunt",
@@ -163,9 +163,9 @@
     "suspicion": 0.38,
     "praiseStreak": 4
    },
-   "movetime": 1293,
-   "multipv": 5,
-   "temperature": 320.0
+   "movetime": 1034,
+   "multipv": 6,
+   "temperature": 640.0
   },
   {
    "op": "update",
@@ -195,9 +195,9 @@
     "suspicion": 0.76,
     "praiseStreak": 6
    },
-   "movetime": 996,
-   "multipv": 8,
-   "temperature": 473.0
+   "movetime": 797,
+   "multipv": 9,
+   "temperature": 793.0
   },
   {
    "op": "update",
@@ -227,9 +227,9 @@
     "suspicion": 0.51,
     "praiseStreak": 6
    },
-   "movetime": 1095,
-   "multipv": 8,
-   "temperature": 507.0
+   "movetime": 876,
+   "multipv": 9,
+   "temperature": 827.0
   },
   {
    "op": "taunt",
@@ -261,9 +261,9 @@
     "suspicion": 0.54,
     "praiseStreak": 0
    },
-   "movetime": 1392,
-   "multipv": 8,
-   "temperature": 372.0
+   "movetime": 1114,
+   "multipv": 9,
+   "temperature": 692.0
   },
   {
    "op": "taunt",
@@ -295,9 +295,9 @@
     "suspicion": 0.12,
     "praiseStreak": 0
    },
-   "movetime": 1266,
-   "multipv": 8,
-   "temperature": 353.0
+   "movetime": 1013,
+   "multipv": 9,
+   "temperature": 673.0
   },
   {
    "op": "taunt",
@@ -329,9 +329,9 @@
     "suspicion": 0.06,
     "praiseStreak": 0
    },
-   "movetime": 690,
-   "multipv": 8,
-   "temperature": 663.0
+   "movetime": 552,
+   "multipv": 9,
+   "temperature": 983.0
   },
   {
    "op": "update",
@@ -361,9 +361,9 @@
     "suspicion": 0.37,
     "praiseStreak": 0
    },
-   "movetime": 690,
-   "multipv": 5,
-   "temperature": 528.0
+   "movetime": 552,
+   "multipv": 6,
+   "temperature": 848.0
   },
   {
    "op": "update",
@@ -393,9 +393,9 @@
     "suspicion": 0.09,
     "praiseStreak": 1
    },
-   "movetime": 1158,
-   "multipv": 8,
-   "temperature": 470.0
+   "movetime": 926,
+   "multipv": 9,
+   "temperature": 790.0
   },
   {
    "op": "taunt",
@@ -427,9 +427,9 @@
     "suspicion": 0.3,
     "praiseStreak": 0
    },
-   "movetime": 708,
-   "multipv": 5,
-   "temperature": 502.0
+   "movetime": 566,
+   "multipv": 6,
+   "temperature": 822.0
   },
   {
    "op": "update",
@@ -459,9 +459,9 @@
     "suspicion": 0.71,
     "praiseStreak": 6
    },
-   "movetime": 1464,
-   "multipv": 5,
-   "temperature": 175.0
+   "movetime": 1171,
+   "multipv": 6,
+   "temperature": 495.0
   },
   {
    "op": "taunt",
@@ -493,9 +493,9 @@
     "suspicion": 0.53,
     "praiseStreak": 0
    },
-   "movetime": 1284,
-   "multipv": 5,
-   "temperature": 132.0
+   "movetime": 1027,
+   "multipv": 6,
+   "temperature": 452.0
   },
   {
    "op": "taunt",
@@ -527,9 +527,9 @@
     "suspicion": 0.51,
     "praiseStreak": 0
    },
-   "movetime": 1482,
-   "multipv": 8,
-   "temperature": 305.0
+   "movetime": 1186,
+   "multipv": 9,
+   "temperature": 625.0
   },
   {
    "op": "taunt",
@@ -561,9 +561,9 @@
     "suspicion": 0.43,
     "praiseStreak": 0
    },
-   "movetime": 1473,
-   "multipv": 5,
-   "temperature": 69.0
+   "movetime": 1178,
+   "multipv": 6,
+   "temperature": 389.0
   },
   {
    "op": "taunt",
@@ -595,9 +595,9 @@
     "suspicion": 0.04,
     "praiseStreak": 0
    },
-   "movetime": 807,
-   "multipv": 5,
-   "temperature": 473.0
+   "movetime": 646,
+   "multipv": 6,
+   "temperature": 793.0
   },
   {
    "op": "update",
@@ -627,9 +627,9 @@
     "suspicion": 0.56,
     "praiseStreak": 1
    },
-   "movetime": 906,
-   "multipv": 5,
-   "temperature": 450.0
+   "movetime": 725,
+   "multipv": 6,
+   "temperature": 770.0
   },
   {
    "op": "taunt",
@@ -661,9 +661,9 @@
     "suspicion": 0.15,
     "praiseStreak": 1
    },
-   "movetime": 1320,
-   "multipv": 5,
-   "temperature": 113.0
+   "movetime": 1056,
+   "multipv": 6,
+   "temperature": 433.0
   },
   {
    "op": "update",
@@ -693,9 +693,9 @@
     "suspicion": 0.01,
     "praiseStreak": 3
    },
-   "movetime": 1185,
-   "multipv": 5,
-   "temperature": 290.0
+   "movetime": 948,
+   "multipv": 6,
+   "temperature": 610.0
   },
   {
    "op": "update",
@@ -725,9 +725,9 @@
     "suspicion": 0.16,
     "praiseStreak": 0
    },
-   "movetime": 1392,
-   "multipv": 5,
-   "temperature": 129.0
+   "movetime": 1114,
+   "multipv": 6,
+   "temperature": 449.0
   },
   {
    "op": "taunt",
@@ -759,9 +759,9 @@
     "suspicion": 0.37,
     "praiseStreak": 0
    },
-   "movetime": 1140,
-   "multipv": 8,
-   "temperature": 406.0
+   "movetime": 912,
+   "multipv": 9,
+   "temperature": 726.0
   },
   {
    "op": "update",
@@ -791,9 +791,9 @@
     "suspicion": 0.6,
     "praiseStreak": 0
    },
-   "movetime": 924,
-   "multipv": 5,
-   "temperature": 307.0
+   "movetime": 739,
+   "multipv": 6,
+   "temperature": 627.0
   },
   {
    "op": "update",
@@ -823,9 +823,9 @@
     "suspicion": 0.39,
     "praiseStreak": 0
    },
-   "movetime": 1032,
-   "multipv": 8,
-   "temperature": 484.0
+   "movetime": 826,
+   "multipv": 9,
+   "temperature": 804.0
   },
   {
    "op": "taunt",
@@ -857,9 +857,9 @@
     "suspicion": 0.67,
     "praiseStreak": 0
    },
-   "movetime": 1023,
-   "multipv": 5,
-   "temperature": 395.0
+   "movetime": 818,
+   "multipv": 6,
+   "temperature": 715.0
   },
   {
    "op": "update",
@@ -889,9 +889,9 @@
     "suspicion": 0.64,
     "praiseStreak": 0
    },
-   "movetime": 960,
-   "multipv": 5,
-   "temperature": 276.0
+   "movetime": 768,
+   "multipv": 6,
+   "temperature": 596.0
   },
   {
    "op": "taunt",
@@ -923,9 +923,9 @@
     "suspicion": 0.47,
     "praiseStreak": 0
    },
-   "movetime": 1230,
-   "multipv": 5,
-   "temperature": 324.0
+   "movetime": 984,
+   "multipv": 6,
+   "temperature": 644.0
   },
   {
    "op": "taunt",
@@ -957,9 +957,9 @@
     "suspicion": 0.61,
     "praiseStreak": 4
    },
-   "movetime": 1464,
-   "multipv": 5,
-   "temperature": 154.0
+   "movetime": 1171,
+   "multipv": 6,
+   "temperature": 474.0
   },
   {
    "op": "taunt",
@@ -991,9 +991,9 @@
     "suspicion": 0.67,
     "praiseStreak": 0
    },
-   "movetime": 1059,
-   "multipv": 5,
-   "temperature": 274.0
+   "movetime": 847,
+   "multipv": 6,
+   "temperature": 594.0
   },
   {
    "op": "update",
@@ -1023,9 +1023,9 @@
     "suspicion": 0.19,
     "praiseStreak": 0
    },
-   "movetime": 717,
-   "multipv": 5,
-   "temperature": 456.0
+   "movetime": 574,
+   "multipv": 6,
+   "temperature": 776.0
   },
   {
    "op": "update",
@@ -1055,9 +1055,9 @@
     "suspicion": 0.06,
     "praiseStreak": 0
    },
-   "movetime": 1266,
-   "multipv": 8,
-   "temperature": 419.0
+   "movetime": 1013,
+   "multipv": 9,
+   "temperature": 739.0
   },
   {
    "op": "update",
@@ -1087,9 +1087,9 @@
     "suspicion": 0.19,
     "praiseStreak": 6
    },
-   "movetime": 834,
-   "multipv": 5,
-   "temperature": 404.0
+   "movetime": 667,
+   "multipv": 6,
+   "temperature": 724.0
   },
   {
    "op": "update",
@@ -1119,9 +1119,9 @@
     "suspicion": 0.56,
     "praiseStreak": 3
    },
-   "movetime": 870,
-   "multipv": 5,
-   "temperature": 325.0
+   "movetime": 696,
+   "multipv": 6,
+   "temperature": 645.0
   },
   {
    "op": "taunt",
@@ -1153,9 +1153,9 @@
     "suspicion": 0.2,
     "praiseStreak": 0
    },
-   "movetime": 735,
-   "multipv": 8,
-   "temperature": 595.0
+   "movetime": 588,
+   "multipv": 9,
+   "temperature": 915.0
   },
   {
    "op": "taunt",
@@ -1187,9 +1187,9 @@
     "suspicion": 0.56,
     "praiseStreak": 0
    },
-   "movetime": 1482,
-   "multipv": 8,
-   "temperature": 308.0
+   "movetime": 1186,
+   "multipv": 9,
+   "temperature": 628.0
   },
   {
    "op": "taunt",
@@ -1221,9 +1221,9 @@
     "suspicion": 0.27,
     "praiseStreak": 0
    },
-   "movetime": 1077,
-   "multipv": 5,
-   "temperature": 311.0
+   "movetime": 862,
+   "multipv": 6,
+   "temperature": 631.0
   },
   {
    "op": "update",
@@ -1253,9 +1253,9 @@
     "suspicion": 0.61,
     "praiseStreak": 6
    },
-   "movetime": 1446,
-   "multipv": 8,
-   "temperature": 294.0
+   "movetime": 1157,
+   "multipv": 9,
+   "temperature": 614.0
   },
   {
    "op": "update",
@@ -1285,9 +1285,9 @@
     "suspicion": 0.28,
     "praiseStreak": 4
    },
-   "movetime": 1320,
-   "multipv": 5,
-   "temperature": 242.0
+   "movetime": 1056,
+   "multipv": 6,
+   "temperature": 562.0
   },
   {
    "op": "update",
@@ -1317,9 +1317,9 @@
     "suspicion": 0.72,
     "praiseStreak": 0
    },
-   "movetime": 951,
-   "multipv": 8,
-   "temperature": 547.0
+   "movetime": 761,
+   "multipv": 9,
+   "temperature": 867.0
   },
   {
    "op": "update",
@@ -1349,9 +1349,9 @@
     "suspicion": 0.4,
     "praiseStreak": 6
    },
-   "movetime": 1437,
-   "multipv": 8,
-   "temperature": 304.0
+   "movetime": 1150,
+   "multipv": 9,
+   "temperature": 624.0
   },
   {
    "op": "taunt",
@@ -1383,9 +1383,9 @@
     "suspicion": 0.16,
     "praiseStreak": 0
    },
-   "movetime": 1392,
-   "multipv": 5,
-   "temperature": 255.0
+   "movetime": 1114,
+   "multipv": 6,
+   "temperature": 575.0
   },
   {
    "op": "taunt",
@@ -1417,9 +1417,9 @@
     "suspicion": 0.17,
     "praiseStreak": 0
    },
-   "movetime": 1122,
-   "multipv": 5,
-   "temperature": 333.0
+   "movetime": 898,
+   "multipv": 6,
+   "temperature": 653.0
   },
   {
    "op": "update",
@@ -1449,9 +1449,9 @@
     "suspicion": 0.18,
     "praiseStreak": 0
    },
-   "movetime": 897,
-   "multipv": 5,
-   "temperature": 388.0
+   "movetime": 718,
+   "multipv": 6,
+   "temperature": 708.0
   },
   {
    "op": "taunt",
@@ -1483,9 +1483,9 @@
     "suspicion": 0.64,
     "praiseStreak": 0
    },
-   "movetime": 1014,
-   "multipv": 5,
-   "temperature": 276.0
+   "movetime": 811,
+   "multipv": 6,
+   "temperature": 596.0
   },
   {
    "op": "taunt",
@@ -1517,9 +1517,9 @@
     "suspicion": 0.57,
     "praiseStreak": 0
    },
-   "movetime": 1338,
-   "multipv": 5,
-   "temperature": 255.0
+   "movetime": 1070,
+   "multipv": 6,
+   "temperature": 575.0
   },
   {
    "op": "taunt",
@@ -1551,9 +1551,9 @@
     "suspicion": 0.04,
     "praiseStreak": 0
    },
-   "movetime": 996,
-   "multipv": 8,
-   "temperature": 551.0
+   "movetime": 797,
+   "multipv": 9,
+   "temperature": 871.0
   },
   {
    "op": "update",
@@ -1583,9 +1583,9 @@
     "suspicion": 0.28,
     "praiseStreak": 0
    },
-   "movetime": 672,
-   "multipv": 5,
-   "temperature": 539.0
+   "movetime": 538,
+   "multipv": 6,
+   "temperature": 859.0
   },
   {
    "op": "update",
@@ -1615,9 +1615,9 @@
     "suspicion": 0.68,
     "praiseStreak": 1
    },
-   "movetime": 888,
-   "multipv": 5,
-   "temperature": 476.0
+   "movetime": 710,
+   "multipv": 6,
+   "temperature": 796.0
   },
   {
    "op": "update",
@@ -1647,9 +1647,9 @@
     "suspicion": 0.76,
     "praiseStreak": 4
    },
-   "movetime": 1095,
-   "multipv": 5,
-   "temperature": 276.0
+   "movetime": 876,
+   "multipv": 6,
+   "temperature": 596.0
   },
   {
    "op": "taunt",
@@ -1681,9 +1681,9 @@
     "suspicion": 0.93,
     "praiseStreak": 5
    },
-   "movetime": 1257,
-   "multipv": 5,
-   "temperature": 192.0
+   "movetime": 1006,
+   "multipv": 6,
+   "temperature": 512.0
   },
   {
    "op": "taunt",
@@ -1715,9 +1715,9 @@
     "suspicion": 0.54,
     "praiseStreak": 0
    },
-   "movetime": 1077,
-   "multipv": 8,
-   "temperature": 488.0
+   "movetime": 862,
+   "multipv": 9,
+   "temperature": 808.0
   },
   {
    "op": "taunt",
@@ -1749,9 +1749,9 @@
     "suspicion": 0.52,
     "praiseStreak": 0
    },
-   "movetime": 717,
-   "multipv": 8,
-   "temperature": 633.0
+   "movetime": 574,
+   "multipv": 9,
+   "temperature": 953.0
   },
   {
    "op": "update",
@@ -1781,9 +1781,9 @@
     "suspicion": 0.71,
     "praiseStreak": 4
    },
-   "movetime": 915,
-   "multipv": 8,
-   "temperature": 554.0
+   "movetime": 732,
+   "multipv": 9,
+   "temperature": 874.0
   },
   {
    "op": "taunt",
@@ -1815,9 +1815,9 @@
     "suspicion": 0.74,
     "praiseStreak": 7
    },
-   "movetime": 1464,
-   "multipv": 8,
-   "temperature": 307.0
+   "movetime": 1171,
+   "multipv": 9,
+   "temperature": 627.0
   },
   {
    "op": "taunt",
@@ -1849,9 +1849,9 @@
     "suspicion": 0.48,
     "praiseStreak": 1
    },
-   "movetime": 1410,
-   "multipv": 5,
-   "temperature": 280.0
+   "movetime": 1128,
+   "multipv": 6,
+   "temperature": 600.0
   },
   {
    "op": "taunt",
@@ -1883,9 +1883,9 @@
     "suspicion": 0.44,
     "praiseStreak": 0
    },
-   "movetime": 681,
-   "multipv": 5,
-   "temperature": 538.0
+   "movetime": 545,
+   "multipv": 6,
+   "temperature": 858.0
   },
   {
    "op": "taunt",
@@ -1917,9 +1917,9 @@
     "suspicion": 0.87,
     "praiseStreak": 4
    },
-   "movetime": 870,
-   "multipv": 5,
-   "temperature": 439.0
+   "movetime": 696,
+   "multipv": 6,
+   "temperature": 759.0
   },
   {
    "op": "update",
@@ -1949,9 +1949,9 @@
     "suspicion": 0.18,
     "praiseStreak": 1
    },
-   "movetime": 753,
-   "multipv": 5,
-   "temperature": 365.0
+   "movetime": 602,
+   "multipv": 6,
+   "temperature": 685.0
   },
   {
    "op": "taunt",
@@ -1983,9 +1983,9 @@
     "suspicion": 0.42,
     "praiseStreak": 0
    },
-   "movetime": 762,
-   "multipv": 8,
-   "temperature": 574.0
+   "movetime": 610,
+   "multipv": 9,
+   "temperature": 894.0
   },
   {
    "op": "taunt",
@@ -2017,9 +2017,9 @@
     "suspicion": 0.21,
     "praiseStreak": 0
    },
-   "movetime": 735,
-   "multipv": 5,
-   "temperature": 469.0
+   "movetime": 588,
+   "multipv": 6,
+   "temperature": 789.0
   },
   {
    "op": "taunt",
@@ -2051,9 +2051,9 @@
     "suspicion": 0.48,
     "praiseStreak": 7
    },
-   "movetime": 1455,
-   "multipv": 5,
-   "temperature": 251.0
+   "movetime": 1164,
+   "multipv": 6,
+   "temperature": 571.0
   },
   {
    "op": "update",
@@ -2083,9 +2083,9 @@
     "suspicion": 0.22,
     "praiseStreak": 3
    },
-   "movetime": 753,
-   "multipv": 5,
-   "temperature": 422.0
+   "movetime": 602,
+   "multipv": 6,
+   "temperature": 742.0
   },
   {
    "op": "taunt",
@@ -2117,9 +2117,9 @@
     "suspicion": 0.5,
     "praiseStreak": 5
    },
-   "movetime": 1392,
-   "multipv": 5,
-   "temperature": 183.0
+   "movetime": 1114,
+   "multipv": 6,
+   "temperature": 503.0
   },
   {
    "op": "taunt",
@@ -2151,9 +2151,9 @@
     "suspicion": 0.2,
     "praiseStreak": 0
    },
-   "movetime": 960,
-   "multipv": 5,
-   "temperature": 435.0
+   "movetime": 768,
+   "multipv": 6,
+   "temperature": 755.0
   },
   {
    "op": "taunt",
@@ -2185,9 +2185,9 @@
     "suspicion": 0.72,
     "praiseStreak": 0
    },
-   "movetime": 816,
-   "multipv": 8,
-   "temperature": 571.0
+   "movetime": 653,
+   "multipv": 9,
+   "temperature": 891.0
   },
   {
    "op": "taunt",
@@ -2219,9 +2219,9 @@
     "suspicion": 0.07,
     "praiseStreak": 0
    },
-   "movetime": 843,
-   "multipv": 5,
-   "temperature": 463.0
+   "movetime": 674,
+   "multipv": 6,
+   "temperature": 783.0
   },
   {
    "op": "taunt",
@@ -2253,9 +2253,9 @@
     "suspicion": 0.51,
     "praiseStreak": 0
    },
-   "movetime": 807,
-   "multipv": 5,
-   "temperature": 485.0
+   "movetime": 646,
+   "multipv": 6,
+   "temperature": 805.0
   },
   {
    "op": "update",
@@ -2285,9 +2285,9 @@
     "suspicion": 0.5,
     "praiseStreak": 3
    },
-   "movetime": 1446,
-   "multipv": 5,
-   "temperature": 66.0
+   "movetime": 1157,
+   "multipv": 6,
+   "temperature": 386.0
   },
   {
    "op": "update",
@@ -2317,9 +2317,9 @@
     "suspicion": 0.52,
     "praiseStreak": 3
    },
-   "movetime": 1005,
-   "multipv": 8,
-   "temperature": 481.0
+   "movetime": 804,
+   "multipv": 9,
+   "temperature": 801.0
   },
   {
    "op": "update",
@@ -2349,9 +2349,9 @@
     "suspicion": 0.26,
     "praiseStreak": 0
    },
-   "movetime": 960,
-   "multipv": 8,
-   "temperature": 534.0
+   "movetime": 768,
+   "multipv": 9,
+   "temperature": 854.0
   },
   {
    "op": "update",
@@ -2381,9 +2381,9 @@
     "suspicion": 0.23,
     "praiseStreak": 6
    },
-   "movetime": 1104,
-   "multipv": 8,
-   "temperature": 452.0
+   "movetime": 883,
+   "multipv": 9,
+   "temperature": 772.0
   },
   {
    "op": "update",
@@ -2413,9 +2413,9 @@
     "suspicion": 0.2,
     "praiseStreak": 6
    },
-   "movetime": 636,
-   "multipv": 5,
-   "temperature": 432.0
+   "movetime": 509,
+   "multipv": 6,
+   "temperature": 752.0
   },
   {
    "op": "update",
@@ -2445,9 +2445,9 @@
     "suspicion": 0.59,
     "praiseStreak": 1
    },
-   "movetime": 1185,
-   "multipv": 5,
-   "temperature": 254.0
+   "movetime": 948,
+   "multipv": 6,
+   "temperature": 574.0
   },
   {
    "op": "update",
@@ -2477,9 +2477,9 @@
     "suspicion": 0.72,
     "praiseStreak": 0
    },
-   "movetime": 1068,
-   "multipv": 5,
-   "temperature": 255.0
+   "movetime": 854,
+   "multipv": 6,
+   "temperature": 575.0
   },
   {
    "op": "update",
@@ -2509,9 +2509,9 @@
     "suspicion": 0.39,
     "praiseStreak": 6
    },
-   "movetime": 807,
-   "multipv": 5,
-   "temperature": 389.0
+   "movetime": 646,
+   "multipv": 6,
+   "temperature": 709.0
   },
   {
    "op": "update",
@@ -2541,9 +2541,9 @@
     "suspicion": 0.61,
     "praiseStreak": 0
    },
-   "movetime": 1365,
-   "multipv": 5,
-   "temperature": 102.0
+   "movetime": 1092,
+   "multipv": 6,
+   "temperature": 422.0
   },
   {
    "op": "update",
@@ -2573,9 +2573,9 @@
     "suspicion": 0.31,
     "praiseStreak": 0
    },
-   "movetime": 1311,
-   "multipv": 5,
-   "temperature": 153.0
+   "movetime": 1049,
+   "multipv": 6,
+   "temperature": 473.0
   },
   {
    "op": "update",
@@ -2605,9 +2605,9 @@
     "suspicion": 0.63,
     "praiseStreak": 3
    },
-   "movetime": 1455,
-   "multipv": 5,
-   "temperature": 80.0
+   "movetime": 1164,
+   "multipv": 6,
+   "temperature": 400.0
   },
   {
    "op": "taunt",
@@ -2639,9 +2639,9 @@
     "suspicion": 0.33,
     "praiseStreak": 0
    },
-   "movetime": 834,
-   "multipv": 5,
-   "temperature": 338.0
+   "movetime": 667,
+   "multipv": 6,
+   "temperature": 658.0
   },
   {
    "op": "taunt",
@@ -2673,9 +2673,9 @@
     "suspicion": 0.36,
     "praiseStreak": 0
    },
-   "movetime": 843,
-   "multipv": 5,
-   "temperature": 346.0
+   "movetime": 674,
+   "multipv": 6,
+   "temperature": 666.0
   },
   {
    "op": "update",
@@ -2705,9 +2705,9 @@
     "suspicion": 0.08,
     "praiseStreak": 1
    },
-   "movetime": 1311,
-   "multipv": 5,
-   "temperature": 207.0
+   "movetime": 1049,
+   "multipv": 6,
+   "temperature": 527.0
   },
   {
    "op": "taunt",
@@ -2739,9 +2739,9 @@
     "suspicion": 0.45,
     "praiseStreak": 0
    },
-   "movetime": 1095,
-   "multipv": 5,
-   "temperature": 273.0
+   "movetime": 876,
+   "multipv": 6,
+   "temperature": 593.0
   },
   {
    "op": "update",
@@ -2771,9 +2771,9 @@
     "suspicion": 0.05,
     "praiseStreak": 0
    },
-   "movetime": 618,
-   "multipv": 5,
-   "temperature": 557.0
+   "movetime": 494,
+   "multipv": 6,
+   "temperature": 877.0
   },
   {
    "op": "taunt",
@@ -2805,9 +2805,9 @@
     "suspicion": 0.46,
     "praiseStreak": 0
    },
-   "movetime": 1446,
-   "multipv": 8,
-   "temperature": 345.0
+   "movetime": 1157,
+   "multipv": 9,
+   "temperature": 665.0
   },
   {
    "op": "taunt",
@@ -2839,9 +2839,9 @@
     "suspicion": 0.15,
     "praiseStreak": 0
    },
-   "movetime": 1320,
-   "multipv": 5,
-   "temperature": 161.0
+   "movetime": 1056,
+   "multipv": 6,
+   "temperature": 481.0
   },
   {
    "op": "update",
@@ -2871,9 +2871,9 @@
     "suspicion": 0.06,
     "praiseStreak": 0
    },
-   "movetime": 1140,
-   "multipv": 8,
-   "temperature": 448.0
+   "movetime": 912,
+   "multipv": 9,
+   "temperature": 768.0
   },
   {
    "op": "update",
@@ -2903,9 +2903,9 @@
     "suspicion": 0.53,
     "praiseStreak": 6
    },
-   "movetime": 1347,
-   "multipv": 5,
-   "temperature": 263.0
+   "movetime": 1078,
+   "multipv": 6,
+   "temperature": 583.0
   },
   {
    "op": "taunt",
@@ -2937,9 +2937,9 @@
     "suspicion": 0.24,
     "praiseStreak": 0
    },
-   "movetime": 888,
-   "multipv": 5,
-   "temperature": 419.0
+   "movetime": 710,
+   "multipv": 6,
+   "temperature": 739.0
   },
   {
    "op": "taunt",
@@ -2971,9 +2971,9 @@
     "suspicion": 0.46,
     "praiseStreak": 0
    },
-   "movetime": 645,
-   "multipv": 8,
-   "temperature": 710.0
+   "movetime": 516,
+   "multipv": 9,
+   "temperature": 1030.0
   },
   {
    "op": "update",
@@ -3003,9 +3003,9 @@
     "suspicion": 0.76,
     "praiseStreak": 6
    },
-   "movetime": 1464,
-   "multipv": 5,
-   "temperature": 127.0
+   "movetime": 1171,
+   "multipv": 6,
+   "temperature": 447.0
   },
   {
    "op": "update",
@@ -3035,9 +3035,9 @@
     "suspicion": 0.53,
     "praiseStreak": 4
    },
-   "movetime": 1248,
-   "multipv": 5,
-   "temperature": 151.0
+   "movetime": 998,
+   "multipv": 6,
+   "temperature": 471.0
   },
   {
    "op": "update",
@@ -3067,9 +3067,9 @@
     "suspicion": 0.13,
     "praiseStreak": 0
    },
-   "movetime": 1419,
-   "multipv": 5,
-   "temperature": 213.0
+   "movetime": 1135,
+   "multipv": 6,
+   "temperature": 533.0
   },
   {
    "op": "taunt",
@@ -3101,9 +3101,9 @@
     "suspicion": 0.03,
     "praiseStreak": 0
    },
-   "movetime": 1167,
-   "multipv": 8,
-   "temperature": 436.0
+   "movetime": 934,
+   "multipv": 9,
+   "temperature": 756.0
   },
   {
    "op": "taunt",
@@ -3135,9 +3135,9 @@
     "suspicion": 0.44,
     "praiseStreak": 5
    },
-   "movetime": 1338,
-   "multipv": 5,
-   "temperature": 237.0
+   "movetime": 1070,
+   "multipv": 6,
+   "temperature": 557.0
   },
   {
    "op": "update",
@@ -3167,9 +3167,9 @@
     "suspicion": 0.74,
     "praiseStreak": 3
    },
-   "movetime": 1014,
-   "multipv": 8,
-   "temperature": 459.0
+   "movetime": 811,
+   "multipv": 9,
+   "temperature": 779.0
   },
   {
    "op": "update",
@@ -3199,9 +3199,9 @@
     "suspicion": 0.47,
     "praiseStreak": 4
    },
-   "movetime": 1059,
-   "multipv": 5,
-   "temperature": 274.0
+   "movetime": 847,
+   "multipv": 6,
+   "temperature": 594.0
   },
   {
    "op": "taunt",
@@ -3233,9 +3233,9 @@
     "suspicion": 0.46,
     "praiseStreak": 0
    },
-   "movetime": 1392,
-   "multipv": 8,
-   "temperature": 303.0
+   "movetime": 1114,
+   "multipv": 9,
+   "temperature": 623.0
   },
   {
    "op": "update",
@@ -3265,9 +3265,9 @@
     "suspicion": 0.66,
     "praiseStreak": 6
    },
-   "movetime": 1293,
-   "multipv": 5,
-   "temperature": 134.0
+   "movetime": 1034,
+   "multipv": 6,
+   "temperature": 454.0
   },
   {
    "op": "taunt",
@@ -3299,9 +3299,9 @@
     "suspicion": 0.06,
     "praiseStreak": 0
    },
-   "movetime": 1365,
-   "multipv": 5,
-   "temperature": 222.0
+   "movetime": 1092,
+   "multipv": 6,
+   "temperature": 542.0
   },
   {
    "op": "taunt",
@@ -3333,9 +3333,9 @@
     "suspicion": 0.69,
     "praiseStreak": 0
    },
-   "movetime": 708,
-   "multipv": 5,
-   "temperature": 556.0
+   "movetime": 566,
+   "multipv": 6,
+   "temperature": 876.0
   },
   {
    "op": "taunt",
@@ -3367,9 +3367,9 @@
     "suspicion": 0.64,
     "praiseStreak": 0
    },
-   "movetime": 1185,
-   "multipv": 8,
-   "temperature": 446.0
+   "movetime": 948,
+   "multipv": 9,
+   "temperature": 766.0
   },
   {
    "op": "taunt",
@@ -3401,9 +3401,9 @@
     "suspicion": 0.69,
     "praiseStreak": 0
    },
-   "movetime": 1284,
-   "multipv": 5,
-   "temperature": 249.0
+   "movetime": 1027,
+   "multipv": 6,
+   "temperature": 569.0
   },
   {
    "op": "taunt",
@@ -3435,9 +3435,9 @@
     "suspicion": 0.5,
     "praiseStreak": 0
    },
-   "movetime": 1320,
-   "multipv": 5,
-   "temperature": 179.0
+   "movetime": 1056,
+   "multipv": 6,
+   "temperature": 499.0
   },
   {
    "op": "taunt",
@@ -3469,9 +3469,9 @@
     "suspicion": 0.0,
     "praiseStreak": 0
    },
-   "movetime": 1095,
-   "multipv": 8,
-   "temperature": 507.0
+   "movetime": 876,
+   "multipv": 9,
+   "temperature": 827.0
   },
   {
    "op": "taunt",
@@ -3503,9 +3503,9 @@
     "suspicion": 0.32,
     "praiseStreak": 4
    },
-   "movetime": 1284,
-   "multipv": 5,
-   "temperature": 300.0
+   "movetime": 1027,
+   "multipv": 6,
+   "temperature": 620.0
   },
   {
    "op": "taunt",
@@ -3537,9 +3537,9 @@
     "suspicion": 0.6,
     "praiseStreak": 7
    },
-   "movetime": 1437,
-   "multipv": 5,
-   "temperature": 61.0
+   "movetime": 1150,
+   "multipv": 6,
+   "temperature": 381.0
   },
   {
    "op": "update",
@@ -3569,9 +3569,9 @@
     "suspicion": 0.53,
     "praiseStreak": 3
    },
-   "movetime": 915,
-   "multipv": 8,
-   "temperature": 572.0
+   "movetime": 732,
+   "multipv": 9,
+   "temperature": 892.0
   },
   {
    "op": "taunt",
@@ -3603,9 +3603,9 @@
     "suspicion": 0.72,
     "praiseStreak": 0
    },
-   "movetime": 1176,
-   "multipv": 5,
-   "temperature": 291.0
+   "movetime": 941,
+   "multipv": 6,
+   "temperature": 611.0
   },
   {
    "op": "update",
@@ -3635,9 +3635,9 @@
     "suspicion": 0.27,
     "praiseStreak": 0
    },
-   "movetime": 1347,
-   "multipv": 8,
-   "temperature": 350.0
+   "movetime": 1078,
+   "multipv": 9,
+   "temperature": 670.0
   },
   {
    "op": "update",
@@ -3667,9 +3667,9 @@
     "suspicion": 0.49,
     "praiseStreak": 3
    },
-   "movetime": 1383,
-   "multipv": 5,
-   "temperature": 238.0
+   "movetime": 1106,
+   "multipv": 6,
+   "temperature": 558.0
   },
   {
    "op": "update",
@@ -3699,9 +3699,9 @@
     "suspicion": 0.16,
     "praiseStreak": 3
    },
-   "movetime": 1005,
-   "multipv": 8,
-   "temperature": 529.0
+   "movetime": 804,
+   "multipv": 9,
+   "temperature": 849.0
   },
   {
    "op": "update",
@@ -3731,9 +3731,9 @@
     "suspicion": 0.38,
     "praiseStreak": 1
    },
-   "movetime": 717,
-   "multipv": 5,
-   "temperature": 426.0
+   "movetime": 574,
+   "multipv": 6,
+   "temperature": 746.0
   },
   {
    "op": "taunt",
@@ -3765,9 +3765,9 @@
     "suspicion": 0.53,
     "praiseStreak": 0
    },
-   "movetime": 609,
-   "multipv": 5,
-   "temperature": 459.0
+   "movetime": 487,
+   "multipv": 6,
+   "temperature": 779.0
   },
   {
    "op": "update",
@@ -3797,9 +3797,9 @@
     "suspicion": 0.27,
     "praiseStreak": 1
    },
-   "movetime": 1329,
-   "multipv": 5,
-   "temperature": 253.0
+   "movetime": 1063,
+   "multipv": 6,
+   "temperature": 573.0
   },
   {
    "op": "update",
@@ -3829,9 +3829,9 @@
     "suspicion": 0.03,
     "praiseStreak": 0
    },
-   "movetime": 1041,
-   "multipv": 5,
-   "temperature": 348.0
+   "movetime": 833,
+   "multipv": 6,
+   "temperature": 668.0
   },
   {
    "op": "taunt",
@@ -3863,9 +3863,9 @@
     "suspicion": 0.41,
     "praiseStreak": 0
    },
-   "movetime": 1383,
-   "multipv": 5,
-   "temperature": 271.0
+   "movetime": 1106,
+   "multipv": 6,
+   "temperature": 591.0
   },
   {
    "op": "update",
@@ -3895,9 +3895,9 @@
     "suspicion": 0.37,
     "praiseStreak": 1
    },
-   "movetime": 753,
-   "multipv": 5,
-   "temperature": 407.0
+   "movetime": 602,
+   "multipv": 6,
+   "temperature": 727.0
   },
   {
    "op": "update",
@@ -3927,9 +3927,9 @@
     "suspicion": 0.6,
     "praiseStreak": 6
    },
-   "movetime": 1275,
-   "multipv": 5,
-   "temperature": 211.0
+   "movetime": 1020,
+   "multipv": 6,
+   "temperature": 531.0
   },
   {
    "op": "taunt",
@@ -3961,9 +3961,9 @@
     "suspicion": 0.08,
     "praiseStreak": 0
    },
-   "movetime": 717,
-   "multipv": 8,
-   "temperature": 663.0
+   "movetime": 574,
+   "multipv": 9,
+   "temperature": 983.0
   },
   {
    "op": "update",
@@ -3993,9 +3993,9 @@
     "suspicion": 0.24,
     "praiseStreak": 6
    },
-   "movetime": 1140,
-   "multipv": 5,
-   "temperature": 199.0
+   "movetime": 912,
+   "multipv": 6,
+   "temperature": 519.0
   },
   {
    "op": "taunt",
@@ -4027,9 +4027,9 @@
     "suspicion": 0.49,
     "praiseStreak": 0
    },
-   "movetime": 780,
-   "multipv": 8,
-   "temperature": 638.0
+   "movetime": 624,
+   "multipv": 9,
+   "temperature": 958.0
   },
   {
    "op": "taunt",
@@ -4061,9 +4061,9 @@
     "suspicion": 0.39,
     "praiseStreak": 0
    },
-   "movetime": 960,
-   "multipv": 5,
-   "temperature": 321.0
+   "movetime": 768,
+   "multipv": 6,
+   "temperature": 641.0
   },
   {
    "op": "taunt",
@@ -4095,9 +4095,9 @@
     "suspicion": 0.37,
     "praiseStreak": 0
    },
-   "movetime": 789,
-   "multipv": 8,
-   "temperature": 574.0
+   "movetime": 631,
+   "multipv": 9,
+   "temperature": 894.0
   },
   {
    "op": "update",
@@ -4127,9 +4127,9 @@
     "suspicion": 0.43,
     "praiseStreak": 6
    },
-   "movetime": 1086,
-   "multipv": 5,
-   "temperature": 274.0
+   "movetime": 869,
+   "multipv": 6,
+   "temperature": 594.0
   },
   {
    "op": "taunt",
@@ -4161,9 +4161,9 @@
     "suspicion": 0.69,
     "praiseStreak": 4
    },
-   "movetime": 1068,
-   "multipv": 5,
-   "temperature": 342.0
+   "movetime": 854,
+   "multipv": 6,
+   "temperature": 662.0
   },
   {
    "op": "update",
@@ -4193,9 +4193,9 @@
     "suspicion": 0.0,
     "praiseStreak": 1
    },
-   "movetime": 1158,
-   "multipv": 5,
-   "temperature": 392.0
+   "movetime": 926,
+   "multipv": 6,
+   "temperature": 712.0
   },
   {
    "op": "taunt",
@@ -4227,9 +4227,9 @@
     "suspicion": 0.02,
     "praiseStreak": 0
    },
-   "movetime": 1419,
-   "multipv": 5,
-   "temperature": 135.0
+   "movetime": 1135,
+   "multipv": 6,
+   "temperature": 455.0
   },
   {
    "op": "taunt",
@@ -4261,9 +4261,9 @@
     "suspicion": 0.3,
     "praiseStreak": 2
    },
-   "movetime": 1302,
-   "multipv": 8,
-   "temperature": 364.0
+   "movetime": 1042,
+   "multipv": 9,
+   "temperature": 684.0
   },
   {
    "op": "taunt",
@@ -4295,9 +4295,9 @@
     "suspicion": 0.41,
     "praiseStreak": 0
    },
-   "movetime": 1383,
-   "multipv": 5,
-   "temperature": 232.0
+   "movetime": 1106,
+   "multipv": 6,
+   "temperature": 552.0
   },
   {
    "op": "update",
@@ -4327,9 +4327,9 @@
     "suspicion": 0.65,
     "praiseStreak": 1
    },
-   "movetime": 1410,
-   "multipv": 5,
-   "temperature": 235.0
+   "movetime": 1128,
+   "multipv": 6,
+   "temperature": 555.0
   },
   {
    "op": "taunt",
@@ -4361,9 +4361,9 @@
     "suspicion": 0.35,
     "praiseStreak": 0
    },
-   "movetime": 933,
-   "multipv": 8,
-   "temperature": 519.0
+   "movetime": 746,
+   "multipv": 9,
+   "temperature": 839.0
   },
   {
    "op": "update",
@@ -4393,9 +4393,9 @@
     "suspicion": 0.0,
     "praiseStreak": 0
    },
-   "movetime": 1392,
-   "multipv": 5,
-   "temperature": 135.0
+   "movetime": 1114,
+   "multipv": 6,
+   "temperature": 455.0
   },
   {
    "op": "update",
@@ -4425,9 +4425,9 @@
     "suspicion": 0.62,
     "praiseStreak": 1
    },
-   "movetime": 1041,
-   "multipv": 5,
-   "temperature": 384.0
+   "movetime": 833,
+   "multipv": 6,
+   "temperature": 704.0
   },
   {
    "op": "taunt",
@@ -4459,9 +4459,9 @@
     "suspicion": 0.41,
     "praiseStreak": 5
    },
-   "movetime": 843,
-   "multipv": 8,
-   "temperature": 577.0
+   "movetime": 674,
+   "multipv": 9,
+   "temperature": 897.0
   },
   {
    "op": "taunt",
@@ -4493,9 +4493,9 @@
     "suspicion": 0.1,
     "praiseStreak": 0
    },
-   "movetime": 942,
-   "multipv": 8,
-   "temperature": 563.0
+   "movetime": 754,
+   "multipv": 9,
+   "temperature": 883.0
   },
   {
    "op": "update",
@@ -4525,9 +4525,9 @@
     "suspicion": 0.4,
     "praiseStreak": 1
    },
-   "movetime": 681,
-   "multipv": 5,
-   "temperature": 598.0
+   "movetime": 545,
+   "multipv": 6,
+   "temperature": 918.0
   },
   {
    "op": "taunt",
@@ -4559,9 +4559,9 @@
     "suspicion": 0.16,
     "praiseStreak": 0
    },
-   "movetime": 798,
-   "multipv": 5,
-   "temperature": 534.0
+   "movetime": 638,
+   "multipv": 6,
+   "temperature": 854.0
   },
   {
    "op": "update",
@@ -4591,9 +4591,9 @@
     "suspicion": 0.33,
     "praiseStreak": 4
    },
-   "movetime": 915,
-   "multipv": 5,
-   "temperature": 479.0
+   "movetime": 732,
+   "multipv": 6,
+   "temperature": 799.0
   },
   {
    "op": "update",
@@ -4623,9 +4623,9 @@
     "suspicion": 0.67,
     "praiseStreak": 0
    },
-   "movetime": 681,
-   "multipv": 5,
-   "temperature": 544.0
+   "movetime": 545,
+   "multipv": 6,
+   "temperature": 864.0
   },
   {
    "op": "update",
@@ -4655,9 +4655,9 @@
     "suspicion": 0.65,
     "praiseStreak": 0
    },
-   "movetime": 1167,
-   "multipv": 8,
-   "temperature": 433.0
+   "movetime": 934,
+   "multipv": 9,
+   "temperature": 753.0
   },
   {
    "op": "taunt",
@@ -4689,9 +4689,9 @@
     "suspicion": 0.48,
     "praiseStreak": 0
    },
-   "movetime": 1122,
-   "multipv": 8,
-   "temperature": 441.0
+   "movetime": 898,
+   "multipv": 9,
+   "temperature": 761.0
   },
   {
    "op": "taunt",
@@ -4723,9 +4723,9 @@
     "suspicion": 0.54,
     "praiseStreak": 0
    },
-   "movetime": 807,
-   "multipv": 5,
-   "temperature": 374.0
+   "movetime": 646,
+   "multipv": 6,
+   "temperature": 694.0
   },
   {
    "op": "update",
@@ -4755,9 +4755,9 @@
     "suspicion": 0.05,
     "praiseStreak": 6
    },
-   "movetime": 753,
-   "multipv": 8,
-   "temperature": 656.0
+   "movetime": 602,
+   "multipv": 9,
+   "temperature": 976.0
   },
   {
    "op": "update",
@@ -4787,9 +4787,9 @@
     "suspicion": 0.43,
     "praiseStreak": 1
    },
-   "movetime": 1248,
-   "multipv": 8,
-   "temperature": 400.0
+   "movetime": 998,
+   "multipv": 9,
+   "temperature": 720.0
   },
   {
    "op": "taunt",
@@ -4821,9 +4821,9 @@
     "suspicion": 0.38,
     "praiseStreak": 0
    },
-   "movetime": 1284,
-   "multipv": 5,
-   "temperature": 186.0
+   "movetime": 1027,
+   "multipv": 6,
+   "temperature": 506.0
   },
   {
    "op": "taunt",
@@ -4855,9 +4855,9 @@
     "suspicion": 0.48,
     "praiseStreak": 0
    },
-   "movetime": 744,
-   "multipv": 5,
-   "temperature": 453.0
+   "movetime": 595,
+   "multipv": 6,
+   "temperature": 773.0
   },
   {
    "op": "taunt",
@@ -4889,9 +4889,9 @@
     "suspicion": 0.11,
     "praiseStreak": 0
    },
-   "movetime": 771,
-   "multipv": 5,
-   "temperature": 432.0
+   "movetime": 617,
+   "multipv": 6,
+   "temperature": 752.0
   },
   {
    "op": "update",
@@ -4921,9 +4921,9 @@
     "suspicion": 0.54,
     "praiseStreak": 4
    },
-   "movetime": 1194,
-   "multipv": 5,
-   "temperature": 199.0
+   "movetime": 955,
+   "multipv": 6,
+   "temperature": 519.0
   },
   {
    "op": "taunt",
@@ -4955,9 +4955,9 @@
     "suspicion": 0.08,
     "praiseStreak": 0
    },
-   "movetime": 1428,
-   "multipv": 5,
-   "temperature": 167.0
+   "movetime": 1142,
+   "multipv": 6,
+   "temperature": 487.0
   },
   {
    "op": "taunt",
@@ -4989,9 +4989,9 @@
     "suspicion": 0.18,
     "praiseStreak": 0
    },
-   "movetime": 888,
-   "multipv": 8,
-   "temperature": 527.0
+   "movetime": 710,
+   "multipv": 9,
+   "temperature": 847.0
   },
   {
    "op": "update",
@@ -5021,9 +5021,9 @@
     "suspicion": 0.75,
     "praiseStreak": 0
    },
-   "movetime": 942,
-   "multipv": 5,
-   "temperature": 299.0
+   "movetime": 754,
+   "multipv": 6,
+   "temperature": 619.0
   },
   {
    "op": "taunt",
@@ -5055,9 +5055,9 @@
     "suspicion": 0.23,
     "praiseStreak": 1
    },
-   "movetime": 1032,
-   "multipv": 5,
-   "temperature": 439.0
+   "movetime": 826,
+   "multipv": 6,
+   "temperature": 759.0
   },
   {
    "op": "update",
@@ -5087,9 +5087,9 @@
     "suspicion": 0.02,
     "praiseStreak": 3
    },
-   "movetime": 1050,
-   "multipv": 5,
-   "temperature": 431.0
+   "movetime": 840,
+   "multipv": 6,
+   "temperature": 751.0
   },
   {
    "op": "update",
@@ -5119,9 +5119,9 @@
     "suspicion": 0.17,
     "praiseStreak": 1
    },
-   "movetime": 699,
-   "multipv": 5,
-   "temperature": 428.0
+   "movetime": 559,
+   "multipv": 6,
+   "temperature": 748.0
   },
   {
    "op": "taunt",
@@ -5153,9 +5153,9 @@
     "suspicion": 0.63,
     "praiseStreak": 0
    },
-   "movetime": 1419,
-   "multipv": 8,
-   "temperature": 327.0
+   "movetime": 1135,
+   "multipv": 9,
+   "temperature": 647.0
   },
   {
    "op": "taunt",
@@ -5187,9 +5187,9 @@
     "suspicion": 0.02,
     "praiseStreak": 1
    },
-   "movetime": 897,
-   "multipv": 5,
-   "temperature": 355.0
+   "movetime": 718,
+   "multipv": 6,
+   "temperature": 675.0
   },
   {
    "op": "taunt",
@@ -5221,9 +5221,9 @@
     "suspicion": 0.33,
     "praiseStreak": 0
    },
-   "movetime": 1338,
-   "multipv": 5,
-   "temperature": 237.0
+   "movetime": 1070,
+   "multipv": 6,
+   "temperature": 557.0
   },
   {
    "op": "update",
@@ -5253,9 +5253,9 @@
     "suspicion": 0.74,
     "praiseStreak": 3
    },
-   "movetime": 969,
-   "multipv": 8,
-   "temperature": 524.0
+   "movetime": 775,
+   "multipv": 9,
+   "temperature": 844.0
   },
   {
    "op": "taunt",
@@ -5287,9 +5287,9 @@
     "suspicion": 0.41,
     "praiseStreak": 0
    },
-   "movetime": 951,
-   "multipv": 8,
-   "temperature": 556.0
+   "movetime": 761,
+   "multipv": 9,
+   "temperature": 876.0
   },
   {
    "op": "update",
@@ -5319,9 +5319,9 @@
     "suspicion": 0.17,
     "praiseStreak": 4
    },
-   "movetime": 1032,
-   "multipv": 5,
-   "temperature": 265.0
+   "movetime": 826,
+   "multipv": 6,
+   "temperature": 585.0
   },
   {
    "op": "taunt",
@@ -5353,9 +5353,9 @@
     "suspicion": 0.2,
     "praiseStreak": 0
    },
-   "movetime": 735,
-   "multipv": 8,
-   "temperature": 592.0
+   "movetime": 588,
+   "multipv": 9,
+   "temperature": 912.0
   },
   {
    "op": "update",
@@ -5385,9 +5385,9 @@
     "suspicion": 0.22,
     "praiseStreak": 0
    },
-   "movetime": 753,
-   "multipv": 5,
-   "temperature": 407.0
+   "movetime": 602,
+   "multipv": 6,
+   "temperature": 727.0
   },
   {
    "op": "update",
@@ -5417,9 +5417,9 @@
     "suspicion": 0.28,
     "praiseStreak": 4
    },
-   "movetime": 780,
-   "multipv": 5,
-   "temperature": 416.0
+   "movetime": 624,
+   "multipv": 6,
+   "temperature": 736.0
   },
   {
    "op": "taunt",
@@ -5451,9 +5451,9 @@
     "suspicion": 0.75,
     "praiseStreak": 0
    },
-   "movetime": 1113,
-   "multipv": 8,
-   "temperature": 499.0
+   "movetime": 890,
+   "multipv": 9,
+   "temperature": 819.0
   },
   {
    "op": "taunt",
@@ -5485,9 +5485,9 @@
     "suspicion": 0.04,
     "praiseStreak": 0
    },
-   "movetime": 1266,
-   "multipv": 5,
-   "temperature": 245.0
+   "movetime": 1013,
+   "multipv": 6,
+   "temperature": 565.0
   },
   {
    "op": "taunt",
@@ -5519,9 +5519,9 @@
     "suspicion": 0.67,
     "praiseStreak": 0
    },
-   "movetime": 1329,
-   "multipv": 5,
-   "temperature": 169.0
+   "movetime": 1063,
+   "multipv": 6,
+   "temperature": 489.0
   },
   {
    "op": "update",
@@ -5551,9 +5551,9 @@
     "suspicion": 0.76,
     "praiseStreak": 0
    },
-   "movetime": 1464,
-   "multipv": 5,
-   "temperature": 127.0
+   "movetime": 1171,
+   "multipv": 6,
+   "temperature": 447.0
   },
   {
    "op": "taunt",
@@ -5585,9 +5585,9 @@
     "suspicion": 0.38,
     "praiseStreak": 0
    },
-   "movetime": 1185,
-   "multipv": 8,
-   "temperature": 449.0
+   "movetime": 948,
+   "multipv": 9,
+   "temperature": 769.0
   },
   {
    "op": "taunt",
@@ -5619,9 +5619,9 @@
     "suspicion": 0.06,
     "praiseStreak": 0
    },
-   "movetime": 969,
-   "multipv": 5,
-   "temperature": 368.0
+   "movetime": 775,
+   "multipv": 6,
+   "temperature": 688.0
   },
   {
    "op": "update",
@@ -5651,9 +5651,9 @@
     "suspicion": 0.28,
     "praiseStreak": 0
    },
-   "movetime": 879,
-   "multipv": 8,
-   "temperature": 594.0
+   "movetime": 703,
+   "multipv": 9,
+   "temperature": 914.0
   },
   {
    "op": "taunt",
@@ -5685,9 +5685,9 @@
     "suspicion": 0.32,
     "praiseStreak": 1
    },
-   "movetime": 1338,
-   "multipv": 5,
-   "temperature": 165.0
+   "movetime": 1070,
+   "multipv": 6,
+   "temperature": 485.0
   },
   {
    "op": "update",
@@ -5717,9 +5717,9 @@
     "suspicion": 0.65,
     "praiseStreak": 1
    },
-   "movetime": 879,
-   "multipv": 5,
-   "temperature": 312.0
+   "movetime": 703,
+   "multipv": 6,
+   "temperature": 632.0
   },
   {
    "op": "update",
@@ -5749,9 +5749,9 @@
     "suspicion": 0.05,
     "praiseStreak": 4
    },
-   "movetime": 1437,
-   "multipv": 5,
-   "temperature": 163.0
+   "movetime": 1150,
+   "multipv": 6,
+   "temperature": 483.0
   },
   {
    "op": "taunt",
@@ -5783,9 +5783,9 @@
     "suspicion": 0.43,
     "praiseStreak": 0
    },
-   "movetime": 996,
-   "multipv": 8,
-   "temperature": 497.0
+   "movetime": 797,
+   "multipv": 9,
+   "temperature": 817.0
   },
   {
    "op": "update",
@@ -5815,9 +5815,9 @@
     "suspicion": 0.1,
     "praiseStreak": 0
    },
-   "movetime": 798,
-   "multipv": 5,
-   "temperature": 546.0
+   "movetime": 638,
+   "multipv": 6,
+   "temperature": 866.0
   },
   {
    "op": "taunt",
@@ -5849,9 +5849,9 @@
     "suspicion": 0.08,
     "praiseStreak": 0
    },
-   "movetime": 1437,
-   "multipv": 8,
-   "temperature": 355.0
+   "movetime": 1150,
+   "multipv": 9,
+   "temperature": 675.0
   },
   {
    "op": "taunt",
@@ -5883,9 +5883,9 @@
     "suspicion": 0.04,
     "praiseStreak": 0
    },
-   "movetime": 1329,
-   "multipv": 8,
-   "temperature": 325.0
+   "movetime": 1063,
+   "multipv": 9,
+   "temperature": 645.0
   },
   {
    "op": "update",
@@ -5915,9 +5915,9 @@
     "suspicion": 0.41,
     "praiseStreak": 0
    },
-   "movetime": 1275,
-   "multipv": 8,
-   "temperature": 397.0
+   "movetime": 1020,
+   "multipv": 9,
+   "temperature": 717.0
   },
   {
    "op": "taunt",
@@ -5949,9 +5949,9 @@
     "suspicion": 0.36,
     "praiseStreak": 0
    },
-   "movetime": 1446,
-   "multipv": 5,
-   "temperature": 210.0
+   "movetime": 1157,
+   "multipv": 6,
+   "temperature": 530.0
   },
   {
    "op": "update",
@@ -5981,9 +5981,9 @@
     "suspicion": 0.15,
     "praiseStreak": 1
    },
-   "movetime": 1293,
-   "multipv": 5,
-   "temperature": 293.0
+   "movetime": 1034,
+   "multipv": 6,
+   "temperature": 613.0
   },
   {
    "op": "update",
@@ -6013,9 +6013,9 @@
     "suspicion": 0.28,
     "praiseStreak": 1
    },
-   "movetime": 798,
-   "multipv": 5,
-   "temperature": 387.0
+   "movetime": 638,
+   "multipv": 6,
+   "temperature": 707.0
   },
   {
    "op": "update",
@@ -6045,9 +6045,9 @@
     "suspicion": 0.69,
     "praiseStreak": 0
    },
-   "movetime": 1068,
-   "multipv": 8,
-   "temperature": 501.0
+   "movetime": 854,
+   "multipv": 9,
+   "temperature": 821.0
   },
   {
    "op": "update",
@@ -6077,9 +6077,9 @@
     "suspicion": 0.29,
     "praiseStreak": 3
    },
-   "movetime": 1248,
-   "multipv": 5,
-   "temperature": 169.0
+   "movetime": 998,
+   "multipv": 6,
+   "temperature": 489.0
   },
   {
    "op": "update",
@@ -6109,9 +6109,9 @@
     "suspicion": 0.44,
     "praiseStreak": 0
    },
-   "movetime": 816,
-   "multipv": 8,
-   "temperature": 583.0
+   "movetime": 653,
+   "multipv": 9,
+   "temperature": 903.0
   },
   {
    "op": "update",
@@ -6141,9 +6141,9 @@
     "suspicion": 0.3,
     "praiseStreak": 0
    },
-   "movetime": 1473,
-   "multipv": 8,
-   "temperature": 297.0
+   "movetime": 1178,
+   "multipv": 9,
+   "temperature": 617.0
   },
   {
    "op": "taunt",
@@ -6175,9 +6175,9 @@
     "suspicion": 0.59,
     "praiseStreak": 0
    },
-   "movetime": 915,
-   "multipv": 5,
-   "temperature": 323.0
+   "movetime": 732,
+   "multipv": 6,
+   "temperature": 643.0
   },
   {
    "op": "update",
@@ -6207,9 +6207,9 @@
     "suspicion": 0.02,
     "praiseStreak": 0
    },
-   "movetime": 1320,
-   "multipv": 8,
-   "temperature": 359.0
+   "movetime": 1056,
+   "multipv": 9,
+   "temperature": 679.0
   },
   {
    "op": "update",
@@ -6239,9 +6239,9 @@
     "suspicion": 0.11,
     "praiseStreak": 0
    },
-   "movetime": 888,
-   "multipv": 5,
-   "temperature": 416.0
+   "movetime": 710,
+   "multipv": 6,
+   "temperature": 736.0
   },
   {
    "op": "taunt",
@@ -6273,9 +6273,9 @@
     "suspicion": 0.47,
     "praiseStreak": 0
    },
-   "movetime": 1203,
-   "multipv": 5,
-   "temperature": 339.0
+   "movetime": 962,
+   "multipv": 6,
+   "temperature": 659.0
   },
   {
    "op": "taunt",
@@ -6307,9 +6307,9 @@
     "suspicion": 0.78,
     "praiseStreak": 0
    },
-   "movetime": 843,
-   "multipv": 5,
-   "temperature": 388.0
+   "movetime": 674,
+   "multipv": 6,
+   "temperature": 708.0
   },
   {
    "op": "update",
@@ -6339,9 +6339,9 @@
     "suspicion": 0.61,
     "praiseStreak": 6
    },
-   "movetime": 681,
-   "multipv": 5,
-   "temperature": 574.0
+   "movetime": 545,
+   "multipv": 6,
+   "temperature": 894.0
   },
   {
    "op": "taunt",
@@ -6373,9 +6373,9 @@
     "suspicion": 0.03,
     "praiseStreak": 0
    },
-   "movetime": 690,
-   "multipv": 8,
-   "temperature": 651.0
+   "movetime": 552,
+   "multipv": 9,
+   "temperature": 971.0
   },
   {
    "op": "update",
@@ -6405,9 +6405,9 @@
     "suspicion": 0.6,
     "praiseStreak": 3
    },
-   "movetime": 1050,
-   "multipv": 5,
-   "temperature": 260.0
+   "movetime": 840,
+   "multipv": 6,
+   "temperature": 580.0
   },
   {
    "op": "update",
@@ -6437,9 +6437,9 @@
     "suspicion": 0.13,
     "praiseStreak": 4
    },
-   "movetime": 1302,
-   "multipv": 8,
-   "temperature": 379.0
+   "movetime": 1042,
+   "multipv": 9,
+   "temperature": 699.0
   },
   {
    "op": "update",
@@ -6469,9 +6469,9 @@
     "suspicion": 0.33,
     "praiseStreak": 3
    },
-   "movetime": 1464,
-   "multipv": 5,
-   "temperature": 121.0
+   "movetime": 1171,
+   "multipv": 6,
+   "temperature": 441.0
   },
   {
    "op": "taunt",
@@ -6503,9 +6503,9 @@
     "suspicion": 0.57,
     "praiseStreak": 0
    },
-   "movetime": 1311,
-   "multipv": 5,
-   "temperature": 219.0
+   "movetime": 1049,
+   "multipv": 6,
+   "temperature": 539.0
   },
   {
    "op": "taunt",
@@ -6537,9 +6537,9 @@
     "suspicion": 0.77,
     "praiseStreak": 0
    },
-   "movetime": 1482,
-   "multipv": 8,
-   "temperature": 251.0
+   "movetime": 1186,
+   "multipv": 9,
+   "temperature": 571.0
   },
   {
    "op": "taunt",
@@ -6571,9 +6571,9 @@
     "suspicion": 0.56,
     "praiseStreak": 2
    },
-   "movetime": 1221,
-   "multipv": 5,
-   "temperature": 358.0
+   "movetime": 977,
+   "multipv": 6,
+   "temperature": 678.0
   },
   {
    "op": "taunt",
@@ -6605,9 +6605,9 @@
     "suspicion": 0.58,
     "praiseStreak": 0
    },
-   "movetime": 978,
-   "multipv": 8,
-   "temperature": 529.0
+   "movetime": 782,
+   "multipv": 9,
+   "temperature": 849.0
   }
  ]
 }

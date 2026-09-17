@@ -171,11 +171,11 @@ void main() {
       }
     });
 
-    test('思考時間と温度', () {
-      expect(movetimeFor(const MindState(composure: 1)), 1500);
-      expect(movetimeFor(const MindState(composure: 0)), 600);
-      expect(temperatureFor(const MindState(composure: 0.2, panic: 0.8)), closeTo(590, 1e-9));
-      expect(multiPvFor(const MindState(panic: 0.8)), 8);
+    test('思考時間と温度（棋力レベル ふつう）', () {
+      expect(movetimeFor(const MindState(composure: 1)), 1200);
+      expect(movetimeFor(const MindState(composure: 0)), 480);
+      expect(temperatureFor(const MindState(composure: 0.2, panic: 0.8)), closeTo(910, 1e-9));
+      expect(multiPvFor(const MindState(panic: 0.8)), 9);
     });
   });
 

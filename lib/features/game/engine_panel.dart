@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/mind/move_policy.dart';
 import 'engine_controller.dart';
 import 'game_controller.dart';
 
@@ -78,6 +79,25 @@ class EnginePanel extends ConsumerWidget {
                 gameCtl.setMode(mode);
               },
             ),
+            if (game.mode != OpponentMode.human)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Row(
+                  children: [
+                    const Text('強さ'),
+                    const SizedBox(width: 8),
+                    DropdownButton<SkillLevel>(
+                      key: const ValueKey('level'),
+                      value: game.level,
+                      isDense: true,
+                      items: [for (final l in SkillLevel.values) DropdownMenuItem(value: l, child: Text(l.label))],
+                      onChanged: (l) {
+                        if (l != null) gameCtl.setLevel(l);
+                      },
+                    ),
+                  ],
+                ),
+              ),
             if (game.thinking)
               const Padding(
                 padding: EdgeInsets.only(top: 6),

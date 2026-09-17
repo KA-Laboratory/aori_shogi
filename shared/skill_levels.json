@@ -1,0 +1,36 @@
+{
+ "version": 1,
+ "note": "棋力レベル。temp は softmax の基準温度（感情の分はこれに足す）。Dart move_policy.dart / Python policy.py と一致していること（test/core/mind/skill_level_test.dart, tests/test_skill_levels.py）",
+ "levels": {
+  "beginner": {
+   "label": "入門",
+   "temp": 900,
+   "multi_pv": 10,
+   "movetime_scale": 0.3
+  },
+  "easy": {
+   "label": "やさしい",
+   "temp": 600,
+   "multi_pv": 8,
+   "movetime_scale": 0.5
+  },
+  "normal": {
+   "label": "ふつう",
+   "temp": 350,
+   "multi_pv": 6,
+   "movetime_scale": 0.8
+  },
+  "strong": {
+   "label": "強い",
+   "temp": 120,
+   "multi_pv": 5,
+   "movetime_scale": 1.2
+  },
+  "allOut": {
+   "label": "全力",
+   "temp": 30,
+   "multi_pv": 3,
+   "movetime_scale": 2.0
+  }
+ }
+}

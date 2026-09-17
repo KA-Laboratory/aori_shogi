@@ -40,6 +40,7 @@ class GunshiBrain {
     this.modulate = true,
     MindState? fixedMind,
     this.baseMovetimeMs = PolicyParams.baseMovetimeMs,
+    this.level = SkillLevel.normal,
     this.fixedMovetimeMs,
     this.observeMs = 300,
   }) : _rng = math.Random(seed),
@@ -50,6 +51,9 @@ class GunshiBrain {
   final Side side;
   final bool modulate;
   final int baseMovetimeMs;
+
+  /// 棋力レベル（人間が選ぶ強さ）。
+  SkillLevel level;
 
   /// 指定すると感情に関係なく思考時間を固定（自己対局用）。
   final int? fixedMovetimeMs;
@@ -81,8 +85,8 @@ class GunshiBrain {
     final pos = game.position;
     if (pos.turn != side) throw StateError('not AI turn');
     final before = mind;
-    final multiPv = modulate && !forceBest ? multiPvFor(mind) : 1;
-    final movetime = fixedMovetimeMs ?? movetimeFor(mind, baseMs: baseMovetimeMs);
+    final multiPv = modulate && !forceBest ? multiPvFor(mind, level: level) : 1;
+    final movetime = fixedMovetimeMs ?? movetimeFor(mind, baseMs: baseMovetimeMs, level: level);
     await engine.setPosition(game.startPosition.toSfen(), _usiMoves(game));
     final result = await engine.think(movetimeMs: movetime, multiPv: multiPv);
     final cands = result.candidates.where((c) {
@@ -104,7 +108,14 @@ class GunshiBrain {
       mind = updateOnAiTurn(mind, evalAi: evalAi);
     }
     log.add(mind);
-    final choice = chooseMove(candidates: cands, pos: pos, mind: mind, rng: _rng, modulate: modulate && !forceBest);
+    final choice = chooseMove(
+      candidates: cands,
+      pos: pos,
+      mind: mind,
+      rng: _rng,
+      modulate: modulate && !forceBest,
+      level: level,
+    );
     _bestScoreBeforeAiMove = cands.first.sortScore.clamp(-PolicyParams.scoreClampCp, PolicyParams.scoreClampCp);
     tauntContext = null;
     return AiTurn(

@@ -1,0 +1,42 @@
+# push と PR ごとに Flutter と Python の検査を回す。
+# エンジン本体（native/yaneuraou）と NNUE が要るテスト（integration_test）はここでは回さない。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: false # やねうら王の本体は重く、ここでは要らない
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.3
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format -l 120 --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+
+  python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --group dev
+      # Ollama とエンジンが要るものは動かない。純粋なロジックのテストだけ回す
+      - run: uv run pytest -q
