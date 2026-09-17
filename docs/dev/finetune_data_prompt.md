@@ -3,6 +3,7 @@
 用途: M3 の軍師キャラ LoRA 用データ（約500件）を、別のAI（gpt-oss / qwen3 など）に作らせる。
 使い方: 下の「システムプロンプト」を固定で渡し、「バッチ指示」の {…} を埋めて1回25件ずつ依頼する。
 出力は JSON Lines。集まったら賢太郎さんが選別・修正し、`python/aori_lab/tone.py` の口調チェックを通したものだけ使う。
+自動実行（2026-09-17）: `python/tools/run_finetune_gen.ps1`（`aori_lab.learn.finetune_gen`）がこのファイルのシステムプロンプトを読み、scene×mood ごとに10件ずつ依頼→下のチェック1〜4を自動で行い、足りない分を作り直す。出力は `python/data/finetune_gen/`（accepted / rejected / train / eval / report.md）、停止は同フォルダに STOP。Gemini など利用規約で学習利用を禁じるサービスの出力は使わない。
 注意: このプロンプトにはセリフの見本を載せていない（既存テンプレートを見本として貼らないこと。データが見本の言い回しに寄るため）。
 
 ---
