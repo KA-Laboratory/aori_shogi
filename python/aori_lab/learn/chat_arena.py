@@ -94,7 +94,7 @@ async def taunter_line(llm: OllamaClient, s: Session, strategy: str, my_recent: 
         prompt.append("自分の最近の発言（繰り返さない）:\n" + "\n".join(my_recent[-4:]))
     out = await llm.chat_json(TAUNTER_SYSTEM, [{"role": "user", "content": "\n".join(prompt)}],
                               {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]},
-                              temperature=1.0, num_predict=120)
+                              temperature=1.0, num_predict=900)
     t = (out or {}).get("text")
     if out is None:
         print(f"taunter fail: {llm.last_error}", flush=True)
