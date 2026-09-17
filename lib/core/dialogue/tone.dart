@@ -4,7 +4,7 @@ import 'dart:convert';
 /// 1. [rewrite]: です・ます、女性語、人称などのよくある崩れを規則で置換（決定的）。
 /// 2. [violations]: 置換で直らなかった崩れを検出 → 作り直し／テンプレートへ。
 class ToneProfile {
-  ToneProfile._(this.summary, this.moodNotes, this._keep, this._pairs, this._banned, this._moodBanned)
+  ToneProfile._(this.summary, this.moodNotes, this._keep, this._pairs, this._banned, this._moodBanned, this._moodAllow)
       : _rx = RegExp(_pairs.map((p) => RegExp.escape(p.$1)).join('|'));
 
   factory ToneProfile.fromJsonString(String s) {
@@ -24,6 +24,10 @@ class ToneProfile {
       {
         for (final e in ((d['mood_banned'] as Map?) ?? const {}).entries) e.key as String: rules(e.value as List),
       },
+      {
+        for (final e in ((d['mood_allow'] as Map?) ?? const {}).entries)
+          e.key as String: {...(e.value as List).cast<String>()},
+      },
     );
   }
 
@@ -36,6 +40,8 @@ class ToneProfile {
   final List<(String, String)> _pairs;
   final List<(RegExp, String)> _banned;
   final Map<String, List<(RegExp, String)>> _moodBanned;
+  /// 気分によって許す崩れ（大混乱の乱暴な言葉は人間味として可）。
+  final Map<String, Set<String>> _moodAllow;
   final RegExp _rx;
 
   (String, List<String>) _protect(String s) {
@@ -63,7 +69,8 @@ class ToneProfile {
   List<String> violations(String text, {String? mood}) {
     final (s, _) = _protect(text);
     final rules = [..._banned, ...?(mood == null ? null : _moodBanned[mood])];
-    return [for (final (rx, reason) in rules) if (rx.hasMatch(s)) reason];
+    final allow = mood == null ? const <String>{} : (_moodAllow[mood] ?? const <String>{});
+    return [for (final (rx, reason) in rules) if (!allow.contains(reason) && rx.hasMatch(s)) reason];
   }
 
   String reminder(String mood) => '[口調チェック（必ず守る）] $summary 今の気分の口調: ${moodNotes[mood] ?? ''}';

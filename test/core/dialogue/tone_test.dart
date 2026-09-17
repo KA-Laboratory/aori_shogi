@@ -19,6 +19,10 @@ void main() {
     expect(tone.violations('一手待ってやろうか？'), isEmpty);
     expect(tone.violations('勝利の方程式が見えるわ！'), isEmpty);
     expect(tone.violations('へぇ〜そうなんだ', mood: 'composed'), isNotEmpty);
+    // 大混乱の乱暴な言葉は人間味として許す（です・ますは不可のまま）
+    expect(tone.violations('うるせえ！ ちげえって言ってんだろ', mood: 'meltdown'), isEmpty);
+    expect(tone.violations('うるせえ！', mood: 'composed'), contains('乱暴な口調'));
+
   });
 
   test('テンプレートセリフ自体は口調規則を守っている', () {

@@ -24,6 +24,8 @@ class ToneProfile:
         self.banned = [(re.compile(b["pattern"]), b["reason"]) for b in d["banned"]]
         self.mood_banned = {m: [(re.compile(b["pattern"]), b["reason"]) for b in lst]
                             for m, lst in d.get("mood_banned", {}).items()}
+        # 気分によって許す崩れ（大混乱の乱暴な言葉は人間味として可）
+        self.mood_allow: dict[str, set[str]] = {m: set(v) for m, v in d.get("mood_allow", {}).items()}
 
     @classmethod
     def load(cls, path: Path = TONE_PATH) -> "ToneProfile":
@@ -51,7 +53,8 @@ class ToneProfile:
     def violations(self, text: str, mood: str | None = None) -> list[str]:
         s, _ = self._protect(text)
         rules = self.banned + (self.mood_banned.get(mood, []) if mood else [])
-        return [reason for rx, reason in rules if rx.search(s)]
+        allow = self.mood_allow.get(mood, set()) if mood else set()
+        return [reason for rx, reason in rules if reason not in allow and rx.search(s)]
 
     def reminder(self, mood: str) -> str:
         note = self.mood_notes.get(mood, "")
