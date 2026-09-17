@@ -4,11 +4,7 @@ import 'taunts.dart';
 
 /// 図星判定に必要な局面情報（プレイヤーの手番、AI が指した直後）。
 class TauntContext {
-  const TauntContext({
-    required this.position,
-    required this.playerCandidates,
-    this.lastAiMoveLossCp,
-  });
+  const TauntContext({required this.position, required this.playerCandidates, this.lastAiMoveLossCp});
 
   /// プレイヤーが指す番の局面。
   final Position position;

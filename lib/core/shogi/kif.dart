@@ -23,27 +23,19 @@ String kifMoveText(Position before, Move move, {Move? previous}) {
   if (move.promote) {
     sb.write('成');
   } else if (piece.type.canPromote &&
-      (Position.inPromotionZone(move.from!, piece.side) ||
-          Position.inPromotionZone(move.to, piece.side))) {
+      (Position.inPromotionZone(move.from!, piece.side) || Position.inPromotionZone(move.to, piece.side))) {
     sb.write('不成');
   }
   sb.write('(${fileOf(move.from!)}${rankOf(move.from!)})');
   return sb.toString();
 }
 
-String toKif(
-  ShogiGame game, {
-  String blackName = '先手',
-  String whiteName = '後手',
-  DateTime? startedAt,
-}) {
-  final sb = StringBuffer()
-    ..writeln('# ---- 煽り将棋 棋譜ファイル ----');
+String toKif(ShogiGame game, {String blackName = '先手', String whiteName = '後手', DateTime? startedAt}) {
+  final sb = StringBuffer()..writeln('# ---- 煽り将棋 棋譜ファイル ----');
   if (startedAt != null) {
     final d = startedAt;
     String two(int v) => v.toString().padLeft(2, '0');
-    sb.writeln(
-        '開始日時：${d.year}/${two(d.month)}/${two(d.day)} ${two(d.hour)}:${two(d.minute)}:${two(d.second)}');
+    sb.writeln('開始日時：${d.year}/${two(d.month)}/${two(d.day)} ${two(d.hour)}:${two(d.minute)}:${two(d.second)}');
   }
   final start = game.startPosition;
   if (start.repetitionKey == Position.initial().repetitionKey) {
@@ -60,8 +52,7 @@ String toKif(
   final moves = game.moves;
   final positions = game.positions;
   for (var i = 0; i < moves.length; i++) {
-    final text = kifMoveText(positions[i], moves[i],
-        previous: i > 0 ? moves[i - 1] : null);
+    final text = kifMoveText(positions[i], moves[i], previous: i > 0 ? moves[i - 1] : null);
     sb.writeln('${(i + 1).toString().padLeft(4)} ${_pad(text, 14)}( 0:00/00:00:00)');
   }
   final result = game.result;
@@ -96,4 +87,3 @@ String _pad(String s, int width) {
   }
   return w >= width ? '$s ' : s + ' ' * (width - w);
 }
-

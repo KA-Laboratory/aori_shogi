@@ -66,7 +66,13 @@ const offerGate = {
 enum PlayerRequest { undo, hint, draw, resign }
 
 /// プレイヤーの要求を軍師が認められる状況か。
-bool requestAllowed(PlayerRequest r, MindState m, {required int evalAi, required int undoCount, required bool hasCandidates}) {
+bool requestAllowed(
+  PlayerRequest r,
+  MindState m, {
+  required int evalAi,
+  required int undoCount,
+  required bool hasCandidates,
+}) {
   switch (r) {
     case PlayerRequest.undo:
       return (m.hubris >= 0.5 || m.mood == Mood.smug) && undoCount < 3;

@@ -4,7 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('info cp / multipv / pv', () {
     final i = EngineInfo.parse(
-        'info depth 12 seldepth 15 score cp -34 nodes 123456 nps 1000 multipv 2 pv 7g7f 3c3d 2g2f')!;
+      'info depth 12 seldepth 15 score cp -34 nodes 123456 nps 1000 multipv 2 pv 7g7f 3c3d 2g2f',
+    )!;
     expect(i.depth, 12);
     expect(i.scoreCp, -34);
     expect(i.multiPv, 2);

@@ -12,12 +12,12 @@ class GameResult {
   final GameEndReason reason;
 
   String get label => switch (reason) {
-        GameEndReason.checkmate => '詰み（${winner!.label}の勝ち）',
-        GameEndReason.resign => '投了（${winner!.label}の勝ち）',
-        GameEndReason.repetition => '千日手（引き分け）',
-        GameEndReason.perpetualCheck => '連続王手の千日手（${winner!.label}の勝ち）',
-        GameEndReason.agreement => '合意により引き分け',
-      };
+    GameEndReason.checkmate => '詰み（${winner!.label}の勝ち）',
+    GameEndReason.resign => '投了（${winner!.label}の勝ち）',
+    GameEndReason.repetition => '千日手（引き分け）',
+    GameEndReason.perpetualCheck => '連続王手の千日手（${winner!.label}の勝ち）',
+    GameEndReason.agreement => '合意により引き分け',
+  };
 }
 
 class IllegalMoveException implements Exception {
@@ -29,8 +29,7 @@ class IllegalMoveException implements Exception {
 
 /// 1局分の進行（手順・局面履歴・終局判定）。
 class ShogiGame {
-  ShogiGame([Position? start])
-      : _positions = [start ?? Position.initial()];
+  ShogiGame([Position? start]) : _positions = [start ?? Position.initial()];
 
   final List<Position> _positions;
   final List<Move> _moves = [];

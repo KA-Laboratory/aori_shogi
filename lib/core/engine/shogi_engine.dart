@@ -16,8 +16,7 @@ abstract class ShogiEngine {
   Future<SearchResult> think({required int movetimeMs, int multiPv = 1});
 
   /// 候補手解析（感情ロジック・図星判定用の共通入口）。
-  Future<List<Candidate>> analyze(String sfen,
-      {List<String> moves = const [], int movetimeMs = 300, int multiPv = 5});
+  Future<List<Candidate>> analyze(String sfen, {List<String> moves = const [], int movetimeMs = 300, int multiPv = 5});
 
   Future<void> stop();
 
@@ -49,20 +48,17 @@ class YaneuraOuEngine implements ShogiEngine {
   Stream<String> get lines => _lineCtrl.stream;
 
   /// 起動して isready まで済ませる。[evalDir] に nn.bin があること。
-  static Future<YaneuraOuEngine> start({
-    required String evalDir,
-    int hashMb = 64,
-    int? threads,
-  }) {
+  static Future<YaneuraOuEngine> start({required String evalDir, int hashMb = 64, int? threads}) {
     if (_instance != null) return Future.value(_instance!);
-    return _starting ??= _start(evalDir, hashMb, threads).then((e) {
-      _instance = e;
-      return e;
-    }).whenComplete(() => _starting = null);
+    return _starting ??= _start(evalDir, hashMb, threads)
+        .then((e) {
+          _instance = e;
+          return e;
+        })
+        .whenComplete(() => _starting = null);
   }
 
-  static Future<YaneuraOuEngine> _start(
-      String evalDir, int hashMb, int? threads) async {
+  static Future<YaneuraOuEngine> _start(String evalDir, int hashMb, int? threads) async {
     final e = YaneuraOuEngine._(YaneuraOuNative.open());
     e._native.init();
     Timer.periodic(const Duration(milliseconds: 10), (_) => e._drain());
@@ -106,8 +102,7 @@ class YaneuraOuEngine implements ShogiEngine {
   }
 
   Future<String> _waitLine(bool Function(String) test, Duration timeout) {
-    return lines.firstWhere(test).timeout(timeout,
-        onTimeout: () => throw EngineException('timeout waiting engine'));
+    return lines.firstWhere(test).timeout(timeout, onTimeout: () => throw EngineException('timeout waiting engine'));
   }
 
   /// コマンドを直列化する。
@@ -141,18 +136,13 @@ class YaneuraOuEngine implements ShogiEngine {
         if (info != null) collector.add(info);
       });
       try {
-        final bestLine = _waitLine((l) => l.startsWith('bestmove'),
-            Duration(milliseconds: movetimeMs + 10000));
+        final bestLine = _waitLine((l) => l.startsWith('bestmove'), Duration(milliseconds: movetimeMs + 10000));
         _send(pos);
         _send('go movetime $movetimeMs');
         final best = BestMove.parse(await bestLine)!;
         // bestmove 直前の info を取りこぼさないよう1フレーム待つ。
         await Future<void>.delayed(Duration.zero);
-        return SearchResult(
-          bestMove: best,
-          candidates: collector.candidates,
-          depth: collector.depth,
-        );
+        return SearchResult(bestMove: best, candidates: collector.candidates, depth: collector.depth);
       } finally {
         await sub.cancel();
       }
@@ -160,8 +150,12 @@ class YaneuraOuEngine implements ShogiEngine {
   }
 
   @override
-  Future<List<Candidate>> analyze(String sfen,
-      {List<String> moves = const [], int movetimeMs = 300, int multiPv = 5}) async {
+  Future<List<Candidate>> analyze(
+    String sfen, {
+    List<String> moves = const [],
+    int movetimeMs = 300,
+    int multiPv = 5,
+  }) async {
     await setPosition(sfen, moves);
     final r = await think(movetimeMs: movetimeMs, multiPv: math.max(1, multiPv));
     return r.candidates;

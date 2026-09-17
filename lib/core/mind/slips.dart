@@ -23,7 +23,8 @@ class Slip {
 }
 
 double slipChance(MindState m, {double questionBonus = 0}) {
-  final p = 0.02 +
+  final p =
+      0.02 +
       0.55 * m.looseLips +
       0.15 * math.max(0.0, m.panic - 0.5) +
       0.1 * math.max(0.0, m.hubris - 0.6) +
@@ -79,18 +80,24 @@ Slip? decideSlip({
         if (!truthful && worst == null) truthful = true;
         final c = truthful ? best : worst!;
         return Slip(
-            kind: kind, truthful: truthful, fact: '${_kif(position, c.usi, prevUsi)}と指されるのが一番こわい', moveUsi: c.usi, ply: ply);
+          kind: kind,
+          truthful: truthful,
+          fact: '${_kif(position, c.usi, prevUsi)}と指されるのが一番こわい',
+          moveUsi: c.usi,
+          ply: ply,
+        );
       case SlipKind.plan:
         final src = truthful ? best : (worst ?? best);
         if (src.pv.length < 2) return null;
         if (!truthful && identical(src, best)) truthful = true;
         final after = position.play(Move.fromUsi(src.pv[0]));
         return Slip(
-            kind: kind,
-            truthful: truthful,
-            fact: '次は${_kif(after, src.pv[1], src.pv[0])}で決めるつもり',
-            moveUsi: src.pv[1],
-            ply: ply);
+          kind: kind,
+          truthful: truthful,
+          fact: '次は${_kif(after, src.pv[1], src.pv[0])}で決めるつもり',
+          moveUsi: src.pv[1],
+          ply: ply,
+        );
       case SlipKind.confess:
         final loss = aiLossCp ?? 0;
         if (truthful && loss >= 150) {

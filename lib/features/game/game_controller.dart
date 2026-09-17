@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/dialogue/intent.dart';
+import '../../core/dialogue/player_memory.dart';
 import '../../core/dialogue/lexicon.dart';
 import '../../core/dialogue/line_library.dart';
 import '../../core/engine/shogi_engine.dart';
@@ -38,18 +39,18 @@ enum OpponentMode {
   aiBoth; // 動作確認用
 
   bool isAi(Side side) => switch (this) {
-        OpponentMode.human => false,
-        OpponentMode.aiWhite => side == Side.white,
-        OpponentMode.aiBlack => side == Side.black,
-        OpponentMode.aiBoth => true,
-      };
+    OpponentMode.human => false,
+    OpponentMode.aiWhite => side == Side.white,
+    OpponentMode.aiBlack => side == Side.black,
+    OpponentMode.aiBoth => true,
+  };
 
   /// 感情表示の対象になる軍師の手番（1人のときだけ）。
   Side? get gunshiSide => switch (this) {
-        OpponentMode.aiWhite => Side.white,
-        OpponentMode.aiBlack => Side.black,
-        _ => null,
-      };
+    OpponentMode.aiWhite => Side.white,
+    OpponentMode.aiBlack => Side.black,
+    _ => null,
+  };
 }
 
 enum ChatRole { gunshi, player, system }
@@ -122,10 +123,14 @@ final lineLibraryProvider = Provider<LineLibrary?>((ref) => null);
 /// 自由文分類の辞書。main() で読み込んで override する（未設定ならキーワード版）。
 final intentLexiconProvider = Provider<IntentLexicon?>((ref) => null);
 
+/// 相手について覚えていること。端末では main.dart が PlayerMemoryFile で読み込んだものを差し替える。
+final playerMemoryProvider = Provider<PlayerMemory>((ref) => PlayerMemory());
+
 Future<IntentLexicon> loadIntentLexicon() async => IntentLexicon.fromJson(
-    await rootBundle.loadString(IntentLexicon.termsAsset),
-    await rootBundle.loadString(IntentLexicon.sentimentAsset),
-    await rootBundle.loadString(IntentLexicon.emotionAsset));
+  await rootBundle.loadString(IntentLexicon.termsAsset),
+  await rootBundle.loadString(IntentLexicon.sentimentAsset),
+  await rootBundle.loadString(IntentLexicon.emotionAsset),
+);
 
 Future<LineLibrary> loadLineLibrary() async =>
     LineLibrary.fromJsonString(await rootBundle.loadString(LineLibrary.assetPath));
@@ -170,9 +175,15 @@ class GameController extends Notifier<GameViewState> {
     Set<int> targets = const {};
     if (_pending == null) {
       if (selection is SquareSelection) {
-        targets = {for (final m in _legal) if (m.from == selection.square) m.to};
+        targets = {
+          for (final m in _legal)
+            if (m.from == selection.square) m.to,
+        };
       } else if (selection is HandSelection) {
-        targets = {for (final m in _legal) if (m.drop == selection.type) m.to};
+        targets = {
+          for (final m in _legal)
+            if (m.drop == selection.type) m.to,
+        };
       }
     }
     final g = _gunshi;
@@ -189,7 +200,8 @@ class GameController extends Notifier<GameViewState> {
       mind: g?.mind,
       speech: _speech,
       lastTaunt: _lastTaunt,
-      tauntAvailable: g != null &&
+      tauntAvailable:
+          g != null &&
           _effectsLeft > 0 &&
           !_thinking &&
           !_game.isOver &&
@@ -223,8 +235,11 @@ class GameController extends Notifier<GameViewState> {
   String _kifOf(int moveIndex) {
     final positions = _game.positions;
     final moves = _game.moves;
-    return kifMoveText(positions[moveIndex], moves[moveIndex], previous: moveIndex > 0 ? moves[moveIndex - 1] : null)
-        .replaceAll(RegExp(r'\(\d+\)'), '');
+    return kifMoveText(
+      positions[moveIndex],
+      moves[moveIndex],
+      previous: moveIndex > 0 ? moves[moveIndex - 1] : null,
+    ).replaceAll(RegExp(r'\(\d+\)'), '');
   }
 
   String _kifOfUsi(String usi) {
@@ -309,7 +324,10 @@ class GameController extends Notifier<GameViewState> {
     final m = g.mind;
     if (sl.truthful) {
       g.mind = m.copyWith(
-          suspicion: m.suspicion + SlipParams.suspicionOnExploit, panic: m.panic + 0.15, composure: m.composure - 0.1);
+        suspicion: m.suspicion + SlipParams.suspicionOnExploit,
+        panic: m.panic + 0.15,
+        composure: m.composure - 0.1,
+      );
       _exploitReaction = LineTrigger.exploitedTrue;
     } else {
       g.mind = m.copyWith(hubris: m.hubris + 0.15, composure: m.composure + 0.05);
@@ -382,7 +400,7 @@ class GameController extends Notifier<GameViewState> {
     final intent = forcedKind != null
         ? PlayerIntent(kind: IntentKind.values.byName(forcedKind.name), intensity: 1.0)
         : (ref.read(intentLexiconProvider)?.analyze(text, hasPendingOffer: _pending != null).intent ??
-            classifyKeywords(text, hasPendingOffer: _pending != null));
+              classifyKeywords(text, hasPendingOffer: _pending != null));
 
     if (_pending != null && (intent.request == IntentRequest.accept || intent.request == IntentRequest.decline)) {
       respondOffer(intent.request == IntentRequest.accept);
@@ -399,8 +417,10 @@ class GameController extends Notifier<GameViewState> {
       questionBonus = 0.1 + 0.25 * math.max(0.0, m.hubris - 0.4) + 0.15 * m.looseLips;
       g.mind = m.copyWith(looseLips: m.looseLips + SlipParams.lipsPerQuestion * (0.5 + m.hubris));
       _say(LineTrigger.questionDodge);
+    } else if (asksIfAi(text)) {
+      _say(LineTrigger.questionDodge);
     } else if (intent.request == IntentRequest.none) {
-      _say(LineTrigger.chat);
+      _say(isSmalltalk(text) ? _remember(text) : LineTrigger.chat);
     }
 
     if (intent.request != IntentRequest.none &&
@@ -410,6 +430,21 @@ class GameController extends Notifier<GameViewState> {
     }
     if (intent.kind != IntentKind.abuse && !_game.isOver) _maybeSlip(questionBonus: questionBonus);
     _refresh();
+  }
+
+  /// 雑談として受ける。相手が話した事実を覚えて、smalltalk のセリフで返す。
+  /// 覚える中身は規則で拾えるものだけ（M3で端末内LLMの提案を足し、保存の可否はここで判断する）。
+  LineTrigger _remember(String text) {
+    final memory = ref.read(playerMemoryProvider);
+    final recent = [
+      for (final e in _chat)
+        if (e.role == ChatRole.player) e.text,
+    ];
+    final source = [...recent.length > 3 ? recent.sublist(recent.length - 3) : recent].join(' ');
+    for (final f in keywordFacts(text, recent: recent)) {
+      if (acceptFact(f, '$source $text')) memory.upsert(f);
+    }
+    return LineTrigger.smalltalk;
   }
 
   void _handleTaunt(TauntKind kind, double intensity, {required bool forced}) {
@@ -444,8 +479,13 @@ class GameController extends Notifier<GameViewState> {
   void _handleRequest(PlayerRequest req) {
     final g = _gunshi!;
     final ctx = g.tauntContext;
-    final allowed = requestAllowed(req, g.mind,
-        evalAi: g.lastEvalAi, undoCount: _undoCount, hasCandidates: ctx != null && ctx.playerCandidates.isNotEmpty);
+    final allowed = requestAllowed(
+      req,
+      g.mind,
+      evalAi: g.lastEvalAi,
+      undoCount: _undoCount,
+      hasCandidates: ctx != null && ctx.playerCandidates.isNotEmpty,
+    );
     final undoPossible = _game.moves.length >= 2;
     if (!allowed || (req == PlayerRequest.undo && !undoPossible)) {
       _say(LineTrigger.requestRefuse);
@@ -498,14 +538,16 @@ class GameController extends Notifier<GameViewState> {
   void _maybeOffer() {
     final g = _gunshi;
     if (g == null || _pending != null || _game.isOver || _game.position.turn == g.side) return;
-    final offers = availableOffers(NegotiationContext(
-      mind: g.mind,
-      ply: _game.moves.length,
-      playerGainCp: g.lastPlayerGainCp,
-      aiLossCp: g.lastAiMoveLossCp,
-      lastOfferPly: _lastOfferPly,
-      counts: _offerCounts,
-    ));
+    final offers = availableOffers(
+      NegotiationContext(
+        mind: g.mind,
+        ply: _game.moves.length,
+        playerGainCp: g.lastPlayerGainCp,
+        aiLossCp: g.lastAiMoveLossCp,
+        lastOfferPly: _lastOfferPly,
+        counts: _offerCounts,
+      ),
+    );
     for (final o in offers) {
       if (_rng.nextDouble() < offerGate[o]!) {
         _pending = o;

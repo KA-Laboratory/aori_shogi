@@ -12,12 +12,12 @@ class PlayerIntent {
   final double intensity;
 
   bool get isTaunt => const {
-        IntentKind.blunderCall,
-        IntentKind.hangingPiece,
-        IntentKind.threat,
-        IntentKind.mock,
-        IntentKind.praise,
-      }.contains(kind);
+    IntentKind.blunderCall,
+    IntentKind.hangingPiece,
+    IntentKind.threat,
+    IntentKind.mock,
+    IntentKind.praise,
+  }.contains(kind);
 }
 
 final _kinds = <(IntentKind, RegExp)>[
@@ -64,7 +64,9 @@ PlayerIntent classifyKeywords(String text, {required bool hasPendingOffer}) {
   // 「次の手教えて」はヒント要求であって軍師への質問ではない
   if (req == IntentRequest.hint && kind == IntentKind.question) kind = IntentKind.chat;
   final bangs = '！'.allMatches(text).length + '!'.allMatches(text).length;
-  final intensity =
-      (0.4 + 0.15 * bangs + (kind == IntentKind.mock || kind == IntentKind.abuse ? 0.2 : 0)).clamp(0.0, 1.0);
+  final intensity = (0.4 + 0.15 * bangs + (kind == IntentKind.mock || kind == IntentKind.abuse ? 0.2 : 0)).clamp(
+    0.0,
+    1.0,
+  );
   return PlayerIntent(kind: kind, request: req, intensity: intensity.toDouble());
 }

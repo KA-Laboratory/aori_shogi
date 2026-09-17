@@ -7,19 +7,17 @@ import 'package:path_provider/path_provider.dart';
 /// NNUE 評価関数ファイル（Háo, tanuki-, GPLv3）の保存と初回ダウンロード。
 class NnueStore {
   NnueStore({Directory? baseDir, HttpClient Function()? httpClient})
-      : _baseDir = baseDir, // ignore: prefer_initializing_formals
-        _httpClient = httpClient ?? HttpClient.new;
+    : _baseDir = baseDir, // ignore: prefer_initializing_formals
+      _httpClient = httpClient ?? HttpClient.new;
 
   static const fileName = 'nn.bin';
   static const expectedSize = 64217066;
-  static const expectedSha256 =
-      '1141d275bceec911156801f27303dc9ff5beb24f4f59144cc069306c59e80782';
+  static const expectedSha256 = '1141d275bceec911156801f27303dc9ff5beb24f4f59144cc069306c59e80782';
 
   /// KA-Laboratory/aori_shogi の nnue-assets ブランチ（main と独立）に置いた gzip 圧縮版。
   /// ⚠ リポジトリが非公開の間は取得できない。開発中は adb で files/eval/nn.bin に配置する
   /// （docs/dev/nnue.md）。
-  static const downloadUrl =
-      'https://raw.githubusercontent.com/KA-Laboratory/aori_shogi/nnue-assets/nn.bin.gz';
+  static const downloadUrl = 'https://raw.githubusercontent.com/KA-Laboratory/aori_shogi/nnue-assets/nn.bin.gz';
 
   final Directory? _baseDir;
   final HttpClient Function() _httpClient;

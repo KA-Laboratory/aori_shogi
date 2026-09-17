@@ -99,9 +99,15 @@ void main() {
       for (final m in ['7g7f', '3c3d']) {
         p = p.play(Move.fromUsi(m));
       }
-      final capture = TauntContext(position: p, playerCandidates: const [Candidate(usi: '8h2b+', scoreCp: 200)]);
+      final capture = TauntContext(
+        position: p,
+        playerCandidates: const [Candidate(usi: '8h2b+', scoreCp: 200)],
+      );
       expect(judgeTruth(TauntKind.hangingPiece, capture), 1.0);
-      final quiet = TauntContext(position: p, playerCandidates: const [Candidate(usi: '2g2f', scoreCp: 200)]);
+      final quiet = TauntContext(
+        position: p,
+        playerCandidates: const [Candidate(usi: '2g2f', scoreCp: 200)],
+      );
       expect(judgeTruth(TauntKind.hangingPiece, quiet), 0);
     });
     test('詰めろ', () {
@@ -130,8 +136,11 @@ void main() {
     test('同じシードなら同じ結果', () {
       List<int> run() {
         final r = math.Random(42);
-        return [for (var i = 0; i < 30; i++) chooseMove(candidates: cands, pos: pos, mind: const MindState(), rng: r).index];
+        return [
+          for (var i = 0; i < 30; i++) chooseMove(candidates: cands, pos: pos, mind: const MindState(), rng: r).index,
+        ];
       }
+
       expect(run(), run());
     });
 
@@ -144,6 +153,7 @@ void main() {
         }
         return sum / 2000;
       }
+
       final calm = avgLoss(const MindState(composure: 1, panic: 0, hubris: 0));
       final normal = avgLoss(const MindState());
       final broken = avgLoss(const MindState(composure: 0.2, panic: 0.8, hubris: 0));

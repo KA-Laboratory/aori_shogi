@@ -6,24 +6,18 @@ import '../../core/shogi/shogi.dart';
 
 /// 駒の大きさ（玉を1.0とした比率）。実物の駒の大小に合わせる。
 double pieceScale(PieceType t) => switch (t.base) {
-      PieceType.king => 1.0,
-      PieceType.rook || PieceType.bishop => 0.96,
-      PieceType.gold || PieceType.silver => 0.92,
-      PieceType.knight => 0.88,
-      PieceType.lance => 0.86,
-      PieceType.pawn => 0.82,
-      _ => 0.9,
-    };
+  PieceType.king => 1.0,
+  PieceType.rook || PieceType.bishop => 0.96,
+  PieceType.gold || PieceType.silver => 0.92,
+  PieceType.knight => 0.88,
+  PieceType.lance => 0.86,
+  PieceType.pawn => 0.82,
+  _ => 0.9,
+};
 
 /// 五角形の将棋駒をコードで描く。後手の駒は180度回転。
 class ShogiPiece extends StatelessWidget {
-  const ShogiPiece({
-    super.key,
-    required this.type,
-    required this.side,
-    required this.size,
-    this.highlighted = false,
-  });
+  const ShogiPiece({super.key, required this.type, required this.side, required this.size, this.highlighted = false});
 
   final PieceType type;
   final Side side;
@@ -43,9 +37,7 @@ class ShogiPiece extends StatelessWidget {
       width: size,
       height: size,
       child: Center(
-        child: side == Side.white
-            ? Transform.rotate(angle: math.pi, child: painted)
-            : painted,
+        child: side == Side.white ? Transform.rotate(angle: math.pi, child: painted) : painted,
       ),
     );
   }
@@ -83,9 +75,7 @@ class _PiecePainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: highlighted
-              ? const [Color(0xFFFFF1C9), Color(0xFFF2C66F)]
-              : const [_woodLight, _woodDark],
+          colors: highlighted ? const [Color(0xFFFFF1C9), Color(0xFFF2C66F)] : const [_woodLight, _woodDark],
         ).createShader(rect),
     );
     // 木目っぽい細線

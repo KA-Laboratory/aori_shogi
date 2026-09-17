@@ -44,8 +44,18 @@ class IntentAnalysis {
 
 /// 将棋用語辞書（assets/lexicon/shogi_terms.json）＋日本語評価極性辞書（assets/lexicon/sentiment_ja.json）による分類器。
 class IntentLexicon {
-  IntentLexicon._(this._terms, this._requests, this._accept, this._decline, this._pieces, this._sentiment,
-      this._maxSentimentLen, this._emotions, this._intensifiers, this._shogiContext);
+  IntentLexicon._(
+    this._terms,
+    this._requests,
+    this._accept,
+    this._decline,
+    this._pieces,
+    this._sentiment,
+    this._maxSentimentLen,
+    this._emotions,
+    this._intensifiers,
+    this._shogiContext,
+  );
 
   static const termsAsset = 'assets/lexicon/shogi_terms.json';
   static const sentimentAsset = 'assets/lexicon/sentiment_ja.json';
@@ -55,14 +65,21 @@ class IntentLexicon {
     final t = jsonDecode(termsJson) as Map<String, dynamic>;
     final terms = <_Term>[
       for (final e in (t['terms'] as List).cast<Map<String, dynamic>>())
-        _Term(e['t'] as String, IntentKind.values.byName(e['k'] as String), (e['w'] as num).toDouble(),
-            e['neg'] == true, e['raw'] == true),
+        _Term(
+          e['t'] as String,
+          IntentKind.values.byName(e['k'] as String),
+          (e['w'] as num).toDouble(),
+          e['neg'] == true,
+          e['raw'] == true,
+        ),
     ]..sort((a, b) => b.text.length.compareTo(a.text.length));
     final req = <IntentRequest, List<String>>{
       for (final e in (t['request'] as Map<String, dynamic>).entries)
         IntentRequest.values.byName(e.key): (e.value as List).cast<String>(),
     };
-    final sentiment = (jsonDecode(sentimentJson) as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as num).toInt()));
+    final sentiment = (jsonDecode(sentimentJson) as Map<String, dynamic>).map(
+      (k, v) => MapEntry(k, (v as num).toInt()),
+    );
     var maxLen = 0;
     for (final k in sentiment.keys) {
       if (k.length > maxLen) maxLen = k.length;
@@ -101,6 +118,7 @@ class IntentLexicon {
   static const _negativeEmotions = {'iya', 'ikari'};
 
   static final _negation = RegExp(r'^(?:て|で)?(?:い)?(?:な[いく]|ません|ず|ぬ|じゃな|ではな)');
+
   /// 「〜じゃない？」「〜じゃね？」は反語（肯定）。
   static final _rhetorical = RegExp(r'^(?:(?:じゃ|では)(?:ない|ね)(?:の|か|かな|です)?[?？]|(?:じゃ|では)ないですか|じゃん)');
   static final _hiraganaOnly = RegExp(r'^[\u3041-\u309F]+$');
@@ -129,7 +147,28 @@ class IntentLexicon {
   }
 
   static final _kanji = RegExp(r'[一-鿿々]');
-  static const _pieceFollow = {'が', 'を', 'に', 'は', 'で', 'も', 'の', 'と', 'だ', 'じ', 'ち', 'さ', 'く', '、', '。', '!', '?', 'ー', '成', '打'};
+  static const _pieceFollow = {
+    'が',
+    'を',
+    'に',
+    'は',
+    'で',
+    'も',
+    'の',
+    'と',
+    'だ',
+    'じ',
+    'ち',
+    'さ',
+    'く',
+    '、',
+    '。',
+    '!',
+    '?',
+    'ー',
+    '成',
+    '打',
+  };
 
   /// 1文字の駒名（金・角・歩・馬…）は「金額」「歩く」「馬鹿」「貯金」を除くため、前後を見る。
   bool _mentionsPiece(String text) {
@@ -183,8 +222,14 @@ class IntentLexicon {
         }
         final after = text.substring(i + term.text.length);
         final negated = _negation.hasMatch(after) && !_rhetorical.hasMatch(after);
-        final keep = term.keepOnNegation ||
-            const {IntentKind.threat, IntentKind.hangingPiece, IntentKind.question, IntentKind.abuse}.contains(term.kind);
+        final keep =
+            term.keepOnNegation ||
+            const {
+              IntentKind.threat,
+              IntentKind.hangingPiece,
+              IntentKind.question,
+              IntentKind.abuse,
+            }.contains(term.kind);
         if (negated && !keep) {
           // 「悪手じゃない」「強くない」: 褒め↔けなしを弱く反転、それ以外は打ち消し
           if (term.kind == IntentKind.praise) {
@@ -319,15 +364,20 @@ class IntentLexicon {
     final intensifierHits = _intensifiers.where(text.contains).length;
     final aroused = (emotionCounts['ikari'] ?? 0) + (emotionCounts['takaburi'] ?? 0) + (emotionCounts['odoroki'] ?? 0);
     final top = scores[kind] ?? 0;
-    final intensity = (0.35 +
-            0.25 * top.clamp(0, 2) +
-            0.12 * bangs.clamp(0, 3) +
-            0.1 * sentiment.abs().clamp(0, 2) +
-            0.08 * intensifierHits.clamp(0, 3) +
-            0.06 * aroused.clamp(0, 2))
-        .clamp(0.0, 1.0);
+    final intensity =
+        (0.35 +
+                0.25 * top.clamp(0, 2) +
+                0.12 * bangs.clamp(0, 3) +
+                0.1 * sentiment.abs().clamp(0, 2) +
+                0.08 * intensifierHits.clamp(0, 3) +
+                0.06 * aroused.clamp(0, 2))
+            .clamp(0.0, 1.0);
     return IntentAnalysis(
-        PlayerIntent(kind: kind, request: request, intensity: intensity.toDouble()), scores, matched, sentiment,
-        emotions: emotionCounts);
+      PlayerIntent(kind: kind, request: request, intensity: intensity.toDouble()),
+      scores,
+      matched,
+      sentiment,
+      emotions: emotionCounts,
+    );
   }
 }

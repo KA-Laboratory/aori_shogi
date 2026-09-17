@@ -35,12 +35,13 @@ void main() {
     var t = 0, f = 0;
     for (var i = 0; i < 400; i++) {
       final s = decideSlip(
-          mind: const MindState(looseLips: 1, panic: 0.9, suspicion: 0.5),
-          position: p,
-          playerCandidates: cands,
-          aiLossCp: 0,
-          prevUsi: '3c3d',
-          rng: rng);
+        mind: const MindState(looseLips: 1, panic: 0.9, suspicion: 0.5),
+        position: p,
+        playerCandidates: cands,
+        aiLossCp: 0,
+        prevUsi: '3c3d',
+        rng: rng,
+      );
       if (s?.kind == SlipKind.fear) {
         expect(s!.moveUsi, s.truthful ? '2g2f' : '1g1f');
         expect(s.fact, contains('こわい'));
@@ -50,8 +51,10 @@ void main() {
     }
     expect(t, greaterThan(0));
     expect(f, greaterThan(0));
-    expect(slipChance(const MindState(looseLips: 0.9, hubris: 0.9)),
-        greaterThan(slipChance(const MindState(looseLips: 0, hubris: 0.3)) * 5));
+    expect(
+      slipChance(const MindState(looseLips: 0.9, hubris: 0.9)),
+      greaterThan(slipChance(const MindState(looseLips: 0, hubris: 0.3)) * 5),
+    );
   });
 
   test('キーワード分類', () {
@@ -65,11 +68,18 @@ void main() {
 
   test('交渉の条件', () {
     const smug = MindState(stance: Stance.dominant, hubris: 0.8);
-    final offers = availableOffers(NegotiationContext(
-        mind: smug, ply: 10, playerGainCp: 300, aiLossCp: 200, lastOfferPly: -99, counts: const {}));
+    final offers = availableOffers(
+      NegotiationContext(mind: smug, ply: 10, playerGainCp: 300, aiLossCp: 200, lastOfferPly: -99, counts: const {}),
+    );
     expect(offers, containsAll([OfferKind.offerPlayerUndo, OfferKind.requestRedo]));
     expect(requestAllowed(PlayerRequest.undo, smug, evalAi: 500, undoCount: 0, hasCandidates: true), isTrue);
-    expect(requestAllowed(PlayerRequest.undo, const MindState(), evalAi: 0, undoCount: 0, hasCandidates: true), isFalse);
-    expect(requestAllowed(PlayerRequest.resign, const MindState(), evalAi: -2500, undoCount: 0, hasCandidates: true), isTrue);
+    expect(
+      requestAllowed(PlayerRequest.undo, const MindState(), evalAi: 0, undoCount: 0, hasCandidates: true),
+      isFalse,
+    );
+    expect(
+      requestAllowed(PlayerRequest.resign, const MindState(), evalAi: -2500, undoCount: 0, hasCandidates: true),
+      isTrue,
+    );
   });
 }

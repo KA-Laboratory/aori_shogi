@@ -6,20 +6,20 @@ import '../../core/mind/taunts.dart';
 import 'game_controller.dart';
 
 String moodFace(Mood m) => switch (m) {
-      Mood.composed => '(￣ー￣)',
-      Mood.smug => '(≧▽≦)',
-      Mood.rattled => '(；´Д｀)',
-      Mood.meltdown => '(´；ω；｀)',
-      Mood.coverUp => '(・∀・;)',
-    };
+  Mood.composed => '(￣ー￣)',
+  Mood.smug => '(≧▽≦)',
+  Mood.rattled => '(；´Д｀)',
+  Mood.meltdown => '(´；ω；｀)',
+  Mood.coverUp => '(・∀・;)',
+};
 
 Color moodColor(Mood m) => switch (m) {
-      Mood.composed => const Color(0xFF5D7A8C),
-      Mood.smug => const Color(0xFFB8860B),
-      Mood.rattled => const Color(0xFFE67E22),
-      Mood.meltdown => const Color(0xFFC0392B),
-      Mood.coverUp => const Color(0xFF8E44AD),
-    };
+  Mood.composed => const Color(0xFF5D7A8C),
+  Mood.smug => const Color(0xFFB8860B),
+  Mood.rattled => const Color(0xFFE67E22),
+  Mood.meltdown => const Color(0xFFC0392B),
+  Mood.coverUp => const Color(0xFF8E44AD),
+};
 
 /// 軍師の表情・吹き出し・感情メーター。
 class GunshiPanel extends ConsumerWidget {
@@ -38,50 +38,65 @@ class GunshiPanel extends ConsumerWidget {
       margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Column(children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: 72,
-              height: 72,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: moodColor(mood).withValues(alpha: 0.15),
-                border: Border.all(color: moodColor(mood), width: 2),
-              ),
-              child: Text(moodFace(mood), style: const TextStyle(fontSize: 14)),
-            ),
-            const SizedBox(height: 4),
-            Text('軍師・${mood.label}',
-                key: const ValueKey('mood'),
-                style: theme.textTheme.labelSmall?.copyWith(color: moodColor(mood), fontWeight: FontWeight.bold)),
-            Text('形勢: ${mind.stance.label}', style: theme.textTheme.labelSmall),
-          ]),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                key: const ValueKey('speech'),
-                width: double.infinity,
-                constraints: const BoxConstraints(minHeight: 52),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: theme.colorScheme.outlineVariant),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: 72,
+                  height: 72,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: moodColor(mood).withValues(alpha: 0.15),
+                    border: Border.all(color: moodColor(mood), width: 2),
+                  ),
+                  child: Text(moodFace(mood), style: const TextStyle(fontSize: 14)),
                 ),
-                child: Text(s.thinking ? '（ふむ……）' : (s.speech ?? ''), style: theme.textTheme.bodyMedium),
+                const SizedBox(height: 4),
+                Text(
+                  '軍師・${mood.label}',
+                  key: const ValueKey('mood'),
+                  style: theme.textTheme.labelSmall?.copyWith(color: moodColor(mood), fontWeight: FontWeight.bold),
+                ),
+                Text('形勢: ${mind.stance.label}', style: theme.textTheme.labelSmall),
+              ],
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    key: const ValueKey('speech'),
+                    width: double.infinity,
+                    constraints: const BoxConstraints(minHeight: 52),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: theme.colorScheme.outlineVariant),
+                    ),
+                    child: Text(s.thinking ? '（ふむ……）' : (s.speech ?? ''), style: theme.textTheme.bodyMedium),
+                  ),
+                  const SizedBox(height: 6),
+                  _Meter(
+                    label: '冷静',
+                    value: mind.composure,
+                    color: const Color(0xFF2E86C1),
+                    delta: taunt?.composureDelta,
+                  ),
+                  _Meter(label: '慢心', value: mind.hubris, color: const Color(0xFFB8860B)),
+                  _Meter(label: '焦り', value: mind.panic, color: const Color(0xFFC0392B), delta: taunt?.panicDelta),
+                  _Meter(label: '口軽', value: mind.looseLips, color: const Color(0xFF8E44AD)),
+                  _Meter(label: '警戒', value: mind.suspicion, color: const Color(0xFF34495E)),
+                ],
               ),
-              const SizedBox(height: 6),
-              _Meter(label: '冷静', value: mind.composure, color: const Color(0xFF2E86C1), delta: taunt?.composureDelta),
-              _Meter(label: '慢心', value: mind.hubris, color: const Color(0xFFB8860B)),
-              _Meter(label: '焦り', value: mind.panic, color: const Color(0xFFC0392B), delta: taunt?.panicDelta),
-              _Meter(label: '口軽', value: mind.looseLips, color: const Color(0xFF8E44AD)),
-              _Meter(label: '警戒', value: mind.suspicion, color: const Color(0xFF34495E)),
-            ]),
-          ),
-        ]),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -99,33 +114,35 @@ class _Meter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1.5),
-      child: Row(children: [
-        SizedBox(width: 30, child: Text(label, style: const TextStyle(fontSize: 11))),
-        Expanded(
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(end: value),
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutBack,
-            builder: (_, v, _) => ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: v.clamp(0, 1),
-                minHeight: 8,
-                color: color,
-                backgroundColor: color.withValues(alpha: 0.15),
+      child: Row(
+        children: [
+          SizedBox(width: 30, child: Text(label, style: const TextStyle(fontSize: 11))),
+          Expanded(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(end: value),
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutBack,
+              builder: (_, v, _) => ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: v.clamp(0, 1),
+                  minHeight: 8,
+                  color: color,
+                  backgroundColor: color.withValues(alpha: 0.15),
+                ),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          width: 34,
-          child: Text(
-            (delta == null || delta!.abs() < 0.005) ? '' : '${delta! > 0 ? '+' : ''}${(delta! * 100).round()}',
-            textAlign: TextAlign.right,
-            style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.bold),
+          SizedBox(
+            width: 34,
+            child: Text(
+              (delta == null || delta!.abs() < 0.005) ? '' : '${delta! > 0 ? '+' : ''}${(delta! * 100).round()}',
+              textAlign: TextAlign.right,
+              style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
@@ -171,95 +188,118 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
     final hint = s.observing
         ? '軍師が局面を確認中…'
         : s.dealTurns > 0
-            ? '取引中: あと${s.dealTurns}手は煽らない約束'
-            : (s.tauntAvailable ? '話しかける・煽る（感情が動くのは1手に3回まで）' : (myTurn ? 'この手番はもう十分煽った' : 'あなたの手番に話しかけられます'));
+        ? '取引中: あと${s.dealTurns}手は煽らない約束'
+        : (s.tauntAvailable ? '話しかける・煽る（感情が動くのは1手に3回まで）' : (myTurn ? 'この手番はもう十分煽った' : 'あなたの手番に話しかけられます'));
 
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          SizedBox(
-            height: 160,
-            child: ListView.builder(
-              controller: _scroll,
-              itemCount: s.chat.length,
-              itemBuilder: (_, i) {
-                final c = s.chat[i];
-                final align = switch (c.role) {
-                  ChatRole.player => Alignment.centerRight,
-                  ChatRole.gunshi => Alignment.centerLeft,
-                  ChatRole.system => Alignment.center,
-                };
-                final color = switch (c.role) {
-                  ChatRole.player => const Color(0xFFE3F0FD),
-                  ChatRole.gunshi => const Color(0xFFFFF4E0),
-                  ChatRole.system => Colors.transparent,
-                };
-                return Align(
-                  alignment: align,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 2),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    constraints: const BoxConstraints(maxWidth: 320),
-                    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                      Text(c.text,
-                          style: c.role == ChatRole.system
-                              ? theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline)
-                              : theme.textTheme.bodySmall),
-                      if (c.slip)
-                        Text('（口が滑った…？）', style: theme.textTheme.labelSmall?.copyWith(color: const Color(0xFF8E44AD))),
-                    ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 160,
+              child: ListView.builder(
+                controller: _scroll,
+                itemCount: s.chat.length,
+                itemBuilder: (_, i) {
+                  final c = s.chat[i];
+                  final align = switch (c.role) {
+                    ChatRole.player => Alignment.centerRight,
+                    ChatRole.gunshi => Alignment.centerLeft,
+                    ChatRole.system => Alignment.center,
+                  };
+                  final color = switch (c.role) {
+                    ChatRole.player => const Color(0xFFE3F0FD),
+                    ChatRole.gunshi => const Color(0xFFFFF4E0),
+                    ChatRole.system => Colors.transparent,
+                  };
+                  return Align(
+                    alignment: align,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      constraints: const BoxConstraints(maxWidth: 320),
+                      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            c.text,
+                            style: c.role == ChatRole.system
+                                ? theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline)
+                                : theme.textTheme.bodySmall,
+                          ),
+                          if (c.slip)
+                            Text(
+                              '（口が滑った…？）',
+                              style: theme.textTheme.labelSmall?.copyWith(color: const Color(0xFF8E44AD)),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (s.pendingOffer != null)
+              Container(
+                key: const ValueKey('offer'),
+                margin: const EdgeInsets.only(top: 6),
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(color: const Color(0xFFFFF8D6), borderRadius: BorderRadius.circular(8)),
+                child: Row(
+                  children: [
+                    Expanded(child: Text('軍師の提案：${s.pendingOffer!.text}', style: theme.textTheme.bodySmall)),
+                    FilledButton(onPressed: () => ctl.respondOffer(true), child: const Text('受ける')),
+                    const SizedBox(width: 6),
+                    OutlinedButton(onPressed: () => ctl.respondOffer(false), child: const Text('断る')),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 6),
+            Text(hint, style: theme.textTheme.labelSmall),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const ValueKey('chat-input'),
+                    controller: _input,
+                    enabled: myTurn,
+                    maxLength: 100,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      counterText: '',
+                      hintText: '軍師に話しかける（例: その角タダじゃない？）',
+                    ),
+                    onSubmitted: (_) => _send(),
                   ),
-                );
-              },
+                ),
+                IconButton(onPressed: myTurn ? _send : null, icon: const Icon(Icons.send)),
+              ],
             ),
-          ),
-          if (s.pendingOffer != null)
-            Container(
-              key: const ValueKey('offer'),
-              margin: const EdgeInsets.only(top: 6),
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(color: const Color(0xFFFFF8D6), borderRadius: BorderRadius.circular(8)),
-              child: Row(children: [
-                Expanded(child: Text('軍師の提案：${s.pendingOffer!.text}', style: theme.textTheme.bodySmall)),
-                FilledButton(onPressed: () => ctl.respondOffer(true), child: const Text('受ける')),
-                const SizedBox(width: 6),
-                OutlinedButton(onPressed: () => ctl.respondOffer(false), child: const Text('断る')),
-              ]),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                for (final t in tauntStamps)
+                  ActionChip(
+                    key: ValueKey('taunt-${t.id}'),
+                    label: Text(t.text, style: const TextStyle(fontSize: 12)),
+                    onPressed: myTurn ? () => ctl.sendTaunt(t) : null,
+                  ),
+                for (final t in _samples)
+                  ActionChip(
+                    label: Text(t, style: const TextStyle(fontSize: 12)),
+                    onPressed: myTurn ? () => _send(t) : null,
+                  ),
+              ],
             ),
-          const SizedBox(height: 6),
-          Text(hint, style: theme.textTheme.labelSmall),
-          Row(children: [
-            Expanded(
-              child: TextField(
-                key: const ValueKey('chat-input'),
-                controller: _input,
-                enabled: myTurn,
-                maxLength: 100,
-                decoration: const InputDecoration(
-                    isDense: true, counterText: '', hintText: '軍師に話しかける（例: その角タダじゃない？）'),
-                onSubmitted: (_) => _send(),
-              ),
-            ),
-            IconButton(onPressed: myTurn ? _send : null, icon: const Icon(Icons.send)),
-          ]),
-          const SizedBox(height: 4),
-          Wrap(spacing: 6, runSpacing: 4, children: [
-            for (final t in tauntStamps)
-              ActionChip(
-                key: ValueKey('taunt-${t.id}'),
-                label: Text(t.text, style: const TextStyle(fontSize: 12)),
-                onPressed: myTurn ? () => ctl.sendTaunt(t) : null,
-              ),
-            for (final t in _samples)
-              ActionChip(
-                label: Text(t, style: const TextStyle(fontSize: 12)),
-                onPressed: myTurn ? () => _send(t) : null,
-              ),
-          ]),
-        ]),
+          ],
+        ),
       ),
     );
   }

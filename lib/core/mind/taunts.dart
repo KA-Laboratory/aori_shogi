@@ -57,8 +57,7 @@ class TauntOutcome {
 
 /// 煽りを感情に反映する。[previousKind] は直前に受けた煽りの種類（耐性計算用）。
 /// [intensity] は自由文の強さ（定型スタンプは 1.0）。
-TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth,
-    {TauntKind? previousKind, double intensity = 1.0}) {
+TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth, {TauntKind? previousKind, double intensity = 1.0}) {
   final resistanceFactor = (1 - s.resistance) * intensity;
   var next = s;
   if (kind == TauntKind.praise) {
@@ -70,10 +69,7 @@ TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth,
   } else if (kind == TauntKind.mock && s.hubris > TauntTable.mockBackfireHubris) {
     next = s.copyWith(composure: s.composure + TauntTable.miss.composure);
   } else if (truth <= 0) {
-    next = s.copyWith(
-      composure: s.composure + TauntTable.miss.composure,
-      hubris: s.hubris + TauntTable.miss.hubris,
-    );
+    next = s.copyWith(composure: s.composure + TauntTable.miss.composure, hubris: s.hubris + TauntTable.miss.hubris);
   } else {
     final e = TauntTable.hit[kind]!;
     final k = truth * resistanceFactor;
@@ -83,9 +79,7 @@ TauntOutcome applyTaunt(MindState s, TauntKind kind, double truth,
       panic: s.panic + e.panic * k,
     );
   }
-  final dr = previousKind == kind
-      ? MindParams.resistanceSameKind
-      : MindParams.resistanceOtherKind;
+  final dr = previousKind == kind ? MindParams.resistanceSameKind : MindParams.resistanceOtherKind;
   next = next.copyWith(resistance: next.resistance + dr);
   if (kind == TauntKind.praise) {
     final streak = s.praiseStreak + 1;

@@ -42,9 +42,9 @@ class GunshiBrain {
     this.baseMovetimeMs = PolicyParams.baseMovetimeMs,
     this.fixedMovetimeMs,
     this.observeMs = 300,
-  })  : _rng = math.Random(seed),
-        _fixed = fixedMind != null,
-        mind = fixedMind ?? const MindState();
+  }) : _rng = math.Random(seed),
+       _fixed = fixedMind != null,
+       mind = fixedMind ?? const MindState();
 
   final ShogiEngine engine;
   final Side side;
@@ -85,15 +85,13 @@ class GunshiBrain {
     final movetime = fixedMovetimeMs ?? movetimeFor(mind, baseMs: baseMovetimeMs);
     await engine.setPosition(game.startPosition.toSfen(), _usiMoves(game));
     final result = await engine.think(movetimeMs: movetime, multiPv: multiPv);
-    final cands = result.candidates
-        .where((c) {
-          try {
-            return pos.isLegal(Move.fromUsi(c.usi));
-          } on FormatException {
-            return false;
-          }
-        })
-        .toList();
+    final cands = result.candidates.where((c) {
+      try {
+        return pos.isLegal(Move.fromUsi(c.usi));
+      } on FormatException {
+        return false;
+      }
+    }).toList();
     if (result.bestMove.isResign || cands.isEmpty) {
       return AiTurn(move: null, choice: null, evalAi: -100000, mindBefore: before, mindAfter: mind, resign: true);
     }
@@ -123,8 +121,12 @@ class GunshiBrain {
   Future<void> observePlayerTurn(ShogiGame game) async {
     final pos = game.position;
     if (pos.turn == side || game.isOver) return;
-    final cands = await engine.analyze(game.startPosition.toSfen(),
-        moves: _usiMoves(game), movetimeMs: observeMs, multiPv: 3);
+    final cands = await engine.analyze(
+      game.startPosition.toSfen(),
+      moves: _usiMoves(game),
+      movetimeMs: observeMs,
+      multiPv: 3,
+    );
     if (cands.isEmpty) return;
     final aiAfter = -cands.first.sortScore.clamp(-PolicyParams.scoreClampCp, PolicyParams.scoreClampCp);
     _expectedEvalAi = aiAfter;

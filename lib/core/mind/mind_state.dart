@@ -7,10 +7,10 @@ enum Stance {
   losing; // 劣勢
 
   String get label => switch (this) {
-        Stance.dominant => '優勢',
-        Stance.even => '互角',
-        Stance.losing => '劣勢',
-      };
+    Stance.dominant => '優勢',
+    Stance.even => '互角',
+    Stance.losing => '劣勢',
+  };
 
   /// AI視点の評価値（詰みは sortScore で ±100000 近く）から形勢を決める。
   static Stance fromEval(int evalAi) {
@@ -28,12 +28,12 @@ enum Mood {
   coverUp; // 取り繕い
 
   String get label => switch (this) {
-        Mood.composed => '平静',
-        Mood.smug => 'ドヤ顔',
-        Mood.rattled => '動揺',
-        Mood.meltdown => '大混乱',
-        Mood.coverUp => '取り繕い',
-      };
+    Mood.composed => '平静',
+    Mood.smug => 'ドヤ顔',
+    Mood.rattled => '動揺',
+    Mood.meltdown => '大混乱',
+    Mood.coverUp => '取り繕い',
+  };
 }
 
 /// 数値パラメータ（Python 版と共有する定数。変更時は両方を合わせる）。
@@ -109,31 +109,30 @@ class MindState {
     double? looseLips,
     double? suspicion,
     int? praiseStreak,
-  }) =>
-      MindState(
-        composure: _clip(composure ?? this.composure),
-        hubris: _clip(hubris ?? this.hubris),
-        panic: _clip(panic ?? this.panic),
-        resistance: _clip(resistance ?? this.resistance),
-        stance: stance ?? this.stance,
-        coverUpTurns: coverUpTurns ?? this.coverUpTurns,
-        looseLips: _clip(looseLips ?? this.looseLips),
-        suspicion: _clip(suspicion ?? this.suspicion),
-        praiseStreak: praiseStreak ?? this.praiseStreak,
-      );
+  }) => MindState(
+    composure: _clip(composure ?? this.composure),
+    hubris: _clip(hubris ?? this.hubris),
+    panic: _clip(panic ?? this.panic),
+    resistance: _clip(resistance ?? this.resistance),
+    stance: stance ?? this.stance,
+    coverUpTurns: coverUpTurns ?? this.coverUpTurns,
+    looseLips: _clip(looseLips ?? this.looseLips),
+    suspicion: _clip(suspicion ?? this.suspicion),
+    praiseStreak: praiseStreak ?? this.praiseStreak,
+  );
 
   Map<String, Object> toJson() => {
-        'composure': composure,
-        'hubris': hubris,
-        'panic': panic,
-        'resistance': resistance,
-        'stance': stance.name,
-        'coverUpTurns': coverUpTurns,
-        'looseLips': looseLips,
-        'suspicion': suspicion,
-        'praiseStreak': praiseStreak,
-        'mood': mood.name,
-      };
+    'composure': composure,
+    'hubris': hubris,
+    'panic': panic,
+    'resistance': resistance,
+    'stance': stance.name,
+    'coverUpTurns': coverUpTurns,
+    'looseLips': looseLips,
+    'suspicion': suspicion,
+    'praiseStreak': praiseStreak,
+    'mood': mood.name,
+  };
 
   @override
   String toString() =>

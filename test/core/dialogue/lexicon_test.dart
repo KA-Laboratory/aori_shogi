@@ -5,8 +5,11 @@ import 'package:aori_shogi/core/dialogue/lexicon.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final lex = IntentLexicon.fromJson(File('assets/lexicon/shogi_terms.json').readAsStringSync(),
-      File('assets/lexicon/sentiment_ja.json').readAsStringSync(), File('assets/lexicon/emotion_ja.json').readAsStringSync());
+  final lex = IntentLexicon.fromJson(
+    File('assets/lexicon/shogi_terms.json').readAsStringSync(),
+    File('assets/lexicon/sentiment_ja.json').readAsStringSync(),
+    File('assets/lexicon/emotion_ja.json').readAsStringSync(),
+  );
   IntentKind k(String s) => lex.analyze(s, hasPendingOffer: false).intent.kind;
 
   test('正規化', () {

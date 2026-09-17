@@ -42,8 +42,7 @@ class EngineFailed extends EngineStatus {
 
 final nnueStoreProvider = Provider<NnueStore>((ref) => NnueStore());
 
-final engineControllerProvider =
-    NotifierProvider<EngineController, EngineStatus>(EngineController.new);
+final engineControllerProvider = NotifierProvider<EngineController, EngineStatus>(EngineController.new);
 
 class EngineController extends Notifier<EngineStatus> {
   @override

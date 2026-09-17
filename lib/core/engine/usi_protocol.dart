@@ -64,8 +64,7 @@ class EngineInfo {
               if (mate == 0) mate = raw.startsWith('-') ? -1 : 1;
             }
           }
-          if (i + 1 < t.length &&
-              (t[i + 1] == 'lowerbound' || t[i + 1] == 'upperbound')) {
+          if (i + 1 < t.length && (t[i + 1] == 'lowerbound' || t[i + 1] == 'upperbound')) {
             bound = t[++i];
           }
         case 'pv':
@@ -77,15 +76,7 @@ class EngineInfo {
       }
     }
     if (!hasScoreOrPv) return null;
-    return EngineInfo(
-      depth: depth,
-      scoreCp: cp,
-      mateIn: mate,
-      multiPv: multiPv,
-      nodes: nodes,
-      pv: pv,
-      bound: bound,
-    );
+    return EngineInfo(depth: depth, scoreCp: cp, mateIn: mate, multiPv: multiPv, nodes: nodes, pv: pv, bound: bound);
   }
 
   static String _at(List<String> t, int i) => i < t.length ? t[i] : '';
@@ -104,8 +95,7 @@ class BestMove {
     final t = line.trim().split(RegExp(r'\s+'));
     if (t.length < 2 || t.first != 'bestmove') return null;
     final ponderIdx = t.indexOf('ponder');
-    return BestMove(t[1],
-        ponder: ponderIdx >= 0 && ponderIdx + 1 < t.length ? t[ponderIdx + 1] : null);
+    return BestMove(t[1], ponder: ponderIdx >= 0 && ponderIdx + 1 < t.length ? t[ponderIdx + 1] : null);
   }
 }
 
@@ -119,8 +109,7 @@ class Candidate {
   int get sortScore => EngineInfo(scoreCp: scoreCp, mateIn: mateIn).sortScore;
 
   @override
-  String toString() =>
-      '$usi(${mateIn != null ? 'mate $mateIn' : 'cp $scoreCp'})';
+  String toString() => '$usi(${mateIn != null ? 'mate $mateIn' : 'cp $scoreCp'})';
 }
 
 class SearchResult {

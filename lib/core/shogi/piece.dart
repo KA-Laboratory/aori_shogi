@@ -38,24 +38,24 @@ enum PieceType {
   bool get isPromoted => index >= PieceType.proPawn.index;
 
   PieceType? get promoted => switch (this) {
-        PieceType.pawn => PieceType.proPawn,
-        PieceType.lance => PieceType.proLance,
-        PieceType.knight => PieceType.proKnight,
-        PieceType.silver => PieceType.proSilver,
-        PieceType.bishop => PieceType.horse,
-        PieceType.rook => PieceType.dragon,
-        _ => null,
-      };
+    PieceType.pawn => PieceType.proPawn,
+    PieceType.lance => PieceType.proLance,
+    PieceType.knight => PieceType.proKnight,
+    PieceType.silver => PieceType.proSilver,
+    PieceType.bishop => PieceType.horse,
+    PieceType.rook => PieceType.dragon,
+    _ => null,
+  };
 
   PieceType get base => switch (this) {
-        PieceType.proPawn => PieceType.pawn,
-        PieceType.proLance => PieceType.lance,
-        PieceType.proKnight => PieceType.knight,
-        PieceType.proSilver => PieceType.silver,
-        PieceType.horse => PieceType.bishop,
-        PieceType.dragon => PieceType.rook,
-        _ => this,
-      };
+    PieceType.proPawn => PieceType.pawn,
+    PieceType.proLance => PieceType.lance,
+    PieceType.proKnight => PieceType.knight,
+    PieceType.proSilver => PieceType.silver,
+    PieceType.horse => PieceType.bishop,
+    PieceType.dragon => PieceType.rook,
+    _ => this,
+  };
 
   bool get canPromote => promoted != null;
 
@@ -84,12 +84,10 @@ class Piece {
   final PieceType type;
   final Side side;
 
-  String get sfen =>
-      side == Side.black ? type.sfen : type.sfen.toLowerCase();
+  String get sfen => side == Side.black ? type.sfen : type.sfen.toLowerCase();
 
   @override
-  bool operator ==(Object other) =>
-      other is Piece && other.type == type && other.side == side;
+  bool operator ==(Object other) => other is Piece && other.type == type && other.side == side;
 
   @override
   int get hashCode => type.index * 2 + side.index;

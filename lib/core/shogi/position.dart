@@ -11,35 +11,29 @@ const List<_Dir> _silverSteps = [(0, -1), (-1, -1), (1, -1), (-1, 1), (1, 1)];
 
 /// 先手視点（前方 = dy -1）の1マス移動。
 List<_Dir> _steps(PieceType t) => switch (t) {
-      PieceType.pawn => const [(0, -1)],
-      PieceType.knight => const [(-1, -2), (1, -2)],
-      PieceType.silver => _silverSteps,
-      PieceType.gold ||
-      PieceType.proPawn ||
-      PieceType.proLance ||
-      PieceType.proKnight ||
-      PieceType.proSilver =>
-        _goldSteps,
-      PieceType.king => const [..._orth, ..._diag],
-      PieceType.horse => _orth,
-      PieceType.dragon => _diag,
-      _ => const [],
-    };
+  PieceType.pawn => const [(0, -1)],
+  PieceType.knight => const [(-1, -2), (1, -2)],
+  PieceType.silver => _silverSteps,
+  PieceType.gold || PieceType.proPawn || PieceType.proLance || PieceType.proKnight || PieceType.proSilver => _goldSteps,
+  PieceType.king => const [..._orth, ..._diag],
+  PieceType.horse => _orth,
+  PieceType.dragon => _diag,
+  _ => const [],
+};
 
 /// 先手視点の走り駒の方向。
 List<_Dir> _slides(PieceType t) => switch (t) {
-      PieceType.lance => const [(0, -1)],
-      PieceType.bishop || PieceType.horse => _diag,
-      PieceType.rook || PieceType.dragon => _orth,
-      _ => const [],
-    };
+  PieceType.lance => const [(0, -1)],
+  PieceType.bishop || PieceType.horse => _diag,
+  PieceType.rook || PieceType.dragon => _orth,
+  _ => const [],
+};
 
 /// 局面（不変）。盤・持ち駒・手番・手数。
 class Position {
   Position._(this.board, this.hands, this.turn, this.ply);
 
-  static const startSfen =
-      'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1';
+  static const startSfen = 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1';
 
   factory Position.initial() => Position.fromSfen(startSfen);
 
@@ -197,8 +191,7 @@ class Position {
 
   // ---------------------------------------------------------- 合法手
 
-  static bool inPromotionZone(int sq, Side side) =>
-      side == Side.black ? sq ~/ 9 <= 2 : sq ~/ 9 >= 6;
+  static bool inPromotionZone(int sq, Side side) => side == Side.black ? sq ~/ 9 <= 2 : sq ~/ 9 >= 6;
 
   /// その駒がそのマスに不成で居られない（行き所のない駒）か。
   static bool isDeadSquare(PieceType type, Side side, int sq) {
@@ -218,8 +211,7 @@ class Position {
       for (final to in attacksFrom(from, p)) {
         final target = board[to];
         if (target != null && target.side == turn) continue;
-        final canPromo = p.type.canPromote &&
-            (inPromotionZone(from, turn) || inPromotionZone(to, turn));
+        final canPromo = p.type.canPromote && (inPromotionZone(from, turn) || inPromotionZone(to, turn));
         if (!isDeadSquare(p.type, turn, to)) {
           moves.add(Move.board(from, to));
         }

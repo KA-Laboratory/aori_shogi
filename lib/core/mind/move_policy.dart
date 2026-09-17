@@ -32,9 +32,7 @@ int multiPvFor(MindState s) =>
     s.panic > PolicyParams.blunderPanicThreshold ? PolicyParams.panicMultiPv : PolicyParams.normalMultiPv;
 
 double temperatureFor(MindState s) =>
-    PolicyParams.tempBase +
-    PolicyParams.tempComposure * (1 - s.composure) +
-    PolicyParams.tempPanic * s.panic;
+    PolicyParams.tempBase + PolicyParams.tempComposure * (1 - s.composure) + PolicyParams.tempPanic * s.panic;
 
 enum PolicyReason { best, softmax, hubrisAttack, blunder, mate, mateMissed }
 
@@ -48,8 +46,7 @@ class PolicyChoice {
   final PolicyReason reason;
 }
 
-int _clamped(Candidate c) =>
-    c.sortScore.clamp(-PolicyParams.scoreClampCp, PolicyParams.scoreClampCp);
+int _clamped(Candidate c) => c.sortScore.clamp(-PolicyParams.scoreClampCp, PolicyParams.scoreClampCp);
 
 /// 攻めの手（駒取り・成り・王手）か。
 bool isAttackingMove(Position pos, Move m) {
@@ -70,11 +67,11 @@ PolicyChoice chooseMove({
   final best = candidates.first;
   final bestScore = _clamped(best);
   PolicyChoice pick(int i, PolicyReason r) => PolicyChoice(
-        index: i,
-        candidate: candidates[i],
-        lossCp: math.max(0, bestScore - _clamped(candidates[i])),
-        reason: r,
-      );
+    index: i,
+    candidate: candidates[i],
+    lossCp: math.max(0, bestScore - _clamped(candidates[i])),
+    reason: r,
+  );
 
   if (!modulate || candidates.length == 1) return pick(0, PolicyReason.best);
 
@@ -82,14 +79,16 @@ PolicyChoice chooseMove({
   if (best.mateIn != null && best.mateIn! > 0) {
     final miss = mind.panic > PolicyParams.mateMissPanic && rng.nextDouble() < PolicyParams.mateMissRate;
     if (!miss) return pick(0, PolicyReason.mate);
-    final others = [for (var i = 1; i < candidates.length; i++) if (candidates[i].mateIn == null) i];
+    final others = [
+      for (var i = 1; i < candidates.length; i++)
+        if (candidates[i].mateIn == null) i,
+    ];
     if (others.isNotEmpty) return pick(others[rng.nextInt(others.length)], PolicyReason.mateMissed);
     return pick(0, PolicyReason.mate);
   }
 
   // 大悪手の混入。
-  if (mind.panic > PolicyParams.blunderPanicThreshold &&
-      rng.nextDouble() < PolicyParams.blunderRate * mind.panic) {
+  if (mind.panic > PolicyParams.blunderPanicThreshold && rng.nextDouble() < PolicyParams.blunderRate * mind.panic) {
     final pool = <int>[];
     for (var i = 1; i < candidates.length; i++) {
       final d = bestScore - _clamped(candidates[i]);
@@ -140,8 +139,6 @@ PolicyChoice chooseMove({
       break;
     }
   }
-  final reason = chosen == 0
-      ? PolicyReason.best
-      : (bonus[chosen] ? PolicyReason.hubrisAttack : PolicyReason.softmax);
+  final reason = chosen == 0 ? PolicyReason.best : (bonus[chosen] ? PolicyReason.hubrisAttack : PolicyReason.softmax);
   return pick(chosen, reason);
 }
