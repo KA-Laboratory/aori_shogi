@@ -15,6 +15,21 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ENGINE = ROOT / "engine" / "YaneuraOu_NNUE_halfkp_256x2_32_32-V900Git_AVX2.exe"
 DEFAULT_EVAL_DIR = ROOT / "engine" / "eval"
 
+# 解析用の評価関数（PC 上の研究用。アプリには同梱しない）
+ENGINE_PRESETS = {
+    "hao": {"exe": DEFAULT_ENGINE, "eval_dir": DEFAULT_EVAL_DIR, "fv_scale": 20},  # tanuki- Háo, GPLv3
+    "aoba": {"exe": ROOT / "engine" / "dl" / "aoba" / "AobaNNUE" / "AobaNNUE_AVX2.exe",
+             "eval_dir": ROOT / "engine" / "dl" / "aoba" / "AobaNNUE" / "eval", "fv_scale": 40},  # AobaNNUE, GPLv3
+    "suisho5": {"exe": DEFAULT_ENGINE, "eval_dir": ROOT / "engine" / "dl" / "suisho5", "fv_scale": 24},  # 水匠5
+}
+
+
+def engine_from_preset(name: str, threads: int | None = None) -> "UsiEngine":
+    p = ENGINE_PRESETS[name]
+    e = UsiEngine(exe=p["exe"], eval_dir=p["eval_dir"], threads=threads, fv_scale=p["fv_scale"])
+    e.name = name
+    return e
+
 
 @dataclass
 class SearchResult:
@@ -35,6 +50,7 @@ class UsiEngine:
         self._lines: queue.Queue[str] = queue.Queue()
         self._lock = asyncio.Lock()
         self._multipv = 1
+        self.name = "hao"
 
     # ---- 低レベル
     def _send(self, line: str) -> None:

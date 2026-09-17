@@ -5,7 +5,8 @@
 3. LLM（既定 gpt-oss:20b）に事実だけを渡し、解説文・プレイヤーの煽り・軍師の反応を書かせる
 4. コードで検証（事実にない指し手を書いていないか、長さ、種類）→ 候補ファイルへ（アプリには未反映。レビュー後に採用）
 
-uv run python -m aori_lab.learn.commentary --hours 3
+昼（CPU）: uv run python -m aori_lab.learn.commentary --mode extract --hours 2   → moments.jsonl
+夜（GPU）: uv run python -m aori_lab.learn.commentary --mode generate --hours 6  → candidates.jsonl
 停止: data/learn_commentary/STOP を作る
 """
 from __future__ import annotations
@@ -20,7 +21,7 @@ from pathlib import Path
 
 import cshogi
 
-from ..engine import UsiEngine
+from ..engine import ENGINE_PRESETS, engine_from_preset
 from ..llm import OllamaClient
 from ..shogi_util import PIECE_KANJI, SIDE_LABEL, captured_name, kif_text
 from ..usi import Candidate
@@ -43,6 +44,7 @@ SCHEMA = {
 }
 SYSTEM = """あなたは将棋の解説者兼、対局アプリ「煽り将棋」の台本作家です。
 与えられた【事実】だけを根拠に書きます。事実にない指し手・駒・評価を作ってはいけません。
+- 「エンジン合議」で意見が割れている時は断定せず「有力」「一説には」とぼかす。
 - commentary: 観戦者向けの解説。60〜100字。指し手は事実に書かれた表記（例: ７六歩、同　角成）だけを使う。
 - taunts: プレイヤーが相手（自称天才軍師のAI）に言う煽りを3つ。各10〜35字、口語。kind は
   blunderCall=悪手の指摘 / hangingPiece=駒が浮いている・タダ / threat=詰み・寄せの脅し / mock=からかい / praise=褒め殺し。
@@ -74,15 +76,18 @@ class CommentaryForge:
     def __init__(self, args) -> None:
         self.args = args
         self.rng = random.Random(args.seed)
-        self.engine = UsiEngine(threads=args.threads)
+        names = [n for n in args.engines.split(",") if n in ENGINE_PRESETS]
+        self.engine = engine_from_preset(names[0], threads=args.threads)  # 自己対局と節目の検出
+        self.advisors = [engine_from_preset(n, threads=args.threads) for n in names[1:]]  # 合議
         self.llm = OllamaClient(model=args.model, timeout=args.llm_timeout)
         self.started = time.monotonic()
         DATA.mkdir(parents=True, exist_ok=True)
         self.stats = {"games": 0, "moments": 0, "generated": 0, "valid": 0, "llm_fail": 0}
 
     def done(self) -> bool:
-        return (DATA / "STOP").exists() or time.monotonic() - self.started > self.args.hours * 3600 or (
-            self.args.max_moments and self.stats["generated"] >= self.args.max_moments)
+        n = self.stats["generated"] if self.args.mode == "generate" else self.stats["moments"]
+        return (DATA / "STOP").exists() or time.monotonic() - self.started > self.args.hours * 3600 or bool(
+            self.args.max_moments and n >= self.args.max_moments)
 
     def log(self, msg: str) -> None:
         line = f"{time.strftime('%H:%M:%S')} {msg}"
@@ -163,6 +168,7 @@ class CommentaryForge:
             lines.append(f"詰み: {mate_line}")
         allowed = {played_kif, *pv_kif}
         return {"id": f"g{gid}-p{ply}", "ply": ply, "sfen_before": b.sfen(), "played": played, "loss": loss,
+                "best_usi": best.usi if best else None, "prev_usi": prev_usi, "engine": self.engine.name,
                 "eval_before_black": before_black, "eval_after_black": after_black, "facts": "\n".join(lines),
                 "allowed_moves": sorted(allowed)}
 
@@ -183,33 +189,99 @@ class CommentaryForge:
         return {**m, "out": out, "ok": not errors, "errors": errors, "model": self.args.model,
                 "latency": round(self.llm.last_latency or 0, 1)}
 
+    async def consult(self, m: dict) -> dict:
+        """他エンジンにも同じ局面を読ませ、最善手の票と、指した手の評価損を合議する。"""
+        b = cshogi.Board(m["sfen_before"])
+        mover = b.turn
+        mark = "▲" if mover == cshogi.BLACK else "△"
+        votes: dict[str, list[str]] = {}
+        losses = {self.engine.name: m["loss"]}
+        allowed = set(m["allowed_moves"])
+        for eng in self.advisors:
+            r1 = await eng.think(m["sfen_before"], [], self.args.movetime * 2, multipv=1)
+            cands = sorted(r1.candidates, key=lambda c: -c.sort_score)
+            best = cands[0] if cands else Candidate(r1.bestmove)
+            votes.setdefault(best.usi, []).append(eng.name)
+            if cands and best.usi != m["played"]:
+                r2 = await eng.think(m["sfen_before"], [m["played"]], self.args.movetime * 2, multipv=1)
+                c2 = sorted(r2.candidates, key=lambda c: -c.sort_score)
+                if c2:
+                    losses[eng.name] = clamp_score(best) - (-clamp_score(c2[0]))
+            elif cands:
+                losses[eng.name] = 0
+        votes.setdefault(m["best_usi"], []).insert(0, self.engine.name) if m.get("best_usi") else None
+        label = {"hao": "Háo", "aoba": "Aoba", "suisho5": "水匠5"}
+        parts = []
+        for usi, who in sorted(votes.items(), key=lambda kv: -len(kv[1])):
+            try:
+                kif = kif_text(b, usi, m.get("prev_usi"))
+            except Exception:  # noqa: BLE001
+                continue
+            allowed.add(kif)
+            parts.append(f"{mark}{kif}（{'・'.join(label.get(w, w) for w in who)}）")
+        avg = round(sum(losses.values()) / len(losses))
+        agree = sum(1 for v in losses.values() if v >= 150)
+        m["facts"] += f"\nエンジン合議（{len(losses)}つ）: 最善手 " + " / ".join(parts)
+        m["facts"] += f"\n指した手の評価損: 平均{avg}（悪手と判断したエンジン {agree}/{len(losses)}）"
+        m["allowed_moves"] = sorted(allowed)
+        m["consensus"] = {"votes": votes, "losses": losses}
+        return m
+
     async def run(self) -> None:
         keep_awake(True)
         try:
-            await self.engine.start()
-            if not await self.llm.available():
+            if self.args.mode in ("extract", "both"):
+                await self.engine.start()
+                for a in self.advisors:
+                    await a.start()
+            if self.args.mode in ("generate", "both") and not await self.llm.available():
                 raise SystemExit(f"model not available: {self.args.model}")
+            if self.args.mode == "generate":
+                await self.generate_pending()
+                return
             gid = int(time.time())
             while not self.done():
                 gid += 1
-                moments = await self.play_and_extract(gid)
-                for m in moments:
+                for m in await self.play_and_extract(gid):
                     if self.done():
                         break
+                    if self.advisors:
+                        m = await self.consult(m)
                     self.stats["moments"] += 1
-                    rec = await self.generate(m)
-                    with open(DATA / "candidates.jsonl", "a", encoding="utf-8") as f:
-                        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
-                    if rec["ok"]:
-                        with open(DATA / "classifier_commentary.jsonl", "a", encoding="utf-8") as f:
-                            for t in rec["out"]["taunts"]:
-                                f.write(json.dumps({"text": t["text"], "kind": t["kind"], "src": rec["id"]},
-                                                   ensure_ascii=False) + "\n")
-                    self.log(f"{rec['id']} ok={rec['ok']} {rec.get('latency')}s {rec['errors'][:2]}")
+                    append(DATA / "moments.jsonl", m)
+                    if self.args.mode == "both":
+                        await self.generate_one(m)
                 self.log(f"stats {self.stats}")
         finally:
-            self.engine.quit()
+            for e in [self.engine, *self.advisors]:
+                e.quit()
             keep_awake(False)
+
+    async def generate_pending(self) -> None:
+        done_ids = set()
+        if (DATA / "candidates.jsonl").exists():
+            done_ids = {json.loads(l)["id"] for l in open(DATA / "candidates.jsonl", encoding="utf-8") if l.strip()}
+        pending = [json.loads(l) for l in open(DATA / "moments.jsonl", encoding="utf-8") if l.strip()]
+        pending = [m for m in pending if m["id"] not in done_ids]
+        self.log(f"generate: pending {len(pending)}")
+        for m in pending:
+            if self.done():
+                break
+            await self.generate_one(m)
+        self.log(f"stats {self.stats}")
+
+    async def generate_one(self, m: dict) -> None:
+        rec = await self.generate(m)
+        append(DATA / "candidates.jsonl", rec)
+        if rec["ok"]:
+            for t in rec["out"]["taunts"]:
+                append(DATA / "classifier_commentary.jsonl", {"text": t["text"], "kind": t["kind"], "src": rec["id"]})
+        self.log(f"{rec['id']} ok={rec['ok']} {rec.get('latency')}s {rec['errors'][:2]}")
+
+
+def append(path: Path, rec: dict) -> None:
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
 def validate(out: dict, m: dict) -> list[str]:
@@ -244,12 +316,14 @@ def validate(out: dict, m: dict) -> list[str]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--mode", choices=["extract", "generate", "both"], default="both")
+    ap.add_argument("--engines", default="aoba,hao,suisho5")
     ap.add_argument("--hours", type=float, default=3)
     ap.add_argument("--max-moments", type=int, default=0)
     ap.add_argument("--model", default="gpt-oss:20b")
-    ap.add_argument("--movetime", type=int, default=150)
+    ap.add_argument("--movetime", type=int, default=300)
     ap.add_argument("--per-game", type=int, default=6)
-    ap.add_argument("--threads", type=int, default=2)
+    ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--num-predict", type=int, default=1500)
     ap.add_argument("--llm-timeout", type=float, default=180)
     ap.add_argument("--seed", type=int, default=0)
