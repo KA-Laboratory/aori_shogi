@@ -15,7 +15,8 @@ from . import dialogue as dlg
 from .engine import UsiEngine
 from .lines import LineLibrary
 from .llm import OllamaClient
-from .mind import MindState, Mood, TauntKind, apply_taunt, update_on_ai_turn, P as MP
+from .mind import SP, MindState, Mood, TauntKind, apply_taunt, update_on_ai_turn, P as MP
+from .slips import Slip, decide_slip
 from .policy import PP, choose_move, clamped, movetime_for, multipv_for
 from .shogi_util import SIDE_LABEL, board_json, captured_name, kif_text, legal_moves_json
 from .truth import TauntContext, judge_truth
@@ -63,6 +64,7 @@ class Session:
     seed: int | None = None
     base_movetime_ms: int = PP.base_movetime_ms
     observe_ms: int = 300
+    chatty: bool = True  # False: 毎手のセリフは LLM を使わずテンプレート（ボロ・持ちかけ時だけ LLM）
     id: str = field(default_factory=lambda: time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6])
 
     def __post_init__(self) -> None:
@@ -91,6 +93,9 @@ class Session:
         self.counters = {"offer_player_undo": 0, "request_redo": 0, "propose_deal": 0, "propose_draw": 0,
                          "player_undo": 0, "hint": 0}
         self.deal_turns = 0
+        self.slip_this_turn: Slip | None = None
+        self.leaks: list[Slip] = []
+        self.exploit_note: str | None = None
         self.last_offer_ply = -99
         self.log_path = DATA_DIR / f"{self.id}.jsonl"
 
@@ -160,6 +165,7 @@ class Session:
             raise ValueError(f"指せない手です: {usi}")
         if self.pending:
             await self._resolve_offer(False, implicit=True)
+        self._check_exploit(usi)
         self._push(usi)
         self.deal_turns = max(0, self.deal_turns - 1)
         self._log("player_move", usi=usi, kif=self.kif[-1])
@@ -167,6 +173,42 @@ class Session:
             await self._on_game_over()
             return
         await self._ai_turn()
+
+    def _check_exploit(self, usi: str) -> None:
+        """漏らした『こわい手』を相手が指したか。本当なら動揺・警戒、嘘なら引っかけ成功。"""
+        sl = self.slip_this_turn
+        if not sl or sl.kind != "fear" or sl.move_usi != usi:
+            return
+        m = self.mind
+        if sl.truthful:
+            self.mind = m.copy_with(suspicion=m.suspicion + SP.suspicion_on_exploit, panic=m.panic + 0.15,
+                                    composure=m.composure - 0.1)
+            self.exploit_note = "さっきうっかり漏らした『こわい手』をそのまま指された。なぜバレたのかと慌て、口を滑らせた自分を悔やむ。"
+        else:
+            self.mind = m.copy_with(hubris=m.hubris + 0.15, composure=m.composure + 0.05)
+            self.exploit_note = "わざと漏らした嘘の『こわい手』に相手がまんまと引っかかった。ほくそ笑む（嘘だったとまでは言わなくてよい）。"
+        self._log("exploit", slip=sl.__dict__)
+
+    def _maybe_slip(self, question_bonus: float = 0.0) -> Slip | None:
+        if self.slip_this_turn is not None or not self.is_player_turn or self.pending:
+            return None
+        sl = decide_slip(self.mind, self.board, self.player_cands, self.ai_loss,
+                         self.moves[-1] if self.moves else None, self.rng, question_bonus, len(self.moves))
+        if sl is None:
+            return None
+        self.slip_this_turn = sl
+        self.leaks.append(sl)
+        self.mind = self.mind.copy_with(loose_lips=self.mind.loose_lips + SP.lips_after_slip)
+        self._log("slip", slip=sl.__dict__)
+        return sl
+
+    @staticmethod
+    def _slip_extra(sl: Slip) -> str:
+        if sl.truthful:
+            return (f"[口が滑る] 本人は隠しているつもりだが、調子に乗って（または焦って）うっかり次の本音を漏らしてしまう: {sl.fact}。"
+                    "言った直後に『い、今のは独り言だ』などと取り繕ってよい。")
+        return (f"[わざと口を滑らせる] 相手を引っかけるため、うっかり漏らしたふりをして次の嘘を言う: {sl.fact}。"
+                "嘘だとは絶対に明かさず、本当に口が滑ったように演じる。")
 
     async def _think(self, movetime: int, multipv: int):
         return await self.engine.think(self.start_sfen, self.moves, movetime, multipv)
@@ -204,6 +246,7 @@ class Session:
         res = await self._think(self.observe_ms, 3)
         legal = set(legal_moves_json(self.board))
         self.player_cands = [c for c in res.candidates if c.usi in legal]
+        self.slip_this_turn = None
         if not self.player_cands:
             return
         ai_after = -clamped(self.player_cands[0])
@@ -252,7 +295,8 @@ class Session:
         return f"{v:+d}"
 
     async def _speak(self, trigger: str, instruction: str, options: list[dlg.ActionOption] | None = None,
-                     extra: str = "", template_vars: dict | None = None) -> dlg.GunshiReply:
+                     extra: str = "", template_vars: dict | None = None, use_llm: bool = True,
+                     slip: Slip | None = None) -> dlg.GunshiReply:
         options = options or [dlg.ActionOption("none", "特別な行動はしない")]
         facts = self._facts(extra)
         tmpl = {"start": "start", "ai_move": "move", "taunt_hit": "taunt_hit", "taunt_miss": "taunt_miss",
@@ -260,16 +304,19 @@ class Session:
         examples = self.lines.lines_for(self.mind.mood.value, tmpl)
         examples = self.rng.sample(examples, min(3, len(examples))) if examples else []
         examples = [e.replace("{move}", "〇〇") for e in examples]
-        reply = await dlg.compose_reply(self.llm, facts, instruction, options, self.llm_history, examples)
+        reply = await dlg.compose_reply(self.llm if use_llm else None, facts, instruction, options, self.llm_history, examples)
         if reply is None and trigger in GENERIC_FALLBACK:
             reply = dlg.GunshiReply(self.rng.choice(GENERIC_FALLBACK[trigger]), action=options[0].name if options[0].name in OFFER_TEXT else "none", source="template")
         if reply is None:
             reply = dlg.GunshiReply(self.lines.pick(self.mind.mood.value, tmpl, self.rng, move=self.kif[-1][1:] if self.kif else ""),
                                     action="none", source="template")
-        self._say(reply.speech, {"action": reply.action, "source": reply.source})
+        if slip is not None and reply.source == "template":
+            reply.speech += f"……{slip.fact}……い、今のは聞かなかったことに！"
+        self._say(reply.speech, {"action": reply.action, "source": reply.source, "slip": slip is not None})
         self._log("gunshi_speech", trigger=trigger, speech=reply.speech, action=reply.action, source=reply.source,
                   facts=facts, instruction=instruction, options=[o.name for o in options],
-                  latency=self.llm.last_latency if self.llm else None)
+                  latency=self.llm.last_latency if self.llm else None,
+                  slip=slip.__dict__ if slip else None)
         return reply
 
     # ------------------------------------------------------------ 軍師からの持ちかけ
@@ -301,7 +348,18 @@ class Session:
         instr = f"自分が指した{self.kif[-1][1:]}について、狙いや自慢を一言（相手の手の話ではなく自分の手の話）。" + ("[選べる行動]に持ちかけがあれば、気分に合うなら選んでよい。" if len(options) > 1 else "")
         if redo:
             instr = "置き直しを認めてもらい、指し直した。感謝しつつ威厳を取り戻そうとする。"
-        reply = await self._speak("ai_move", instr, options, extra)
+        if self.exploit_note:
+            extra = extra + "\n" + self.exploit_note
+            instr = self.exploit_note + " そのうえで" + instr
+            self.exploit_note = None
+            forced_llm = True
+        else:
+            forced_llm = False
+        sl = self._maybe_slip()
+        if sl:
+            extra = extra + "\n" + self._slip_extra(sl)
+        use_llm = self.chatty or forced_llm or sl is not None or len(options) > 1 or redo
+        reply = await self._speak("ai_move", instr, options, extra, use_llm=use_llm, slip=sl)
         if reply.action in OFFER_TEXT:
             self.pending = Offer(reply.action, len(self.moves), reply.speech)
             self.counters[reply.action] += 1
@@ -409,6 +467,12 @@ class Session:
         trigger = "chat"
         instruction = "相手の発言に、キャラらしく返す。"
 
+        question_bonus = 0.0
+        if intent.kind == "question":
+            m = self.mind
+            question_bonus = 0.1 + 0.25 * max(0.0, m.hubris - 0.4) + 0.15 * m.loose_lips
+            self.mind = m.copy_with(loose_lips=m.loose_lips + SP.lips_per_question * (0.5 + m.hubris))
+            instruction = "相手に読みや狙いを聞かれた。基本は『教えるわけがない』と勿体ぶる。"
         if intent.kind == "abuse":
             instruction = "相手の発言は不適切。軽くたしなめて、将棋で勝負しようと話を戻す。煽り返しはしない。"
         elif intent.kind in ("blunderCall", "hangingPiece", "threat", "mock", "praise"):
@@ -430,7 +494,13 @@ class Session:
                 why = self._truth_reason(kind, truth)
                 if kind == TauntKind.praise:
                     trigger = "praised"
-                    instruction = "褒められた。調子に乗る（慢心している）。"
+                    m = self.mind
+                    if m.praise_streak >= SP.praise_suspicion_from and m.suspicion >= 0.25:
+                        instruction = f"{m.praise_streak}回続けて褒められた。さすがに怪しい、褒め殺しで何か企んでいるのでは、と警戒しはじめる（でも嬉しさは隠しきれない）。"
+                    elif m.praise_streak >= 3:
+                        instruction = f"{m.praise_streak}回続けて褒められ、完全に舞い上がっている。余計なことまでべらべら喋りたくなっている。"
+                    else:
+                        instruction = "褒められた。調子に乗る（慢心している）。"
                 elif out.hit and truth < 1.0:
                     trigger = "taunt_hit"
                     instruction = "煽りは半分当たっていて、少しだけ効いた。平気なふりをしつつ、ちょっと言い訳が漏れる。"
@@ -453,7 +523,10 @@ class Session:
                 instruction += f" 相手は『{desc[2:] if req == 'undo' else desc}』を求めている。気分次第で受けても断ってもよい。"
             else:
                 instruction += " 相手は要求をしてきたが、今は断るしかない。理由をキャラらしく言う。"
-        reply = await self._speak(trigger, instruction, options, "\n".join(extra_lines))
+        sl = self._maybe_slip(question_bonus) if intent.kind != "abuse" else None
+        if sl:
+            extra_lines.append(self._slip_extra(sl))
+        reply = await self._speak(trigger, instruction, options, "\n".join(extra_lines), slip=sl)
         if req in ("undo", "hint", "draw", "resign") and reply.action == "accept" and self._request_allowed(req):
             await self._grant_request(req)
 

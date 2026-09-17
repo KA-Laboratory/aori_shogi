@@ -83,6 +83,8 @@ dialog{border:none;border-radius:14px;padding:18px}
           <div class="meter">冷静<div class="bar"><div class="fill" id="mComp" style="background:#2e86c1"></div></div></div>
           <div class="meter">慢心<div class="bar"><div class="fill" id="mHub" style="background:#b8860b"></div></div></div>
           <div class="meter">焦り<div class="bar"><div class="fill" id="mPan" style="background:#c0392b"></div></div></div>
+          <div class="meter">口軽<div class="bar"><div class="fill" id="mLips" style="background:#8e44ad"></div></div></div>
+          <div class="meter">警戒<div class="bar"><div class="fill" id="mSus" style="background:#34495e"></div></div></div>
         </div>
       </div>
       <div class="chat" id="chat"></div>
@@ -97,7 +99,7 @@ dialog{border:none;border-radius:14px;padding:18px}
 <script>
 const $ = (id) => document.getElementById(id);
 let S = null, sel = null, busy = false;
-const SAMPLES = ["いまの手、悪手でしょ", "その駒、浮いてない？", "玉、危なくない？", "天才軍師（笑）", "さすが天才軍師さま！", "待った！今のなしで", "ヒント教えてよ", "もう投了したら？"];
+const SAMPLES = ["次どこ指すつもり？", "本当は苦しいんでしょ？", "さすが！天才！最強！", "いまの手、悪手でしょ", "その駒、浮いてない？", "玉、危なくない？", "天才軍師（笑）", "さすが天才軍師さま！", "待った！今のなしで", "ヒント教えてよ", "もう投了したら？"];
 
 async function api(path, body) {
   if (busy) return;
@@ -143,10 +145,11 @@ function render() {
   const m = S.mind;
   $("face").textContent = S.face; $("mood").textContent = "軍師・" + S.mood_label; $("stance").textContent = S.stance_label;
   $("eval").textContent = `(${S.eval_ai > 0 ? "+" : ""}${Math.abs(S.eval_ai) > 90000 ? "詰み" : S.eval_ai})`;
-  $("mComp").style.width = (m.composure * 100) + "%"; $("mHub").style.width = (m.hubris * 100) + "%"; $("mPan").style.width = (m.panic * 100) + "%";
+  $("mComp").style.width = (m.composure * 100) + "%"; $("mHub").style.width = (m.hubris * 100) + "%"; $("mPan").style.width = (m.panic * 100) + "%"; $("mLips").style.width = (m.loose_lips * 100) + "%"; $("mSus").style.width = (m.suspicion * 100) + "%";
   const chat = $("chat"); chat.innerHTML = "";
   for (const x of S.chat) {
     const d = document.createElement("div"); d.className = "msg " + x.role; d.textContent = x.text;
+    if (x.role === "gunshi" && x.slip) { const mm = document.createElement("div"); mm.className = "meta"; mm.textContent = "（口が滑った…？）"; d.appendChild(mm); }
     if (x.role === "gunshi" && x.source === "template") { const mm = document.createElement("div"); mm.className = "meta"; mm.textContent = "（テンプレート）"; d.appendChild(mm); }
     chat.appendChild(d);
   }

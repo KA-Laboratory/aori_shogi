@@ -68,9 +68,13 @@ class MindState:
     resistance: float = 0.0
     stance: Stance = Stance.even
     cover_up_turns: int = 0
+    # ---- 自由会話用（Python 版で先行。Dart 版は未移植）
+    loose_lips: float = 0.1  # 口の軽さ: 褒め倒し・慢心・焦りで上がり、ボロ（情報漏洩）が出やすくなる
+    suspicion: float = 0.0  # 警戒心: 褒めすぎ・漏らした手を突かれると上がり、嘘のボロ（ブラフ）が増える
+    praise_streak: int = 0  # 連続で褒められた回数
 
     def copy_with(self, **kw) -> "MindState":
-        for k in ("composure", "hubris", "panic", "resistance"):
+        for k in ("composure", "hubris", "panic", "resistance", "loose_lips", "suspicion"):
             if k in kw:
                 kw[k] = _clip(kw[k])
         return replace(self, **kw)
@@ -112,7 +116,23 @@ def update_on_ai_turn(s: MindState, eval_ai: int, last_ai_move_loss_cp: int | No
     cover = s.cover_up_turns - 1 if s.cover_up_turns > 0 else 0
     if last_ai_move_loss_cp is not None and last_ai_move_loss_cp >= P.cover_up_loss_cp:
         cover = P.cover_up_turns
-    return s.copy_with(composure=c, hubris=h, panic=p, stance=stance, cover_up_turns=cover)
+    return s.copy_with(composure=c, hubris=h, panic=p, stance=stance, cover_up_turns=cover,
+                       loose_lips=s.loose_lips - SP.lips_decay_per_move, suspicion=s.suspicion - SP.suspicion_decay_per_move)
+
+
+class SP:
+    """口の軽さ・警戒心のパラメータ（自由会話・ボロ）。"""
+
+    lips_decay_per_move = 0.04
+    suspicion_decay_per_move = 0.02
+    lips_per_praise = 0.10
+    lips_per_praise_streak = 0.05  # 連続回数×（最大4回分）
+    praise_suspicion_from = 4  # 連続この回数から「褒め殺しか？」と警戒が上がる
+    praise_suspicion_step = 0.08
+    lips_per_hit = 0.05  # 図星で動揺すると口が軽くなる
+    lips_per_question = 0.06  # 読みを聞かれて慢心していると喋りたくなる
+    lips_after_slip = -0.20
+    suspicion_on_exploit = 0.25
 
 
 class TauntKind(str, Enum):
@@ -188,4 +208,13 @@ def apply_taunt(
         )
     dr = P.resistance_same_kind if previous_kind == kind else P.resistance_other_kind
     nxt = nxt.copy_with(resistance=nxt.resistance + dr)
+    if kind == TauntKind.praise:
+        streak = s.praise_streak + 1
+        lips = SP.lips_per_praise + SP.lips_per_praise_streak * min(streak, 4)
+        sus = SP.praise_suspicion_step * (streak - SP.praise_suspicion_from + 1) if streak >= SP.praise_suspicion_from else 0.0
+        nxt = nxt.copy_with(praise_streak=streak, loose_lips=nxt.loose_lips + lips * intensity,
+                            suspicion=nxt.suspicion + sus)
+    else:
+        nxt = nxt.copy_with(praise_streak=0,
+                            loose_lips=nxt.loose_lips + (SP.lips_per_hit * truth * intensity if truth > 0 else 0))
     return TauntOutcome(before=s, after=nxt, truth=truth, kind=kind)
