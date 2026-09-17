@@ -63,3 +63,13 @@ def test_commentary_validate_rejects_invented_moves():
     assert validate(good, m) == []
     bad = {**good, "commentary": "▲４五桂より▲２四歩が良かった。ここから形勢は後手に大きく傾いてしまった。"}
     assert any("unknown move" in e for e in validate(bad, m))
+
+
+def test_commentary_rejects_copied_style_and_wrong_side():
+    from aori_lab.learn.commentary import copied_style, wrong_side_marks
+    out = {"commentary": "△１五歩より▲８四飛が良かった。", "taunts": [], "gunshi": {"text": "それはわが思うつぼである。近日のうちに"}}
+    assert copied_style(out, ["それはわが思うつぼである。近日のうちに、大量の兵糧が"]) == ["copied style quote"]
+    m = {"facts": "手番: △後手 30手目", "own_moves": ["１五歩", "８四飛"]}
+    assert wrong_side_marks(out, m)
+    ok = {**out, "commentary": "△１五歩より△８四飛が良かった。"}
+    assert wrong_side_marks(ok, m) == []

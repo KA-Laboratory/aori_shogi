@@ -176,11 +176,12 @@ class CommentaryForge:
         return {"id": f"g{gid}-p{ply}", "ply": ply, "sfen_before": b.sfen(), "played": played, "loss": loss,
                 "best_usi": best.usi if best else None, "prev_usi": prev_usi, "engine": self.engine.name,
                 "eval_before_black": before_black, "eval_after_black": after_black, "facts": "\n".join(lines),
-                "allowed_moves": sorted(allowed)}
+                "allowed_moves": sorted(allowed), "own_moves": [k for k in (played_kif, best_kif) if k]}
 
     # ---- 2. 生成と検証
     async def generate(self, m: dict) -> dict:
         style = ""
+        picks: list[str] = []
         if STYLE_QUOTES:
             picks = self.rng.sample(STYLE_QUOTES, k=min(3, len(STYLE_QUOTES)))
             style = "\n\n【軍師の口調の味付け（古風な語尾や言い回しの雰囲気だけ借りる。文をそのまま写さない。人名・国名・三国志の話題は出さない）】\n" + "\n".join(f"・{q}" for q in picks)
@@ -194,7 +195,7 @@ class CommentaryForge:
             self.stats["llm_fail"] += 1
             return {**m, "ok": False, "errors": [f"llm: {self.llm.last_error}"]}
         out = salvage(out)
-        errors = validate(out, m)
+        errors = validate(out, m) + copied_style(out, picks) + wrong_side_marks(out, m)
         if not errors:
             self.stats["valid"] += 1
         return {**m, "out": out, "ok": not errors, "errors": errors, "model": self.args.model,
@@ -229,6 +230,7 @@ class CommentaryForge:
             except Exception:  # noqa: BLE001
                 continue
             allowed.add(kif)
+            m.setdefault("own_moves", []).append(kif)
             parts.append(f"{mark}{kif}（{'・'.join(label.get(w, w) for w in who)}）")
         avg = round(sum(losses.values()) / len(losses))
         agree = sum(1 for v in losses.values() if v >= 150)
@@ -303,6 +305,28 @@ def append(path: Path, rec: dict) -> None:
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
+
+def copied_style(out: dict, picks: list[str], n: int = 10) -> list[str]:
+    """口調見本の文を長く写していたら不合格。"""
+    texts = [out.get("commentary", ""), out.get("gunshi", {}).get("text", "")] + [t.get("text", "") for t in out.get("taunts", [])]
+    for q in picks:
+        for i in range(0, max(1, len(q) - n + 1)):
+            if any(q[i:i + n] in t for t in texts):
+                return ["copied style quote"]
+    return []
+
+
+def wrong_side_marks(out: dict, m: dict) -> list[str]:
+    """指した側の手（指した手・合議の最善手）に相手側の▲△を付けていたら不合格。"""
+    mark = m["facts"].split("手番: ", 1)[1][0] if "手番: " in m["facts"] else ""
+    other = "△" if mark == "▲" else "▲"
+    own = {re.sub(r"\s", "", a) for a in m.get("own_moves", [])}
+    texts = [out.get("commentary", "")] + [t.get("text", "") for t in out.get("taunts", [])]
+    for t in texts:
+        for mv in re.findall(other + r"\s*(" + MOVE_RE.pattern + ")", t):
+            if re.sub(r"\s", "", mv) in own:
+                return [f"wrong side mark {other}{mv}"]
+    return []
 
 _DEBRIS = re.compile(r'[」』]?\s*[}\]\[{"].*$')
 
