@@ -88,8 +88,9 @@ def board_facts(scene: str, m: dict, rng: random.Random) -> str:
 def main() -> None:
     rng = random.Random(0)
     have = Counter()
-    if (EDIT / "edited_by_owner.jsonl").exists():
-        for line in (EDIT / "edited_by_owner.jsonl").read_text(encoding="utf-8").splitlines():
+    done = EDIT / "all.jsonl" if (EDIT / "all.jsonl").exists() else EDIT / "edited_by_owner.jsonl"
+    if done.exists():
+        for line in done.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 r = json.loads(line)
                 have[(r["scene"], r["mood"])] += 1

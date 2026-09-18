@@ -25,7 +25,7 @@ def main() -> None:
     bad = Counter()
     clean = []
     for r in kept:
-        f = flags(r, chk)
+        f = [x for x in flags(r, chk) if not x.startswith("気分の印なし")]  # 任意の目安は除く
         if f:
             bad[f[0]] += 1
             print(f"[{r['id']}] {','.join(f)} | {r['line']}")
