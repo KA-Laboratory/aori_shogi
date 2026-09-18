@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'core/dialogue/player_memory_file.dart';
+import 'core/dialogue/speaker.dart';
+import 'core/llm/gemma_client.dart';
 import 'features/game/game_controller.dart';
 import 'features/game/game_page.dart';
 
@@ -17,6 +19,10 @@ Future<void> main() async {
   final tone = await loadToneProfile();
   final dir = await getApplicationSupportDirectory();
   final memory = PlayerMemoryFile(File('${dir.path}/memory/player_memory.json')).load();
+  // 端末内LLM。モデルが入っていなければ ready が false のままで、定型文で遊べる。
+  final llm = GemmaLlmClient();
+  await llm.load().catchError((Object _) {});
+  final speaker = llm.ready ? LlmSpeaker(client: llm, tone: tone, lines: lines) : null;
   runApp(
     ProviderScope(
       overrides: [
@@ -24,6 +30,7 @@ Future<void> main() async {
         intentLexiconProvider.overrideWithValue(lexicon),
         toneProfileProvider.overrideWithValue(tone),
         playerMemoryProvider.overrideWithValue(memory),
+        gunshiSpeakerProvider.overrideWithValue(speaker),
       ],
       child: const AoriShogiApp(),
     ),

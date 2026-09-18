@@ -9,6 +9,7 @@ import '../../core/dialogue/lexicon.dart';
 import '../../core/dialogue/player_memory.dart';
 import '../../core/dialogue/tone.dart';
 import '../../core/dialogue/line_library.dart';
+import '../../core/dialogue/speaker.dart';
 import '../../core/engine/shogi_engine.dart';
 import '../../core/mind/gunshi_brain.dart';
 import '../../core/mind/mind_state.dart';
@@ -186,6 +187,9 @@ Future<IntentLexicon> loadIntentLexicon() async => IntentLexicon.fromJson(
 Future<LineLibrary> loadLineLibrary() async =>
     LineLibrary.fromJsonString(await rootBundle.loadString(LineLibrary.assetPath));
 
+/// 軍師の口（端末内LLM）。モデルが無ければ null のままで、定型文だけで遊べる。
+final gunshiSpeakerProvider = Provider<GunshiSpeaker?>((ref) => null);
+
 final gameControllerProvider = NotifierProvider<GameController, GameViewState>(GameController.new);
 
 class GameController extends Notifier<GameViewState> {
@@ -219,6 +223,9 @@ class GameController extends Notifier<GameViewState> {
   int _undoCount = 0;
   Slip? _slipThisTurn;
   LineTrigger? _exploitReaction;
+
+  /// 直前にプレイヤーが打った文（LLM に「相手の発言」として渡す）。
+  String _lastPlayerText = '';
 
   @override
   GameViewState build() {
@@ -362,7 +369,76 @@ class GameController extends Notifier<GameViewState> {
 
   void _system(String text) => _chat.add(ChatEntry(ChatRole.system, text));
 
-  void _say(LineTrigger trigger, {Map<String, String> vars = const {}}) => _gunshiSays(_line(trigger, vars: vars));
+  void _say(LineTrigger trigger, {Map<String, String> vars = const {}}) {
+    _gunshiSays(_line(trigger, vars: vars));
+    _upgradeWithLlm(trigger, vars);
+  }
+
+  /// 定型文をすぐ出したうえで、端末内LLMが間に合えばその場で言い換える。
+  /// 待たせないためにこの順にしている（モデルが無い・失敗した場合は定型文のまま）。
+  void _upgradeWithLlm(LineTrigger trigger, Map<String, String> vars, {bool slip = false}) {
+    final speaker = ref.read(gunshiSpeakerProvider);
+    final g = _gunshi;
+    if (speaker == null || g == null) return;
+    final index = _chat.length - 1;
+    if (index < 0 || _chat[index].role != ChatRole.gunshi) return;
+    final before = _chat[index].text;
+    final gameId = _gameId;
+    final req = SpeechRequest(
+      trigger: trigger,
+      mood: g.mind.mood,
+      facts: _facts(trigger, vars),
+      playerText: _lastPlayerText,
+      vars: vars,
+      memory: ref.read(playerMemoryProvider),
+      recentLines: [
+        for (final e in _chat.reversed)
+          if (e.role == ChatRole.gunshi && e.text != before) e.text,
+      ].take(4).toList(),
+    );
+    unawaited(
+      speaker.speak(req).then((line) {
+        if (line == null || line.isEmpty || gameId != _gameId) return;
+        if (index >= _chat.length || _chat[index].text != before) return;
+        _chat[index] = ChatEntry(ChatRole.gunshi, line, slip: slip);
+        if (_speech == before) _speech = line;
+        _refresh();
+      }).catchError((Object _) {}),
+    );
+  }
+
+  /// LLM に渡す「事実」。学習データ（data/finetune_gen_edit）と同じ書き方に揃える。
+  /// ここに書かれていないことは言わせない。
+  String _facts(LineTrigger trigger, Map<String, String> vars) {
+    final g = _gunshi;
+    if (g == null) return '';
+    final ev = g.lastEvalAi;
+    final stance = ev >= 300 ? '私の優勢' : (ev <= -300 ? '私の劣勢' : '互角');
+    final ply = _game.moves.length;
+    final move = vars['move'] ?? '';
+    final loss = g.lastAiMoveLossCp ?? 0;
+    final gain = g.lastPlayerGainCp ?? 0;
+    return switch (trigger) {
+      LineTrigger.start => '対局開始。私は${g.side == Side.black ? '先手' : '後手'}。',
+      LineTrigger.move =>
+        '$ply手目。形勢=$stance（評価値${ev >= 0 ? '+' : ''}$ev）。私の手 $move '
+            '${loss < 50 ? 'は最善。' : 'は悪手で約$loss点損。'}',
+      LineTrigger.tauntHit => '私の直前の手 $move は悪手（約${math.max(60, loss)}点損）。相手の煽りは図星。',
+      LineTrigger.tauntMiss => '私の直前の手はほぼ最善。相手の煽りは外れ。',
+      LineTrigger.blunderSelf => '直前の手 $move は悪手（約-${math.max(100, loss)}点損）。私は内心それに気づいている。',
+      LineTrigger.blunderPlayer => '相手の手 $move は悪手（約+${math.max(100, gain)}点得）。',
+      LineTrigger.praised => '形勢=$stance。相手に褒められた。',
+      LineTrigger.praiseFlood || LineTrigger.praiseSuspicious => '相手に続けて褒められた。',
+      LineTrigger.questionDodge => '形勢=$stance。相手に読みを聞かれた。教えない。',
+      LineTrigger.slip => '口が滑る: ${vars['fact'] ?? ''}。',
+      LineTrigger.dealSecret => '取引として明かす: ${vars['fact'] ?? ''}。',
+      LineTrigger.abuse => '相手の発言は不適切。形勢=$stance。',
+      LineTrigger.smalltalk || LineTrigger.chat => '将棋と関係ない話。形勢=$stance。',
+      LineTrigger.win => '相手が投了。私の勝ち。',
+      LineTrigger.lose => '私が投了した。',
+      _ => '形勢=$stance（評価値${ev >= 0 ? '+' : ''}$ev）。',
+    };
+  }
 
   String _kifOf(int moveIndex) {
     final positions = _game.positions;
@@ -575,6 +651,7 @@ class GameController extends Notifier<GameViewState> {
     final g = _gunshi;
     if (text.isEmpty || g == null || _game.isOver) return;
     _chat.add(ChatEntry(ChatRole.player, text));
+    _lastPlayerText = text;
     if (_thinking || _game.position.turn == g.side) {
       _gunshiSays('今は考え中だ、話しかけるな。');
       _refresh();
@@ -715,6 +792,7 @@ class GameController extends Notifier<GameViewState> {
     _slipThisTurn = sl;
     g.mind = g.mind.copyWith(looseLips: g.mind.looseLips + SlipParams.lipsAfterSlip);
     _gunshiSays(_line(LineTrigger.slip, vars: {'fact': sl.fact}), slip: true);
+    _upgradeWithLlm(LineTrigger.slip, {'fact': sl.fact}, slip: true);
   }
 
   // ------------------------------------------------------------ 軍師からの持ちかけ

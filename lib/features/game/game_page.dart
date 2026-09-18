@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/shogi/shogi.dart';
+import '../../core/llm/gemma_client.dart';
 import '../about/about_page.dart';
+import '../llm/model_page.dart';
 import 'board_view.dart';
 import 'engine_panel.dart';
 import 'gunshi_panel.dart';
@@ -58,6 +60,13 @@ class GamePage extends ConsumerWidget {
             tooltip: '感想戦',
             icon: const Icon(Icons.history_edu_outlined),
             onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ReviewPage())),
+          ),
+          IconButton(
+            tooltip: '軍師の言葉（端末内AI）',
+            icon: const Icon(Icons.record_voice_over_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => ModelPage(store: GunshiModelStore())),
+            ),
           ),
           IconButton(
             tooltip: '軍師が覚えていること',

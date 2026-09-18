@@ -23,9 +23,44 @@
 5. **口調は生成後もコードで守る**。`LlmSpeaker` は 生成 → `ToneProfile.rewrite` → 崩れが残れば作り直し（既定2回）→ それでも駄目なら null（呼び出し側がテンプレートに落とす）。90字超も落とす。
 6. Notice（Gemma Terms と Prohibited Use Policy）はアプリ内の「このアプリについて」に載せる。
 
+## 組み込み（2026-09-18 実装）
+
+依存は `flutter_gemma 1.8.3` ＋ `flutter_gemma_litertlm 1.6.4`（litertlm 側は 1.6.4 が最新で、pub の解決もこの組み合わせになる）。
+
+| ファイル | 役割 |
+|---|---|
+| `lib/core/llm/model_catalog.dart` | モデル一覧（URL・容量・種類）。純粋なデータなので、プラグイン無しで読めるしテストもできる |
+| `lib/core/llm/gemma_client.dart` | **flutter_gemma に触れる唯一のファイル**。`GunshiModelStore`（導入・削除・状態）と `GemmaLlmClient`（`LlmClient` 実装） |
+| `lib/features/llm/model_page.dart` | 「軍師の言葉」画面。モデルを選んで入れる／消す。進捗は 0〜100 |
+| `lib/features/game/game_controller.dart` | `gunshiSpeakerProvider` と `_upgradeWithLlm` / `_facts` |
+
+実際に使った API（1.8.3 で確認）:
+
+```dart
+await FlutterGemma.initialize(inferenceEngines: [LiteRtLmEngine()]);
+await FlutterGemma.installModel(modelType: ..., fileType: ModelFileType.litertlm)
+    .fromNetwork(url, foreground: true).withProgress((p) {}).install();   // p は 0..100
+final model = await FlutterGemma.getActiveModel(maxTokens: 1024, preferredBackend: PreferredBackend.gpu);
+final s = await model.createSession(systemInstruction: ..., maxOutputTokens: 120);
+await s.addQueryChunk(Message.text(text: user, isUser: true));
+final text = await s.getResponse();
+await s.close();
+```
+
+- 入っているかどうかは `FlutterGemma.hasActiveModel()`（端末に保存される）。削除は `listInstalledModels()` → `uninstallModel(id)` → `clearActiveInferenceIdentity()`。
+- `maxTokens` は 1024 未満にしない（`.litertlm` はテンソル確保に失敗する）。返答の長さは `maxOutputTokens` で絞る。
+- セリフ1本ごとに session を作って捨てる。軍師は毎ターン気分が変わるので履歴を持たない方が素直で、端末のメモリも抱え込まない。
+- Android: `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_DATA_SYNC` / `POST_NOTIFICATIONS` を AndroidManifest に追加（大きなモデルを画面外でも落とし切るため）。debug APK のビルドは通っている。
+
+### 待たせない出し方
+
+`_say` は **まず定型文をその場で出す**。そのうえで端末内LLMが間に合ったら、同じ発言をそっと言い換える
+（`_upgradeWithLlm`）。生成が遅い・失敗した・対局が変わったときは定型文のまま。
+LLM に渡す「事実」は `_facts` が作り、学習データ（`data/finetune_gen_edit`）と同じ書き方に揃えてある。
+
 ## 次の作業
 
-- [ ] `packages/`（または lib/core/llm）に flutter_gemma を使う `LlmClient` 実装を足す。まずはエミュレータで Qwen3 0.6B を動かして口を確認する。
-- [ ] モデルのダウンロードUI（進捗・Wi-Fi のみ・あとで）と保存先。NNUE の `nnue_store.dart` と共通化できるか見る。
-- [ ] 実機 Galaxy S24 で E2B の速さ（受け入れ条件 p95 < 6秒）とメモリを測る。
+- [ ] 実機 Galaxy S24 で Gemma 3 1B → Gemma 4 E2B の順に、速さ（受け入れ条件 p95 < 6秒。`GemmaLlmClient.timings` で測れる）とメモリを見る。
+- [ ] 実機で日本語の口調が保てるか（tools/eval_persona.py の観点で、テンプレート落ちの割合を見る）。
+- [ ] モデル入替の即時反映（いまはアプリを開き直すと反映。`gunshiSpeakerProvider` を作り直す形にする）。
 - [ ] 評価は tools/eval_persona.py（崩れ・テンプレート落ち・速さ）と tools/ab_compare.py（伏せたA/B）で。
