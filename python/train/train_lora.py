@@ -83,7 +83,7 @@ def main() -> None:
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
-        warmup_ratio=0.05,
+        warmup_steps=10,  # transformers 5.x に warmup_ratio は無い
         lr_scheduler_type="cosine",
         bf16=torch.cuda.is_bf16_supported(),
         gradient_checkpointing=True,
