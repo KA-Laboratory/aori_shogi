@@ -84,12 +84,14 @@ PERSONA_END = re.compile(r"だ[。！？…、]|だ$|だな|だろう|かね|で
                          r"[んせ]か[。？]|であろう|かろう|ものだ|ことだ|のである")
 MIN_LEN = 18
 # 気分ごとの「らしさ」。1つも入っていない文は弾く（平坦な返事の量産を防ぐ）
+# 2026-09-18: 気分ごとの丁寧さ／素の出方は gunshi_tone.json の mood_require に移した。
+# ここは「その気分らしい仕草」が1つも無い文を拾うだけの目安にする。
 MOOD_MARK = {
-    "smug": re.compile(r"はは|ふふ|はーっ|わ！|見よ|当然|愚か|ひれ伏|さすが私|天才|まるで|ごとき|に過ぎ"),
-    "rattled": re.compile(r"……|…|な、|そ、|う、|ま、|待て|落ち着|はず|たぶん|いや"),
-    "meltdown": re.compile(r"[ぁぃぅぇぉー]{1,}[！。]|うわ|ひぃ|やめ|お願い|頼む|だめ|もう|ごめん|泣|！！"),
-    "coverUp": re.compile(r"伏線|作戦|計算|わざと|高等|誤解|そう、|つまり|見ての"),
-    "composed": re.compile(r"ふむ|なるほど|ほう|さて|まあ|よかろう|当然"),
+    "smug": re.compile(r"はは|ふふ|ハッハ|クック|わ！|見よ|当然|愚か|ひれ伏|さすが|天才|まるで|ごとき|に過ぎ|ですな"),
+    "rattled": re.compile(r"……|…|な、|そ、|う、|ま、|え、|ひ、|待て|落ち着|はず|たぶん|いや|ぞ"),
+    "meltdown": re.compile(r"[ぁぃぅぇぉー]{1,}[！。]|うわ|ひぃ|やめ|お願い|頼む|だめ|もう|ごめん|泣|！！|ーっ"),
+    "coverUp": re.compile(r"伏線|作戦|計算|わざと|高等|誤解|そう、|つまり|見ての|ふふ|ハッハ|おや"),
+    "composed": re.compile(r"ふむ|なるほど|ほう|さて|まあ|よかろう|当然|ですな|ございま"),
 }
 
 
@@ -142,7 +144,7 @@ class Checker:
             return "句読点の乱れ"
         if BAD_FACT.search(facts):
             return "事実の数値が不自然"
-        if mood != "meltdown" and not PERSONA_END.search(line):
+        if mood in ("rattled",) and not PERSONA_END.search(line):
             return "語尾がキャラでない"
         # 気分らしさは「半分以上に入っていればよい」ゆるい決まりにする（厳しくすると何も通らない）
         mark = MOOD_MARK.get(mood)

@@ -86,7 +86,7 @@ class LlmSpeaker implements GunshiSpeaker {
     for (var i = 0; i < maxAttempts; i++) {
       final raw = (await client.generate(system: system, user: user))?.trim();
       if (raw == null || raw.isEmpty) continue;
-      final line = tone.rewrite(_oneLine(raw));
+      final line = tone.rewrite(_oneLine(raw), mood: req.mood.name);
       if (line.length > maxChars) continue;
       if (tone.violations(line, mood: req.mood.name).isNotEmpty) continue;
       return line;
