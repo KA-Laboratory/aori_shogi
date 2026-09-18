@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/dialogue/intent.dart';
 import '../../core/dialogue/lexicon.dart';
 import '../../core/dialogue/player_memory.dart';
+import '../../core/dialogue/tone.dart';
 import '../../core/dialogue/line_library.dart';
 import '../../core/engine/shogi_engine.dart';
 import '../../core/mind/gunshi_brain.dart';
@@ -169,6 +170,12 @@ final intentLexiconProvider = Provider<IntentLexicon?>((ref) => null);
 
 /// 相手について覚えていること。端末では main.dart が PlayerMemoryFile で読み込んだものを差し替える。
 final playerMemoryProvider = Provider<PlayerMemory>((ref) => PlayerMemory());
+
+/// 口調プロファイル（assets/lines/gunshi_tone.json）。気分に合わせてセリフを整える。
+final toneProfileProvider = Provider<ToneProfile?>((ref) => null);
+
+Future<ToneProfile> loadToneProfile() async =>
+    ToneProfile.fromJsonString(await rootBundle.loadString(ToneProfile.assetPath));
 
 Future<IntentLexicon> loadIntentLexicon() async => IntentLexicon.fromJson(
   await rootBundle.loadString(IntentLexicon.termsAsset),
@@ -341,7 +348,9 @@ class GameController extends Notifier<GameViewState> {
     final lib = ref.read(lineLibraryProvider);
     final g = _gunshi;
     if (lib == null || g == null) return '';
-    return lib.pick(g.mind.mood, trigger, _rng, vars: vars);
+    final line = lib.pick(g.mind.mood, trigger, _rng, vars: vars);
+    // 気分に合わせて整える（動揺・大混乱では、平静から借りた丁寧なセリフを常体に戻す）
+    return ref.read(toneProfileProvider)?.rewrite(line, mood: g.mind.mood.name) ?? line;
   }
 
   void _gunshiSays(String text, {bool slip = false}) {

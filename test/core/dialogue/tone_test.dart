@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:aori_shogi/core/dialogue/line_library.dart';
 import 'package:aori_shogi/core/dialogue/tone.dart';
+import 'package:aori_shogi/core/mind/mind_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -39,8 +41,20 @@ void main() {
     expect(tone.violations('ハッハッハ！ 喜んで頂戴いたしますよ。', mood: 'smug'), isEmpty);
   });
 
-  test('テンプレートセリフ自体は口調規則を守っている', () {
-    final lines = File('assets/lines/gunshi_lines.json').readAsStringSync();
-    expect(RegExp('わよ|かしら|あなた|でしょう').hasMatch(lines), isFalse);
+  test('テンプレートセリフ自体が気分ごとの口調規則を守っている', () {
+    final lib = LineLibrary.fromJsonString(File('assets/lines/gunshi_lines.json').readAsStringSync());
+    final bad = <String>[];
+    for (final mood in Mood.values) {
+      for (final trigger in LineTrigger.values) {
+        for (final line in lib.linesFor(mood, trigger)) {
+          final raw = line.replaceAll('{move}', '△７六歩').replaceAll('{fact}', '次は△３四歩');
+          // 実際の表示と同じく、気分に合わせて整えてから判定する
+          final text = tone.rewrite(raw, mood: mood.name);
+          final v = tone.violations(text, mood: mood.name);
+          if (v.isNotEmpty) bad.add('${mood.name}/${trigger.key} ${v.join(",")}: $line');
+        }
+      }
+    }
+    expect(bad, isEmpty, reason: bad.join('\n'));
   });
 }

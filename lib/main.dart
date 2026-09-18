@@ -14,6 +14,7 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final lines = await loadLineLibrary();
   final lexicon = await loadIntentLexicon();
+  final tone = await loadToneProfile();
   final dir = await getApplicationSupportDirectory();
   final memory = PlayerMemoryFile(File('${dir.path}/memory/player_memory.json')).load();
   runApp(
@@ -21,6 +22,7 @@ Future<void> main() async {
       overrides: [
         lineLibraryProvider.overrideWithValue(lines),
         intentLexiconProvider.overrideWithValue(lexicon),
+        toneProfileProvider.overrideWithValue(tone),
         playerMemoryProvider.overrideWithValue(memory),
       ],
       child: const AoriShogiApp(),
