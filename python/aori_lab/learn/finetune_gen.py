@@ -146,8 +146,7 @@ class Checker:
             return "句読点の乱れ"
         if BAD_FACT.search(facts):
             return "事実の数値が不自然"
-        if mood in ("rattled",) and not PERSONA_END.search(line):
-            return "語尾がキャラでない"
+        pass  # 語尾の型チェックは廃止（口調は tone の規則で見る）
         # 気分らしさは「半分以上に入っていればよい」ゆるい決まりにする（厳しくすると何も通らない）
         mark = MOOD_MARK.get(mood)
         if mark and not mark.search(line):

@@ -54,9 +54,8 @@ def flags(r: dict, chk: Checker) -> list[str]:
         out.append("句読点の乱れ")
     if BAD_FACT.search(facts):
         out.append("事実の数値が不自然")
-    # 語尾のチェックは素が出る気分だけ（丁寧な気分の口調は tone の mood_require が見る）
-    if mood == "rattled" and not PERSONA_END.search(line):
-        out.append("語尾がキャラでない")
+    # 語尾の型チェックは廃止（動揺は丁寧・常体どちらでもよく、大混乱は叫びで語尾が定まらない）。
+    # 口調は tone の mood_require / mood_banned が見る。
     mark = MOOD_MARK.get(mood)
     if mark and not mark.search(line):
         out.append("気分の印なし(任意)")
