@@ -18,6 +18,9 @@ OUT = DATA / "finetune_gen_edit"
 SOURCES = ["finetune_gen_v1", "finetune_gen_v2", "finetune_gen_v3", "finetune_gen_v4", "finetune_gen_v5",
            "cmp_gpt-oss_20b", "cmp_qwen3_8b"]
 MOODS = ["composed", "smug", "rattled", "meltdown", "coverUp"]
+# 相手の発言が無いと成立しない場面
+NEEDS_PLAYER = {"taunt_hit", "taunt_miss", "praised", "praise_suspicious", "abuse", "ai_question",
+                "offer_reply", "smalltalk", "slip", "question_dodge"}
 
 
 def fix_facts(facts: str) -> str:
@@ -56,9 +59,8 @@ def flags(r: dict, chk: Checker) -> list[str]:
         out.append("口調:" + ",".join(v))
     if squares(line) - squares(facts) - squares(player):
         out.append("事実にない指し手")
-    if S[r["scene"]][3] == "空文字" and player:
-        out.append("player不要")
-    if S[r["scene"]][3] != "空文字" and not player:
+    # 相手の発言は、場面によっては有っても無くてもよい（軍師の独り言でも成立する）
+    if S[r["scene"]][3] != "空文字" and not player and r["scene"] in NEEDS_PLAYER:
         out.append("player欠落")
     return out
 
