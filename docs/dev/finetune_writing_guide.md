@@ -1,9 +1,22 @@
 # 軍師のセリフを書くときの雛形（2026-09-18）
 
 M3 のキャラ追加学習（LoRA）用データを、賢太郎さんが手で書き進めるための手引き。
-雛形ファイルは `python/data/finetune_gen_edit/skeleton.jsonl`（399件、`line` が空）。書けたものは `edited_by_owner.jsonl` に足していく。
 
-作り直しは `uv run python tools/build_skeleton.py`、確認は `uv run python tools/report_edited.py <ファイル>`。
+## 書く手順（2026-09-18 更新・残り109件）
+
+1. `python/data/finetune_gen_edit/worksheet.txt` を開く（場面×気分ごとにまとまっていて、口調の注意が各章の頭に書いてある）。
+2. 各項目の `>>> ` の後ろにセリフを1行書く。書かずに飛ばしてよい。
+3. 書けたら検査する。
+
+```
+cd python
+uv run python tools/import_worksheet.py     # → edited_by_owner_4.jsonl、指摘をその場で表示
+uv run python tools/merge_owner.py          # 指摘ゼロになったら all.jsonl に足す
+uv run python tools/check_edited.py data/finetune_gen_edit/all.jsonl   # train/eval に分け直す
+```
+
+シートの作り直しは `uv run python tools/make_worksheet.py`（雛形そのものは `tools/build_skeleton.py`）。
+雛形ファイルは `python/data/finetune_gen_edit/skeleton.jsonl`（`line` が空）。
 
 ## 1行の形
 
@@ -72,6 +85,14 @@ M3 のキャラ追加学習（LoRA）用データを、賢太郎さんが手で�
 | smalltalk | 将棋と関係ない雑談への返事 | 相手について覚えていること: …／なし。 | 日常の話 | （これから書く。**共感してから、まだ知らないことを1つだけ聞く**のが型） |
 | ai_question | AIか人間か聞かれてはぐらかす | 形勢=…。 | 「AIなの？」系 | （これから書く。人間だと断言も、AIだと認めることもしない） |
 | abuse | 不適切な発言をたしなめる | 相手の発言は不適切。 | 伏せ字の暴言 | （これから書く。煽り返さず、盤上で勝負しようと戻す） |
+
+## 残り109件の内訳（2026-09-18）
+
+smalltalk 18／start 18／ai_question 15／abuse 14／checkmate_threat 14／checkmate_win 8／checkmate_lose 8／win 6／lose 6／draw 2。
+
+事実の作り方も見直した: AIか聞かれる場面と不適切発言の場面は形勢を事実に入れる、
+詰みの手から玉と歩を除く（打ち歩詰めは反則）、手の注記「（最善手と同じ）」を落とし数字を半角に揃える、
+同じ事実・同じ相手の発言が場面の中で重ならないようにする。
 
 ## まだ書けていない場面の注意
 

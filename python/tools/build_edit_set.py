@@ -34,6 +34,11 @@ def fix_facts(facts: str) -> str:
     return facts
 
 
+PIECES = re.compile(r"[歩香桂銀金飛角玉と馬龍竜]")
+# 駒の名前と同じ字を使うが駒ではない言葉
+NOT_A_PIECE = re.compile(r"馬鹿|歩[くみいけんま]|一歩|角度|玉座|金輪際|金言|飛[びぶんばこ]|香[りばし]")
+
+
 def flags(r: dict, chk: Checker) -> list[str]:
     line, facts, player, mood = r["line"], r["facts"], r.get("player", ""), r["mood"]
     out = []
@@ -60,6 +65,12 @@ def flags(r: dict, chk: Checker) -> list[str]:
         out.append("口調:" + ",".join(v))
     if squares(line) - squares(facts) - squares(player):
         out.append("事実にない指し手")
+    # 事実が指し手を挙げているのに、別の駒の名前を出していないか（言い回しの綾もあるので任意）
+    if "手 " in facts:
+        plain = NOT_A_PIECE.sub("", line)
+        named = set(PIECES.findall(plain)) - set(PIECES.findall(facts)) - set(PIECES.findall(player))
+        if named:
+            out.append("事実にない駒(任意):" + "".join(sorted(named)))
     # 相手の発言は、場面によっては有っても無くてもよい（軍師の独り言でも成立する）
     if S[r["scene"]][3] != "空文字" and not player and r["scene"] in NEEDS_PLAYER:
         out.append("player欠落")
