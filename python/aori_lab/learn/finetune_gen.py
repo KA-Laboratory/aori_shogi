@@ -24,7 +24,7 @@ from ..llm import OLLAMA_HOST
 from ..tone import ToneProfile
 
 ROOT = Path(__file__).resolve().parents[3]
-DATA = ROOT / "python" / "data" / "finetune_gen"
+DATA = ROOT / "python" / "data" / "finetune_gen"  # --dir で変えられる
 PROMPT_DOC = ROOT / "docs" / "dev" / "finetune_data_prompt.md"
 MOODS = ["composed", "smug", "rattled", "meltdown", "coverUp"]
 
@@ -66,6 +66,13 @@ def keep_awake(on: bool) -> None:
 
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
 
+# JSON の破片・文語・句読点の乱れ（1回目の生成でこれらが混じったので弾く）
+DEBRIS = re.compile(r'[{}\[\]"]|」\},|」\]')
+STIFF = re.compile(r"である[。！]|なり[。！]|べきである|せよ[。！]|ゆえに|のみならず|たるもの")
+MESS = re.compile(r"[、。][\s　]*[、。]|　+…|[、。]\s+…|…\s*、|^[、。…]")
+# 事実の数値がありえない（損失が小さすぎる・評価値の桁が足りない）ものは作り直す
+BAD_FACT = re.compile(r"約([1-9]|[1-4][0-9])点損|評価値[±+-]?[0-9]{1,2}[）)]")
+
 
 def system_prompt() -> str:
     t = PROMPT_DOC.read_text(encoding="utf-8")
@@ -103,6 +110,16 @@ class Checker:
             return "90字超"
         if re.search(r"[（(［\[【]", line) or EMOJI.search(line) or EMOJI.search(player):
             return "括弧/絵文字"
+        if len(line) < 12:
+            return "短すぎ"
+        if DEBRIS.search(line) or DEBRIS.search(facts) or DEBRIS.search(player):
+            return "JSONの破片"
+        if STIFF.search(line):
+            return "文語"
+        if MESS.search(line):
+            return "句読点の乱れ"
+        if BAD_FACT.search(facts):
+            return "事実の数値が不自然"
         if S[scene][3] == "空文字" and player:
             return "player不要"
         if S[scene][3] != "空文字" and not player:
@@ -128,6 +145,9 @@ def batch_prompt(scene: str, mood: str, count: int, recent: list[str]) -> str:
     s = (f"次の条件で {count} 件書いてください。\n- scene: {scene}\n- mood: {mood}\n- 場面の説明: {desc}\n"
          "- facts は下の「事実の型」に沿って、毎件ちがう局面・状況を作ること（手数、駒、評価値、形勢を変える）。\n"
          "- player は下の「相手の発言の型」に沿って、毎件ちがう言い方にすること（口語、短文、絵文字なし）。\n"
+         "- セリフは必ず言い切った文にする。途中で切れた文、句読点が続く文、記号だけの文は書かない。\n"
+         "- 話し言葉で書く。「である」「なり」「せよ」などの文語は使わない。\n"
+         "- facts の数値は将棋として自然な値にする（損失は50点以上、評価値は±3000以内の3桁以上）。\n"
          f"事実の型: {fp}\n相手の発言の型: {pp}\n")
     if recent:
         s += "\n既に書いたセリフ（書き出し・言い回し・比喩を真似しない）:\n" + "\n".join(recent)
@@ -135,9 +155,9 @@ def batch_prompt(scene: str, mood: str, count: int, recent: list[str]) -> str:
     return s
 
 
-def ask(model: str, system: str, user: str, count: int) -> list[dict]:
+def ask(model: str, system: str, user: str, count: int, temperature: float = 0.9) -> list[dict]:
     body = {"model": model, "stream": False, "format": SCHEMA, "keep_alive": "30m",
-            "options": {"temperature": 0.9, "top_p": 0.95, "num_ctx": 8192, "num_predict": 1500 + 160 * count},
+            "options": {"temperature": temperature, "top_p": 0.95, "num_ctx": 8192, "num_predict": 1500 + 160 * count},
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
     body["think"] = "low" if model.startswith("gpt-oss") else False
     with httpx.Client(timeout=1800) as c:
@@ -186,9 +206,15 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--hours", type=float, default=8)
     ap.add_argument("--model", default="gpt-oss:20b")
-    ap.add_argument("--per-call", type=int, default=10)
+    ap.add_argument("--per-call", type=int, default=5)
     ap.add_argument("--max-tries", type=int, default=8, help="1つの scene×mood に依頼する上限回数")
+    ap.add_argument("--dir", default="", help="出力先（data/ 配下の名前。既定 finetune_gen）")
+    ap.add_argument("--limit", type=int, default=0, help="この件数で打ち切る（モデル比べ用）")
+    ap.add_argument("--temperature", type=float, default=0.9)
     args = ap.parse_args()
+    global DATA
+    if args.dir:
+        DATA = ROOT / "python" / "data" / args.dir
     DATA.mkdir(parents=True, exist_ok=True)
     (DATA / "STOP").unlink(missing_ok=True)
     acc_p, rej_p = DATA / "accepted.jsonl", DATA / "rejected.jsonl"
@@ -200,6 +226,8 @@ def main() -> None:
     try:
         while time.time() < deadline and not (DATA / "STOP").exists():
             have = Counter((r["scene"], r["mood"]) for r in acc)
+            if args.limit and len(acc) >= args.limit:
+                break
             todo = [(k, tg[k] - have[k]) for k in tg if have[k] < tg[k] and tries[k] < args.max_tries]
             if not todo:
                 break
@@ -209,7 +237,7 @@ def main() -> None:
             recent = [r["line"] for r in acc if r["scene"] == scene][-15:]
             try:
                 t = time.time()
-                items = ask(args.model, system, batch_prompt(scene, mood, count, recent), count)
+                items = ask(args.model, system, batch_prompt(scene, mood, count, recent), count, args.temperature)
                 calls += 1
             except Exception as e:  # noqa: BLE001
                 print(f"[error] {scene}/{mood}: {type(e).__name__}: {e}", flush=True)
