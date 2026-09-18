@@ -58,6 +58,21 @@ await s.close();
 （`_upgradeWithLlm`）。生成が遅い・失敗した・対局が変わったときは定型文のまま。
 LLM に渡す「事実」は `_facts` が作り、学習データ（`data/finetune_gen_edit`）と同じ書き方に揃えてある。
 
+## エミュレータでの確認（2026-09-19）
+
+AVD `ybn_test`（Android 35 google_apis **x86_64**）で debug APK を入れて確認した（`tool/run_emu.cmd`、`tool/shot.cmd`、`tool/tap.cmd`）。
+
+- 起動・対局・軍師のセリフはこれまでどおり。flutter_gemma を足しても壊れていない。
+- 「軍師の言葉」画面は開き、モデル未導入なので「いまは定型文で喋っています。」と正しく出る。
+  `FlutterGemma.initialize` は x86_64 でも例外にならない。
+- ▲7六歩 → AI △1四歩 → 軍師「１四歩。計算どおりでございます。」。改訂した紳士口調のテンプレートが出ている。
+
+**⚠ 端末内LLM自体はエミュレータでは動かせない。** APK の中身を見ると LiteRT-LM のネイティブ
+ライブラリ（`libLiteRtLm.so` ほか8個）は **arm64-v8a にしか入っていない**（x86_64 は Flutter の
+4ファイルのみ）。ビルドログの `litertlm libs cached to .../android_arm64` もこれと合う。
+したがって生成の確認は実機（Galaxy S24）でしかできない。arm64 の AVD は x86 ホスト上で
+命令エミュレーションになり、LLM の速さを測る用途には使えない。
+
 ## 次の作業
 
 - [ ] 実機 Galaxy S24 で Gemma 3 1B → Gemma 4 E2B の順に、速さ（受け入れ条件 p95 < 6秒。`GemmaLlmClient.timings` で測れる）とメモリを見る。
