@@ -64,18 +64,34 @@ litert-torch export_hf <MODEL> <OUTPUT_DIR> [flags]
 3. **マージ**: `peft` の `merge_and_unload()` でベースに焼き込み、safetensors で保存する。
    （LoRA アダプタを実行時に差す道は flutter_gemma / LiteRT-LM のどちらにも無い → docs/dev/m3_llm_integration.md）
 
-4. **変換**
+4. **変換**（**2026-09-19 に素の Qwen3 0.6B で実際に通した**）
    ```
-   litert-torch export_hf /path/to/merged-gunshi /tmp/gunshi \
+   litert-torch export_hf /path/to/merged-gunshi out/litertlm \
        --bundle_litert_lm --quantization_recipe dynamic_wi8_emb4_afp32 \
-       --externalize_embedder --cache_length 1024
+       --externalize_embedder --cache_length 1024 --prefill_lengths 512 \
+       --experimental_lightweight_conversion True
    ```
+   - **`--experimental_lightweight_conversion True` は必須に近い。** 付けないと MLIR に落とす途中で
+     メモリを使い切って落ちる（2コア8GBの環境で、無言で死んだ）。付ければ **2分10秒・661MB** で
+     `model.litertlm` ができた。`--prefill_lengths` は 128 でも 512 でも同じ時間・同じ大きさだった。
+     アプリのプロンプトは system＋事実＋口調の念押しで数百トークンになるので 512 にしておく。
+   - 量子化の効き: 埋め込みは 7.6倍小さくなった（0.6B が 661MB）。
 
 5. **端末に入れる**: できた `.litertlm` を配布先（未決: nn.bin と同じ経路）に置き、
    `lib/core/llm/model_catalog.dart` に軍師モデルとして足す。開発中は adb で直接置いてもよい。
 
 6. **評価**: `python/tools/eval_persona.py`（崩れ・テンプレート落ち・速さ）と `tools/ab_compare.py`
    （素のモデル vs 追加学習ずみを伏せて比べる）。受け入れは実機で p95 < 6秒。
+
+## 変換をどこで回すか
+
+`litert-torch` は Linux のみ。選べる道は2つある。
+
+- **(a) WSL2 を入れる**（`wsl --install` に管理者権限と再起動が要る。2026-09-19 時点で未導入）。
+  学習も変換も1台で完結する。
+- **(b) 学習とマージは Windows、変換だけ Linux に渡す。** 変換は上のとおり 2コア8GBで2分なので、
+  重い作業ではない。マージ済みモデル（0.6B の bf16 で約1.2GB）を運ぶだけでよい。
+  `merge_lora.py` は 350MB ずつに分けて保存するので、ファイル1つ400MBの上限がある経路でも運べる。
 
 ## まだ確かめていないこと
 
