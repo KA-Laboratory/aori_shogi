@@ -30,15 +30,32 @@ Future<void> main() async {
         intentLexiconProvider.overrideWithValue(lexicon),
         toneProfileProvider.overrideWithValue(tone),
         playerMemoryProvider.overrideWithValue(memory),
-        gunshiSpeakerProvider.overrideWithValue(speaker),
       ],
-      child: const AoriShogiApp(),
+      child: AoriShogiApp(speaker: speaker),
     ),
   );
 }
 
-class AoriShogiApp extends StatelessWidget {
-  const AoriShogiApp({super.key});
+class AoriShogiApp extends ConsumerStatefulWidget {
+  const AoriShogiApp({super.key, this.speaker});
+
+  final GunshiSpeaker? speaker;
+
+  @override
+  ConsumerState<AoriShogiApp> createState() => _AoriShogiAppState();
+}
+
+class _AoriShogiAppState extends ConsumerState<AoriShogiApp> {
+  @override
+  void initState() {
+    super.initState();
+    final speaker = widget.speaker;
+    if (speaker != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(gunshiSpeakerProvider.notifier).set(speaker);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -4,23 +4,23 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/dialogue/speaker.dart';
 import '../../core/llm/gemma_client.dart';
 import '../../core/llm/model_catalog.dart';
+import '../game/game_controller.dart';
 
-class ModelPage extends StatefulWidget {
-  const ModelPage({super.key, required this.store, this.onChanged});
+class ModelPage extends ConsumerStatefulWidget {
+  const ModelPage({super.key, required this.store});
 
   final GunshiModelStore store;
 
-  /// 導入・削除のあとに呼ばれる（呼び出し側でクライアントを読み直す）。
-  final VoidCallback? onChanged;
-
   @override
-  State<ModelPage> createState() => _ModelPageState();
+  ConsumerState<ModelPage> createState() => _ModelPageState();
 }
 
-class _ModelPageState extends State<ModelPage> {
+class _ModelPageState extends ConsumerState<ModelPage> {
   bool _ready = false;
   bool _busy = false;
   int _percent = 0;
@@ -49,7 +49,7 @@ class _ModelPageState extends State<ModelPage> {
       await widget.store.install(spec, onProgress: (p) {
         if (mounted) setState(() => _percent = p);
       });
-      widget.onChanged?.call();
+      await _swapSpeaker();
     } on Object catch (e) {
       if (mounted) setState(() => _error = '$e');
     } finally {
@@ -70,13 +70,24 @@ class _ModelPageState extends State<ModelPage> {
     });
     try {
       await widget.store.removeAll();
-      widget.onChanged?.call();
+      await _swapSpeaker();
     } on Object catch (e) {
       if (mounted) setState(() => _error = '$e');
     } finally {
       if (mounted) setState(() => _busy = false);
       await _refresh();
     }
+  }
+
+  /// 入れ替えたその場で軍師の口を差し替える（アプリの再起動は要らない）。
+  Future<void> _swapSpeaker() async {
+    final box = ref.read(gunshiSpeakerProvider.notifier);
+    final tone = ref.read(toneProfileProvider);
+    final lines = ref.read(lineLibraryProvider);
+    if (tone == null || lines == null) return;
+    final llm = GemmaLlmClient();
+    await llm.load().catchError((Object _) {});
+    box.set(llm.ready ? LlmSpeaker(client: llm, tone: tone, lines: lines) : null);
   }
 
   @override
@@ -119,7 +130,6 @@ class _ModelPageState extends State<ModelPage> {
                 ),
               ),
             ),
-          const Text('入れ替えたあとは、アプリを開き直すと軍師の言葉に反映されます。'),
           const SizedBox(height: 16),
           if (_ready)
             OutlinedButton.icon(

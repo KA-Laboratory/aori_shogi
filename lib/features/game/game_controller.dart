@@ -188,7 +188,15 @@ Future<LineLibrary> loadLineLibrary() async =>
     LineLibrary.fromJsonString(await rootBundle.loadString(LineLibrary.assetPath));
 
 /// 軍師の口（端末内LLM）。モデルが無ければ null のままで、定型文だけで遊べる。
-final gunshiSpeakerProvider = Provider<GunshiSpeaker?>((ref) => null);
+/// モデルを入れ替えたら [GunshiSpeakerBox.set] で差し替える（アプリの再起動は要らない）。
+final gunshiSpeakerProvider = NotifierProvider<GunshiSpeakerBox, GunshiSpeaker?>(GunshiSpeakerBox.new);
+
+class GunshiSpeakerBox extends Notifier<GunshiSpeaker?> {
+  @override
+  GunshiSpeaker? build() => null;
+
+  void set(GunshiSpeaker? speaker) => state = speaker;
+}
 
 final gameControllerProvider = NotifierProvider<GameController, GameViewState>(GameController.new);
 
@@ -413,7 +421,7 @@ class GameController extends Notifier<GameViewState> {
     final g = _gunshi;
     if (g == null) return '';
     final ev = g.lastEvalAi;
-    final stance = ev >= 300 ? '私の優勢' : (ev <= -300 ? '私の劣勢' : '互角');
+    final stance = ev >= 300 ? '優勢' : (ev <= -300 ? '劣勢' : '互角');
     final ply = _game.moves.length;
     final move = vars['move'] ?? '';
     final loss = g.lastAiMoveLossCp ?? 0;
