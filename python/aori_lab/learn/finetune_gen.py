@@ -69,9 +69,21 @@ EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
 # JSON の破片・文語・句読点の乱れ（1回目の生成でこれらが混じったので弾く）
 DEBRIS = re.compile(r'[{}\[\]"]|」\},|」\]')
 STIFF = re.compile(r"である[。！]|なり[。！]|べきである|せよ[。！]|ゆえに|のみならず|たるもの")
-MESS = re.compile(r"[、。][\s　]*[、。]|　+…|[、。]\s+…|…\s*、|^[、。…]")
+MESS = re.compile(r"[、。][\s　]*[、。]|　+…|[、。]\s+…|…\s*、|^[、。]")
 # 事実の数値がありえない（損失が小さすぎる・評価値の桁が足りない）ものは作り直す
 BAD_FACT = re.compile(r"約([1-9]|[1-4][0-9])点損|評価値[±+-]?[0-9]{1,2}[）)]")
+# 軍師らしい語尾が1つも無い文は弾く（大混乱だけは泣き言・伸ばし語尾を許す）
+PERSONA_END = re.compile(r"だ[。！？…、]|だ$|だな|だろう|かね|ではないか|のだ|たまえ|ぞ[。！…]|ぞ$|"
+                         r"のだよ|かな[。？]|給え|わ[！]|だぁ|だよ[。！]|ぁぁ|ぇ[。！]|ない[。！？]|なのだ")
+MIN_LEN = 18
+# 気分ごとの「らしさ」。1つも入っていない文は弾く（平坦な返事の量産を防ぐ）
+MOOD_MARK = {
+    "smug": re.compile(r"はは|ふふ|はーっ|わ！|見よ|当然|愚か|ひれ伏|さすが私|天才|まるで|ごとき|に過ぎ"),
+    "rattled": re.compile(r"……|…|な、|そ、|う、|ま、|待て|落ち着|はず|たぶん|いや"),
+    "meltdown": re.compile(r"[ぁぃぅぇぉー]{1,}[！。]|うわ|ひぃ|やめ|お願い|頼む|だめ|もう|ごめん|泣|！！"),
+    "coverUp": re.compile(r"伏線|作戦|計算|わざと|高等|誤解|そう、|つまり|見ての"),
+    "composed": re.compile(r"ふむ|なるほど|ほう|さて|まあ|よかろう|当然"),
+}
 
 
 def system_prompt() -> str:
@@ -98,9 +110,12 @@ def squares(s: str) -> set[str]:
     return {norm(a) + norm(b) for a, b in SQ.findall(s)}
 
 
+TONE = ToneProfile.load()
+
+
 class Checker:
     def __init__(self) -> None:
-        self.tone = ToneProfile.load()
+        self.tone = TONE
 
     def check(self, it: dict, scene: str, mood: str, pool: list[dict]) -> str | None:
         line, facts, player = it["line"].strip(), it["facts"].strip(), it["player"].strip()
@@ -110,7 +125,7 @@ class Checker:
             return "90字超"
         if re.search(r"[（(［\[【]", line) or EMOJI.search(line) or EMOJI.search(player):
             return "括弧/絵文字"
-        if len(line) < 12:
+        if len(line) < MIN_LEN:
             return "短すぎ"
         if DEBRIS.search(line) or DEBRIS.search(facts) or DEBRIS.search(player):
             return "JSONの破片"
@@ -120,6 +135,15 @@ class Checker:
             return "句読点の乱れ"
         if BAD_FACT.search(facts):
             return "事実の数値が不自然"
+        if mood != "meltdown" and not PERSONA_END.search(line):
+            return "語尾がキャラでない"
+        # 気分らしさは「半分以上に入っていればよい」ゆるい決まりにする（厳しくすると何も通らない）
+        mark = MOOD_MARK.get(mood)
+        if mark and not mark.search(line):
+            same = [p for p in pool if p["mood"] == mood]
+            plain = sum(1 for p in same if not mark.search(p["line"]))
+            if same and plain >= len(same) / 2:
+                return "気分が出ていない"
         if S[scene][3] == "空文字" and player:
             return "player不要"
         if S[scene][3] != "空文字" and not player:
@@ -132,39 +156,79 @@ class Checker:
         nums = set(re.findall(r"\d{3,}", line.translate(ZEN))) - set(re.findall(r"\d{3,}", (facts + player).translate(ZEN)))
         if nums:
             return "事実にない数値"
+        same_end = 0
         for p in pool:
             if p["line"][:12] == line[:12]:
                 return "書き出し重複"
-            if p["scene"] == scene and difflib.SequenceMatcher(None, p["line"], line).ratio() > 0.75:
+            if p["scene"] == scene and difflib.SequenceMatcher(None, p["line"], line).ratio() > 0.6:
                 return "内容重複"
+            if p["line"][-8:] == line[-8:]:
+                same_end += 1
+                if same_end >= 2:
+                    return "言い回しの重複"
+        if sum(1 for p in pool if p["scene"] == scene and p["line"][-6:] == line[-6:]) >= 3:
+            return "文末の型の重複"
         return None
 
 
-def batch_prompt(scene: str, mood: str, count: int, recent: list[str]) -> str:
+TOPICS = ["仕事", "ペット", "天気", "食事", "週末の予定", "体調", "家族", "趣味", "通勤", "眠気",
+          "映画やテレビ", "季節の行事", "買い物", "運動", "旅行"]
+PIECES = ["歩", "香", "桂", "銀", "金", "角", "飛", "玉", "と金", "馬", "龍"]
+STANCES = ["優勢", "互角", "劣勢"]
+
+
+def variation(scene: str, rng: random.Random) -> str:
+    """同じ scene×mood を何度も頼むと同じ文が返るので、毎回ちがう「お題」を足す。"""
+    if scene == "smalltalk":
+        return f"今回の話題: {rng.choice(TOPICS)}（相手がこの話をしてきた前提で書く）"
+    if scene in ("start", "win", "lose", "abuse", "ai_question", "offer_reply"):
+        return f"今回の言い回しの軸: {rng.choice(['短く言い切る', '大げさな比喩を使う', '独り言が漏れる', '相手に問いかける'])}"
+    return (f"今回の場面: {rng.randrange(12, 120)}手目前後、形勢={rng.choice(STANCES)}、"
+            f"関わる駒={rng.choice(PIECES)}（事実の型に合わせて自然に書く）")
+
+
+def batch_prompt(scene: str, mood: str, count: int, recent: list[str], rng: random.Random | None = None) -> str:
     _, desc, fp, pp, _ = S[scene]
     s = (f"次の条件で {count} 件書いてください。\n- scene: {scene}\n- mood: {mood}\n- 場面の説明: {desc}\n"
          "- facts は下の「事実の型」に沿って、毎件ちがう局面・状況を作ること（手数、駒、評価値、形勢を変える）。\n"
          "- player は下の「相手の発言の型」に沿って、毎件ちがう言い方にすること（口語、短文、絵文字なし）。\n"
          "- セリフは必ず言い切った文にする。途中で切れた文、句読点が続く文、記号だけの文は書かない。\n"
          "- 話し言葉で書く。「である」「なり」「せよ」などの文語は使わない。\n"
+         "- 1件ごとに、尊大な言い回し・もったいぶり・大げさな比喩のどれかを必ず1つ入れる。平坦な相づちだけの返事は書かない。\n"
+         "- セリフは20字以上60字以内。語尾は「〜だ」「〜だな」「〜だろう」「〜かね」「〜ではないか」「〜のだ」「〜たまえ」を使う。\n"
          "- facts の数値は将棋として自然な値にする（損失は50点以上、評価値は±3000以内の3桁以上）。\n"
          f"事実の型: {fp}\n相手の発言の型: {pp}\n")
+    if rng is not None:
+        s += variation(scene, rng) + "\n"
+    s += TONE.reminder(mood) + "\n"
+    s += "同じ文型（「〜は心の〜だな。君は〜のだろうか？」のような型）を繰り返さない。毎件ちがう組み立てにする。\n"
     if recent:
         s += "\n既に書いたセリフ（書き出し・言い回し・比喩を真似しない）:\n" + "\n".join(recent)
     s += '\n\n出力は JSON {"items": [{"facts": ..., "player": ..., "line": ...}, ...]} のみ。'
     return s
 
 
-def ask(model: str, system: str, user: str, count: int, temperature: float = 0.9) -> list[dict]:
+def ask(model: str, system: str, user: str, count: int, temperature: float = 0.9) -> tuple[list[dict], str]:
+    """(使える items, 様子) を返す。gpt-oss は考える分も num_predict を食うので多めに取る。"""
+    gpt_oss = model.startswith("gpt-oss")
     body = {"model": model, "stream": False, "format": SCHEMA, "keep_alive": "30m",
-            "options": {"temperature": temperature, "top_p": 0.95, "num_ctx": 8192, "num_predict": 1500 + 160 * count},
+            "options": {"temperature": temperature, "top_p": 0.95, "num_ctx": 8192,
+                        "num_predict": (4000 if gpt_oss else 1200) + 220 * count},
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
-    body["think"] = "low" if model.startswith("gpt-oss") else False
+    body["think"] = "low" if gpt_oss else False
     with httpx.Client(timeout=1800) as c:
         r = c.post(f"{OLLAMA_HOST}/api/chat", json=body)
         r.raise_for_status()
-        items = json.loads(r.json()["message"].get("content") or "{}").get("items", [])
-    return [i for i in items if isinstance(i, dict) and all(isinstance(i.get(k), str) for k in ("facts", "player", "line"))]
+        d = r.json()
+    m = d.get("message", {})
+    content = m.get("content") or ""
+    note = f"{d.get('done_reason')} 出力{d.get('eval_count')}語 考え{len(m.get('thinking') or '')}字"
+    try:
+        items = json.loads(content).get("items", []) if content.strip() else []
+    except json.JSONDecodeError:
+        return [], note + " JSONが壊れた"
+    ok = [i for i in items if isinstance(i, dict) and all(isinstance(i.get(k), str) for k in ("facts", "player", "line"))]
+    return ok, note
 
 
 def load(p: Path) -> list[dict]:
@@ -220,6 +284,7 @@ def main() -> None:
     acc_p, rej_p = DATA / "accepted.jsonl", DATA / "rejected.jsonl"
     acc, rej = load(acc_p), Counter(r["reason"].split(":")[0] for r in load(rej_p))
     tg, system, chk = targets(), system_prompt(), Checker()
+    rng = random.Random()
     tries: Counter = Counter()
     t0, deadline, calls = time.time(), time.time() + args.hours * 3600, 0
     keep_awake(True)
@@ -237,8 +302,14 @@ def main() -> None:
             recent = [r["line"] for r in acc if r["scene"] == scene][-15:]
             try:
                 t = time.time()
-                items = ask(args.model, system, batch_prompt(scene, mood, count, recent), count, args.temperature)
+                items, note = ask(args.model, system, batch_prompt(scene, mood, count, recent, rng), count,
+                                  args.temperature)
                 calls += 1
+                if not items:  # 考える分で打ち切られたときは件数を減らして1回だけやり直す
+                    items, note2 = ask(args.model, system, batch_prompt(scene, mood, 2, recent, rng), 2,
+                                       args.temperature)
+                    calls += 1
+                    note = f"{note} → 2件で再試行: {note2}"
             except Exception as e:  # noqa: BLE001
                 print(f"[error] {scene}/{mood}: {type(e).__name__}: {e}", flush=True)
                 time.sleep(30)
@@ -258,7 +329,8 @@ def main() -> None:
                 acc.append(row)
                 append(acc_p, row)
                 ok += 1
-            print(f"[{time.strftime('%H:%M')}] {scene}/{mood}: {ok}/{len(items)} 合格 ({time.time()-t:.0f}s) 合計 {len(acc)}/{sum(tg.values())}", flush=True)
+            print(f"[{time.strftime('%H:%M')}] {scene}/{mood}: {ok}/{len(items)} 合格 ({time.time()-t:.0f}s) "
+                  f"合計 {len(acc)}/{sum(tg.values())} [{note}]", flush=True)
             finish(tg, acc, rej, calls, time.time() - t0, args.model)
     finally:
         keep_awake(False)
