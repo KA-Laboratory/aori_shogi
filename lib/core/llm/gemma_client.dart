@@ -122,7 +122,7 @@ class GemmaLlmClient implements LlmClient {
         maxOutputTokens: maxOutputTokens,
       );
       await session.addQueryChunk(Message.text(text: user, isUser: true));
-      final out = stripControlTokens(await session.getResponse());
+      final out = dropRepeats(stripControlTokens(await session.getResponse()));
       timings.add(DateTime.now().difference(started));
       return out.isEmpty ? null : out;
     } on Object {
@@ -136,7 +136,7 @@ class GemmaLlmClient implements LlmClient {
   /// 制御トークンを落とす。
   ///
   /// 実機（S24）で確かめたところ、Qwen3 の思考チャネルの印が本文に混ざって
-  /// 「<|channel>thought <channel|> 君、形勢がどうだ？」のような形で返ってくる。
+  /// `<|channel>thought <channel|> 君、形勢がどうだ？` のような形で返ってくる。
   /// 最後の制御トークンより後ろだけを本文として使う。
   static String stripControlTokens(String s) {
     final tokens = RegExp(r'<\|?[A-Za-z_]+\|?>').allMatches(s).toList();
@@ -144,6 +144,37 @@ class GemmaLlmClient implements LlmClient {
     final tail = s.substring(tokens.last.end).trim();
     // 制御トークンが末尾にあって本文が残らない場合は、印だけ落とす
     return tail.isEmpty ? s.replaceAll(RegExp(r'<\|?[A-Za-z_]+\|?>'), '').trim() : tail;
+  }
+
+  /// 同じ文の繰り返しを落とす。
+  ///
+  /// LiteRT-LM のサンプラーが持つのは top_k / top_p / temperature / seed だけで、
+  /// repetition penalty に当たる設定が無い（flutter_gemma_litertlm の
+  /// native/litert_lm/include/engine.h, LiteRtLmSamplerParams）。実機では
+  /// 「ふむ…空いていても私の歩は最善でございる。」が丸ごと2回並ぶことがあったので、
+  /// 生成側で抑えられない分をここで機械的に落とす。
+  ///
+  /// 末尾が途中で切れた断片で、しかもそれが前に出た文の言い出しと同じ場合も落とす
+  /// （maxOutputTokens で繰り返しの2周目が切られた形）。
+  static String dropRepeats(String s) {
+    final parts = RegExp(
+      r'[^。！？!?]*[。！？!?]+|[^。！？!?]+',
+    ).allMatches(s).map((m) => m.group(0)!).toList();
+    final kept = <String>[];
+    final seen = <String>{};
+    for (var i = 0; i < parts.length; i++) {
+      final part = parts[i];
+      final key = part.replaceAll(RegExp(r'[\s、。！？!?…・ー]'), '');
+      if (key.isEmpty) continue;
+      if (seen.contains(key)) continue;
+      final unfinished = !RegExp(r'[。！？!?]$').hasMatch(part.trimRight());
+      if (i == parts.length - 1 && unfinished && key.length >= 4 && seen.any((k) => k.startsWith(key))) {
+        continue;
+      }
+      seen.add(key);
+      kept.add(part.trim());
+    }
+    return kept.isEmpty ? s.trim() : kept.join();
   }
 
   Future<void> close() async {

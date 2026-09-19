@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import sys
 import time
 from pathlib import Path
@@ -17,6 +18,19 @@ from aori_lab.tone import ToneProfile  # noqa: E402
 
 EDIT = Path(__file__).resolve().parents[1] / "data" / "finetune_gen_edit"
 TONE = Path(__file__).resolve().parents[2] / "assets" / "lines" / "gunshi_tone.json"
+
+
+def repeats(text: str) -> bool:
+    """同じ文が二度出ているか。Dart 側の GemmaLlmClient.dropRepeats と同じ見方。"""
+    seen: set[str] = set()
+    for part in re.findall(r"[^。！？!?]*[。！？!?]+|[^。！？!?]+", text):
+        key = re.sub(r"[\s、。！？!?…・ー]", "", part)
+        if not key:
+            continue
+        if key in seen or (len(key) >= 4 and any(k.startswith(key) for k in seen)):
+            return True
+        seen.add(key)
+    return False
 
 
 def main() -> None:
@@ -42,6 +56,7 @@ def main() -> None:
     model.eval()
 
     bad = 0
+    looped = 0
     for r in rows:
         msgs = r["messages"][:2]
         prompt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
@@ -55,6 +70,8 @@ def main() -> None:
         v = tone.violations(fixed, r["mood"])
         if v:
             bad += 1
+        if repeats(text):
+            looped += 1
         print(f"[{r['scene']}/{r['mood']}] {time.time() - t0:.1f}s")
         print(f"  事実: {msgs[1]['content'].splitlines()[0][:70]}")
         print(f"  出力: {text}")
@@ -63,7 +80,7 @@ def main() -> None:
         if v:
             print(f"  崩れ: {v}")
         print(f"  手本: {r['messages'][2]['content']}")
-    print(f"\n崩れ {bad}/{len(rows)}")
+    print(f"\n崩れ {bad}/{len(rows)}  繰り返し {looped}/{len(rows)}")
 
 
 if __name__ == "__main__":
