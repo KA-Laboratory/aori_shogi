@@ -17,3 +17,8 @@ data/finetune_gen_edit/*
 !data/finetune_gen_edit/skeleton*.jsonl
 !data/finetune_gen_edit/worksheet*.txt
 !data/finetune_gen_edit/README.md
+
+# 学習の出力（LoRA・マージ済みモデル・変換済み .litertlm）。
+# 1ファイルで数百MBあり、GitHub は 100MB 超を拒否する。
+# 2026-09-20: 一度 5.2GB 分がコミットされて push が通らなくなったので除外した。
+out/
