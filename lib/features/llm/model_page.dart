@@ -141,7 +141,8 @@ class _ModelPageState extends ConsumerState<ModelPage> {
             LinearProgressIndicator(value: _percent <= 0 ? null : _percent / 100),
             const SizedBox(height: 16),
           ],
-          for (final spec in gunshiModels)
+          // 学習済みの軍師は URL が決まってから出す（それまでは開発用ボタンで入れる）
+          for (final spec in [if (gunshiFinetuned.url.isNotEmpty) gunshiFinetuned, ...gunshiModels])
             Card(
               child: ListTile(
                 title: Text('${spec.label}（${spec.sizeText}）'),

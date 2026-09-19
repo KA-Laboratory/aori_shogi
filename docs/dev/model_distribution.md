@@ -46,27 +46,53 @@ Hugging Face は**モデルの置き場所としては併用する**。Qwen3 は
 再配布できるが出所の表示が要る。学習の経緯とライセンスを HF のモデルカードに書き、
 **実配信は R2** という分け方にする。
 
-## 手順（未実施）
+## 残っている手順
+
+アプリ側は**もう出来ている**（下の「ダウンロードの検証」）。`model_catalog.dart` の
+`gunshiFinetuned` にサイズと sha256 が入っていて、`url` だけが空。
+ここが埋まれば一覧に「軍師（学習済み）」が出て、そのまま取得できる。
 
 1. Cloudflare アカウントで R2 バケットを作る（例 `aori-shogi-models`）。
-2. `gunshi-qwen3-1_7b-17g.litertlm` としてアップロード。
+2. `python/out/litertlm17g/model.litertlm` をアップロード。
 3. バケットを公開するか、カスタムドメイン（例 `models.ka-laboratory.dev`）を割り当てる。
-4. `model_catalog.dart` に軍師モデルの項目を足し、URL・サイズ・sha256 を書く。
-5. ダウンロードの検証を入れる（下記）。
+4. `gunshiFinetuned.url` にその URL を書く。**これだけ。**
 
-## ダウンロードの検証が要る
+## ダウンロードの検証（2026-09-19 実装・実機で確認済み）
 
-いまの `install()` は `flutter_gemma` の `fromNetwork()` に任せきりで、
-**落ちてきたファイルが正しいか誰も見ていない。** 1.9GB が途中で切れても、
+以前の `install()` は `flutter_gemma` の `fromNetwork()` に任せきりで、
+**落ちてきたファイルが正しいか誰も見ていなかった。** 1.9GB が途中で切れても
 モデルは読み込めてしまい、壊れた日本語を喋る（int4 の試験でその壊れ方は見た）。
-サイズ違いを「モデルが悪い」と誤診する事故が起きる。
+そうなると「モデルが悪い」と誤診して原因を延々と探すことになる。
 
-`NnueStore.download()` に既に正しい型がある: `.part` に落とす → サイズ照合 →
-sha256 照合 → rename。モデルも同じにして、検証が通ってから
-`GunshiModelStore.installFromFile()` に渡すのがよい。
-`installFromFile` は開発用ボタンで既に動いているので、経路は実証済み。
+`ModelDownloader`（`lib/core/llm/model_download.dart`）を入れた。型は
+`NnueStore.download()` と同じ: `.part` に落とす → サイズ照合 → sha256 照合 →
+rename。通ったものだけ `GunshiModelStore.installFromFile()` に渡す。
+入れ終わったら `.part` 由来の複製は消して容量を返す。
 
-これは URL が決まらないと実地で試せないので、R2 に上げてから着手する。
+### URL が無くても実機で試せた
+
+`adb reverse tcp:8000 tcp:8000` で PC の HTTP サーバーを端末から見えるようにし、
+本物の 1.9GB を配って端末で取得させた。R2 の URL を待たずに本番同等の経路を試せる。
+
+```
+cd python\out\litertlm17g && python -m http.server 8000 --bind 127.0.0.1
+adb -s <serial> reverse tcp:8000 tcp:8000
+# model_catalog.dart の url を一時的に http://127.0.0.1:8000/model.litertlm にする
+```
+
+確かめたこと:
+
+- **正常系**: 1.9GB を取得 → 検証 → 導入まで通り、「端末内のモデルで喋ります。」になった。
+  進捗も 0→100% で出る。
+- **異常系**: 末尾 5000 バイトを削ったファイルを配ると、端末で弾かれた。
+
+  > うまくいきませんでした: 大きさが合いません（1900929064 / 1900934064 バイト）。
+  > 通信が途中で切れた可能性があります
+
+  しかも**既に入っているモデルは壊れない**（失敗しても入れ替えが起きないだけ）。
+
+単体テストは `test/core/llm/model_download_test.dart`。本物の `HttpServer` を立てて、
+途中切れ・ハッシュ不一致・404・`.part` の後始末・進捗・再取得の省略を見ている。
 
 ## nn.bin（64MB）は別の問題
 

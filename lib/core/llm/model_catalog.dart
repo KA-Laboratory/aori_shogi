@@ -15,6 +15,7 @@ class LlmModelSpec {
     required this.url,
     required this.bytes,
     required this.note,
+    this.sha256,
   });
 
   /// 端末に置くときのファイル名。同じ名前だと取り違えるので、モデルごとに変える。
@@ -22,7 +23,14 @@ class LlmModelSpec {
   final String label;
   final LlmFamily family;
   final String url;
+
+  /// 正確なバイト数。ダウンロードの照合に使うので、概算を書かないこと。
+  /// 0 なら「分からない」の意味で、照合を飛ばす。
   final int bytes;
+
+  /// 配布元のハッシュ。自前で配るものには必ず入れる。
+  /// 他所のモデルは公表されていないので null（サイズだけ見る）。
+  final String? sha256;
 
   /// 選ぶときの手がかり（速さ・日本語・容量）。
   final String note;
@@ -34,7 +42,24 @@ class LlmModelSpec {
   }
 }
 
-/// 軍師に使える候補。上から順に軽い。
+/// 軍師の本命。Qwen3-1.7B（Apache 2.0）に自前の LoRA を統合して int8 にしたもの。
+/// これだけが軍師の口調と場面の言い回しを学習している。他はどれも素のモデル。
+///
+/// ⚠ `url` はまだ決まっていない（`docs/dev/model_distribution.md`）。
+/// Cloudflare R2 に上げて URL が決まったらここを差し替える。それまでは
+/// 「端末に置いたファイルから入れる」（開発用）で adb push したものを使う。
+const gunshiFinetuned = LlmModelSpec(
+  id: 'gunshi-qwen3-1_7b-17g.litertlm',
+  label: '軍師（学習済み）',
+  family: LlmFamily.qwen3,
+  url: '', // R2 の URL が決まったら入れる
+  bytes: 1900934064,
+  sha256: 'f89c7f1e3cf5504ae6237c39210fe58b9dfd5bb7c69a995279ba4b310b41a2c2',
+  note: '軍師の口調を学習させたもの。これが本命（Wi-Fi 推奨）',
+);
+
+/// 素のモデル。軍師の口調は学習していないので、プロンプトだけで喋らせることになる。
+/// サイズは配布元が公表していないので概算。ハッシュも無いので照合しない。
 const gunshiModels = <LlmModelSpec>[
   LlmModelSpec(
     id: 'gunshi-qwen3-0.6b.litertlm',

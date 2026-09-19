@@ -7,12 +7,15 @@
 library;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../dialogue/speaker.dart';
 import 'model_catalog.dart';
+import 'model_download.dart';
 import 'single_flight.dart';
 
 ModelType _modelType(LlmFamily f) => switch (f) {
@@ -37,13 +40,21 @@ class GunshiModelStore {
     return FlutterGemma.hasActiveModel();
   }
 
-  /// ダウンロードして有効にする。進捗は 0..100。すでに入っていれば有効化するだけ。
+  /// ダウンロードして有効にする。進捗は 0..100。
+  ///
+  /// 自分で落としてサイズと sha256 を確かめてから入れる（[ModelDownloader]）。
+  /// `flutter_gemma` の `fromNetwork()` に任せると検証が入らず、途中で切れた
+  /// 1.9GB でもそのまま入ってしまい、壊れた日本語を喋る原因になる。
   Future<void> install(LlmModelSpec spec, {void Function(int percent)? onProgress}) async {
     await _ensureInit();
-    await FlutterGemma.installModel(modelType: _modelType(spec.family), fileType: ModelFileType.litertlm)
-        .fromNetwork(spec.url, foreground: true)
-        .withProgress((p) => onProgress?.call(p))
-        .install();
+    final base = await getApplicationSupportDirectory();
+    final downloader = ModelDownloader(dir: Directory('${base.path}/models'));
+    final file = await downloader.fetch(spec, onProgress: (p) => onProgress?.call(p.percent));
+    await installFromFile(file.path, spec.family);
+    // 入れ終われば flutter_gemma 側にも複製があるので、こちらは消して容量を返す。
+    try {
+      if (file.existsSync()) file.deleteSync();
+    } catch (_) {}
   }
 
   /// 端末に置いたファイルから入れる（開発用: adb で push した .litertlm を試すため）。
