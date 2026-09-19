@@ -344,11 +344,23 @@ slip/meltdown:
 制御トークン（`thought` / `</think>`）が1語ごとに本文へ割り込み、文として成立しない。
 速さは中央値 2.9秒と int8 より速いが、意味がない。**int8（1.90GB）から下げられない。**
 
-`dynamic_wi4c_afp32`（チャンネルごとのスケール）と `dynamic_int4_block32`
-（ブロックごとのスケール）はまだ試していない。ブロック量子化はスケールの粒度が
-細かいので `wi4` よりは持つ可能性がある。小さくしたいならそこが次の一手。
+### 粒度を細かくしても駄目だった（追試）
 
-再現: `tool\wsl_run.cmd convert17g_i4`（`RECIPE=` で別のレシピも試せる）。
+per-tensor の `wi4` が駄目なら、スケールの粒度を細かくすれば持つのでは、と2つ試した。
+
+- **`dynamic_int4_block32` は `export_hf` では使えない。** `KeyError` になる。
+  パッケージ内を grep すると名前は見つかるが、それは別の場所（ai-edge-quantizer 側）の
+  もので、`export_hf` が受け付けるのは `dynamic_w{i8,i8c,i4,i4c}_afp32` と
+  `dynamic_wi8_emb4_afp32` だけ。
+- **`dynamic_wi4c_afp32`（チャンネルごと）は通るが、壊れ方が `wi4` と同じ。**
+  1.04GB（wi4 と同サイズ、ファイルは別物: sha256 が違う）で、実機の出力は
+  「thought thought 口thought…」まで同一だった。4bit にした時点で同じように壊れる。
+
+**結論: この変換系で 1.7B を 1GB 級にするのは無理。int8 の 1.90GB で配る。**
+小さくしたいなら量子化ではなく、より小さいベース（0.6B は日本語が持たなかった）か、
+別の変換系を探すことになる。
+
+再現: `tool\wsl_run.cmd convert17g_i4`（`RECIPE=` で差し替え可）、`tool\conv_b32.cmd`。
 
 ## まだ確かめていないこと
 

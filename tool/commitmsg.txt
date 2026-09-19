@@ -1,22 +1,30 @@
-int4 量子化を試した（結論: 使えない）
+配布は Cloudflare R2 に決めた（int4 で小さくするのは断念）
 
-配布が 1.90GB と重いので、重みを int4 にして半分にできないか試した。
-litert-torch には dynamic_wi4_afp32 / dynamic_wi4c_afp32 /
-dynamic_int4_block32 / dynamic_int4_block128 がある。
+まず「本当に 1.90GB なのか」を潰した。潰せなかった。
 
-dynamic_wi4_afp32 で 17g を変換すると 1.04GB（45%減）。Play の asset pack
-1個の上限 1.5GB にも収まる。サイズだけ見れば理想的だった。
+- dynamic_wi4_afp32 → 1.04GB（45%減）。Play の asset pack 上限 1.5GB にも収まるが、
+  日本語が壊れる。制御トークンが1語ごとに本文へ割り込む。
+- dynamic_int4_block32 は export_hf では使えない（KeyError）。パッケージ内に名前は
+  あるが別の場所のもので、export_hf が受けるのは dynamic_w{i8,i8c,i4,i4c}_afp32 と
+  dynamic_wi8_emb4_afp32 だけ。
+- dynamic_wi4c_afp32（チャンネルごと）は通るが、壊れ方が wi4 と同じ。ファイルは
+  別物（sha256 が違う）なのに実機の出力は「thought thought 口thought…」まで同一。
+  4bit にした時点で同じように壊れる。
 
-が、実機で日本語が完全に壊れた。制御トークンが1語ごとに本文へ割り込む:
-  thought thought 口thought 口thought 口thought！ thought？ thought おthought…
-  融感もしくは、この気配は相変わ無理である。</think> 1枚下がってきました。
-速さは中央値 2.9秒と int8 より速いが意味がない。int8（1.90GB）から下げられない。
+1.90GB は動かせない前提で、配布先を Cloudflare R2 に決めた。
+- いまの install() が URL から落とす作りなので、model_catalog.dart の URL 差し替えだけ。
+- egress 課金が無いので「広まって請求が来る」が構造的に起きない。保存も無料枠内。
+- iOS でも同じ経路が使える（PAD は Android 専用で、2分割も要る）。
+Hugging Face はモデルカード（Qwen3 Apache 2.0 の出所表示）として併用、実配信は R2。
 
-ブロック量子化（dynamic_int4_block32）はスケールの粒度が細かいので wi4 よりは
-持つ可能性がある。小さくしたいなら次はそこ。
+配るもの: 1,900,934,064 バイト /
+sha256 f89c7f1e3cf5504ae6237c39210fe58b9dfd5bb7c69a995279ba4b310b41a2c2
 
-端末は 17g（int8）に戻してある。
-tool/wsl/convert17g_i4.sh は RECIPE= で別のレシピも試せる。
+docs/dev/model_distribution.md に判断と手順を書いた。あわせて、いまのダウンロードが
+無検証であることも書いた（NnueStore は .part→サイズ→sha256→rename をやっている
+のに、モデル側は fromNetwork 任せ）。URL が決まってから着手する。
+
+端末は 17g に戻してある。
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01YJ8NQ3aySzJGF3xzWSk4Fr
