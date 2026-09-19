@@ -8,6 +8,7 @@ library;
 import 'dart:math' as math;
 
 import '../mind/mind_state.dart';
+import 'fact_guard.dart';
 import 'line_library.dart';
 import 'player_memory.dart';
 import 'tone.dart';
@@ -89,6 +90,8 @@ class LlmSpeaker implements GunshiSpeaker {
       final line = tone.rewrite(_oneLine(raw), mood: req.mood.name);
       if (line.length > maxChars) continue;
       if (tone.violations(line, mood: req.mood.name).isNotEmpty) continue;
+      // 口調が通っても中身が事実と食い違っていることがある（fact_guard.dart の頭を参照）。
+      if (factViolations(line, facts: req.facts, playerText: req.playerText).isNotEmpty) continue;
       return line;
     }
     return null;
