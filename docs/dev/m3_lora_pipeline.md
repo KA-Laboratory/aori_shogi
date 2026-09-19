@@ -316,8 +316,43 @@ tool\dev_bench.cmd
 落とした場合の見え方も問題ない。`_say()` は先に定型文を出しているので、
 落ちたセリフは差し替えが起きないだけで、対局は何も止まらない。
 
+## 量子化で小さくできるか（2026-09-19、結論: int4 は駄目）
+
+配布が 1.90GB と重いので、重みを int4 にして半分にできないか試した。
+`litert-torch` が持っているレシピは、パッケージを覗くとこれだけある:
+
+```
+dynamic_wi8_afp32   dynamic_wi8c_afp32   dynamic_wi8_emb4_afp32（いま使っている）
+dynamic_wi4_afp32   dynamic_wi4c_afp32
+dynamic_int4_block32   dynamic_int4_block128
+```
+
+`dynamic_wi4_afp32` で 17g を変換すると **1.04GB**（1.90GB から 45% 減）。
+Play の asset pack 1個の上限 1.5GB にも収まる。サイズだけ見れば理想的だった。
+
+**が、日本語が完全に壊れた。** 実機の試し撃ちの出力:
+
+```
+taunt_miss/meltdown:
+  thought thought 口thought 口thought 口thought 口thought 口thought！ thought？
+  thought おthought まthought えthought のthought 歩thought をthought 指thought…
+
+slip/meltdown:
+  融感もしくは、この気配は相変わ無理である。</think> 1枚下がってきました。
+```
+
+制御トークン（`thought` / `</think>`）が1語ごとに本文へ割り込み、文として成立しない。
+速さは中央値 2.9秒と int8 より速いが、意味がない。**int8（1.90GB）から下げられない。**
+
+`dynamic_wi4c_afp32`（チャンネルごとのスケール）と `dynamic_int4_block32`
+（ブロックごとのスケール）はまだ試していない。ブロック量子化はスケールの粒度が
+細かいので `wi4` よりは持つ可能性がある。小さくしたいならそこが次の一手。
+
+再現: `tool\wsl_run.cmd convert17g_i4`（`RECIPE=` で別のレシピも試せる）。
+
 ## まだ確かめていないこと
 
 - 内容の妥当性（「売上が見せてくれん」のような意味の崩れ）が、2周目の 126件でどこまで改善するか。
 - それでも足りない場合、4bit 量子化を入れて 4B 級を学習するか、クラウドの GPU を借りるか。
+- `dynamic_int4_block32` なら 1GB 級で日本語が持つか。
 - 1.90GB の `.litertlm` をどう配るか（nn.bin 64MB と同じ未決の問題）。

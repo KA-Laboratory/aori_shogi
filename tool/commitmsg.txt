@@ -1,30 +1,22 @@
-対局中の SIGSEGV を直す: 生成は同時に2つ走らせない
+int4 量子化を試した（結論: 使えない）
 
-実機（S24）で AI対局を始めて一手指すと落ちていた。2回とも同じ所。
+配布が 1.90GB と重いので、重みを int4 にして半分にできないか試した。
+litert-torch には dynamic_wi4_afp32 / dynamic_wi4c_afp32 /
+dynamic_int4_block32 / dynamic_int4_block128 がある。
 
-  Fatal signal 11 (SIGSEGV) fault addr 0x3a22656c6f7222d1
-  #00 libLiteRtLm.so litert::lm::Conversation::GetSingleTurnText(json const&, ...)+12
-  #01 libLiteRtLm.so litert::lm::Conversation::SendMessageAsync(...)
-  #02 libLiteRtLm.so litert_lm_conversation_send_message_stream+196
-  #03 [anon:dart-code]
+dynamic_wi4_afp32 で 17g を変換すると 1.04GB（45%減）。Play の asset pack
+1個の上限 1.5GB にも収まる。サイズだけ見れば理想的だった。
 
-壊れたアドレスはバイトを並べ替えると `"role":` という文字列で、ポインタではなく
-会話の JSON の中身を読んでいる。解放済みの会話を触っていた。
+が、実機で日本語が完全に壊れた。制御トークンが1語ごとに本文へ割り込む:
+  thought thought 口thought 口thought 口thought！ thought？ thought おthought…
+  融感もしくは、この気配は相変わ無理である。</think> 1枚下がってきました。
+速さは中央値 2.9秒と int8 より速いが意味がない。int8（1.90GB）から下げられない。
 
-試し撃ち（BenchPage）では落ちない。あちらは1件ずつ順番に投げるから。
-対局中だけ落ちるのは _upgradeWithLlm が unawaited で投げっぱなしにするためで、
-開始の一言の生成中に指し手の一言が重なると、同じ InferenceModel の上で
-session が2つ走り、片方が閉じるともう片方が壊れる。
+ブロック量子化（dynamic_int4_block32）はスケールの粒度が細かいので wi4 よりは
+持つ可能性がある。小さくしたいなら次はそこ。
 
-SingleFlight を足して、走っている間は待たせずに断る。遅れて出てくるセリフに
-価値は無く、軍師は先に定型文を喋っているので、断られた回はその定型文のまま。
-断った回数は GemmaLlmClient.droppedWhileBusy に出る。
-
-直す前は2回とも落ち、直した後は同じ手順で3回とも生き残った。重なりの起きる
-間合いに依るので「3回通った」以上のことは言えないが、落ち方と筋は合っている。
-
-tool/dev_alive.cmd も足した。最初この落ち方を「端末を触られて閉じられた」と
-読み違えたので、画面から消えたらまずこれを見る。
+端末は 17g（int8）に戻してある。
+tool/wsl/convert17g_i4.sh は RECIPE= で別のレシピも試せる。
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01YJ8NQ3aySzJGF3xzWSk4Fr
