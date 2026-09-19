@@ -39,6 +39,43 @@ PIECES = re.compile(r"[歩香桂銀金飛角玉と馬龍竜]")
 NOT_A_PIECE = re.compile(r"馬鹿|歩[くみいけんま]|一歩|角度|玉座|金輪際|金言|飛[びぶんばこ]|香[りばし]")
 
 
+STANCE = re.compile(r"形勢=(優勢|互角|劣勢)（評価値([+\-−]?\d+)）")
+
+
+def stance_mismatch(facts: str) -> bool:
+    """事実の「形勢=」が評価値と食い違っていないか。
+
+    app 側（game_controller.dart の _facts）は +300 以上を優勢、-300 以下を劣勢、
+    その間を互角と呼ぶ。学習データが違う呼び方をしていると軍師が数字を読めなくなる
+    （-1400 を「互角に持ち込むとは」と言う出力が実際に出た）。
+    """
+    m = STANCE.search(facts)
+    if not m:
+        return False
+    ev = int(m.group(2).replace("−", "-").replace("+", ""))
+    want = "優勢" if ev >= 300 else "劣勢" if ev <= -300 else "互角"
+    return m.group(1) != want
+
+
+STANCE_WORD = re.compile(r"形勢=([^（(。]+)")
+APP_STANCE = {"優勢", "互角", "劣勢"}
+
+
+def odd_stance_word(facts: str) -> str:
+    """アプリが出さない形勢の言い方が混ざっていないか。
+
+    アプリが送るのはこの3語だけ（game_controller.dart の _facts）。1周目の
+    モデル生成由来には「形勢=持ち上がり」「形勢=大きく逆転」などが混ざっていた。
+    本番で来ない言葉を教え、来る言葉を教えないので、数の割に効かない。
+    言い換えられるものは tools/normalize_stance.py が揃えた。残りは人が決める。
+    """
+    m = STANCE_WORD.search(facts)
+    if not m:
+        return ""
+    word = m.group(1).strip()
+    return "" if word in APP_STANCE else word
+
+
 def flags(r: dict, chk: Checker) -> list[str]:
     line, facts, player, mood = r["line"], r["facts"], r.get("player", ""), r["mood"]
     out = []
@@ -54,6 +91,13 @@ def flags(r: dict, chk: Checker) -> list[str]:
         out.append("句読点の乱れ")
     if BAD_FACT.search(facts):
         out.append("事実の数値が不自然")
+    if stance_mismatch(facts):
+        out.append("形勢と評価値が食い違い")
+    odd = odd_stance_word(facts)
+    if odd:
+        out.append(f"アプリが出さない形勢の言い方(任意):{odd}")
+    if "評価値±" in facts:
+        out.append("評価値の符号が±(任意)")
     # 語尾の型チェックは廃止（動揺は丁寧・常体どちらでもよく、大混乱は叫びで語尾が定まらない）。
     # 口調は tone の mood_require / mood_banned が見る。
     mark = MOOD_MARK.get(mood)

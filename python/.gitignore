@@ -3,3 +3,17 @@ __pycache__/
 engine/
 data/
 *.pyc
+
+# ただし手書きの学習データは入れる。賢太郎さんが1件ずつ書いたもので、
+# 消えたら作り直せない（モデル生成の中間ファイルは大きいので引き続き除外）。
+!data/
+data/*
+!data/finetune_gen_edit/
+data/finetune_gen_edit/*
+!data/finetune_gen_edit/all.jsonl
+!data/finetune_gen_edit/edited_by_owner*.jsonl
+!data/finetune_gen_edit/train.jsonl
+!data/finetune_gen_edit/eval.jsonl
+!data/finetune_gen_edit/skeleton*.jsonl
+!data/finetune_gen_edit/worksheet*.txt
+!data/finetune_gen_edit/README.md

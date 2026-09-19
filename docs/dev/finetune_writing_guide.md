@@ -94,6 +94,33 @@ uv run python tools/check_edited.py data/finetune_gen_edit/all.jsonl   # train/e
 素に戻す自動書き換えと「です・ます禁止」は大混乱だけに適用する。語尾の型チェックは廃止した
 （動揺がどちらでもよくなり、大混乱は叫びで語尾が定まらないため。口調は tone の規則が見る）。
 
+## 2周目: 126件（2026-09-19）
+
+実機で軍師を試し撃ちして、弱かった場面に寄せて 126件のシートを作った。
+`python/data/finetune_gen_edit/worksheet.txt`（1周目のシートは `worksheet_1.txt` に退避）。
+
+| 場面 | 件数 | なぜ増やすか |
+|---|---|---|
+| move | 41 | 一番よく出る場面。**評価値を読み違える**（-1400 を「互角」と言った）ので数で効かせる |
+| taunt_hit / taunt_miss | 19 | 煽り合いの核。言い回しが尽きがち |
+| praised / praise_suspicious | 18 | 褒めへの返しが平板（「褒められたのを喜び」で終わる） |
+| question_dodge | 10 | 勿体ぶりが出ず、素直に答えそうになる |
+| blunder_self / blunder_opponent | 16 | 悪手の大きさに反応を合わせられていない |
+| checkmate_threat | 5 | 少ない |
+| win / lose / draw | 17 | 各6件以下しかなく、終局の一言が弱い |
+
+書き方は1周目と同じ（シートの「>>>」の後ろに1行）。`move` では **事実の「形勢」と「評価値」を
+取り違えないこと**（+ は自分が良い、− は自分が悪い）。書けたら:
+
+```
+cd python
+uv run python tools/import_worksheet.py   # jsonl に戻して検査
+uv run python tools/merge_owner.py        # all.jsonl に混ぜる
+```
+
+1周目の混ざりもの（形勢と評価値が食い違う2件）は落として **528件** になっている。
+以後は `check_edited.py` が `形勢と評価値が食い違い` として弾く。
+
 ## 参考: 残り109件の内訳（2026-09-18 時点）
 
 smalltalk 18／start 18／ai_question 15／abuse 14／checkmate_threat 14／checkmate_win 8／checkmate_lose 8／win 6／lose 6／draw 2。

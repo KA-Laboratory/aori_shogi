@@ -1,0 +1,16 @@
+同じ文の繰り返しを Dart 側で落とす
+
+LiteRT-LM のサンプラーには repetition penalty に当たる設定が無い
+（flutter_gemma_litertlm の native/litert_lm/include/engine.h、
+LiteRtLmSamplerParams は type / top_k / top_p / temperature / seed のみ）。
+実機の試し撃ちで「ふむ…空いていても私の歩は最善でございる。」が丸ごと
+2回並ぶことがあったので、生成側で抑えられない分を GemmaLlmClient で落とす。
+
+- GemmaLlmClient.dropRepeats: 同じ文の2度目を捨てる。末尾が途中で切れた
+  断片で、前に出た文の言い出しと同じものも捨てる。
+- train/sample.py: 繰り返しの本数も出す（Dart と同じ見方）。
+- tools/probe_gozaru.py: 学習データの「ござ〜」の活用を数える。データには
+  「ございます」しか無く、生成の「ございる」は LoRA が作った崩れだと分かった。
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01YJ8NQ3aySzJGF3xzWSk4Fr

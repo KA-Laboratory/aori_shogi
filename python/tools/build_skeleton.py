@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import random
 import re
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -161,8 +162,29 @@ def pick(rng: random.Random, pool: list[str], used: set[str], fallback: str) -> 
     return got
 
 
+def wanted() -> dict[str, int]:
+    """場面ごとの目標本数。`--want move=110,praised=45` で S の既定を上書きできる。
+
+    2周目以降は場面を選んで増やしたい（実機の試し撃ちで弱かった場面から）。
+    S を書き換えると1周目の記録が読めなくなるので、その場の指定で上書きする。
+    """
+    want = {scene: total for scene, (total, *_rest) in S.items()}
+    for arg in sys.argv[1:]:
+        if not arg.startswith("--want"):
+            continue
+        spec = arg.split("=", 1)[1] if arg.startswith("--want=") else sys.argv[sys.argv.index(arg) + 1]
+        for part in spec.split(","):
+            scene, _, num = part.partition("=")
+            scene = scene.strip()
+            if scene not in want:
+                raise SystemExit(f"知らない場面: {scene}")
+            want[scene] = int(num)
+    return want
+
+
 def main() -> None:
     rng = random.Random(0)
+    want = wanted()
     have = Counter()
     done = EDIT / "all.jsonl" if (EDIT / "all.jsonl").exists() else EDIT / "edited_by_owner.jsonl"
     if done.exists():
@@ -204,7 +226,8 @@ def main() -> None:
     ms_mate = [m for m in ms if re.search(r"[金銀桂香飛角龍馬と圭杏全]", m["move"])
                and not re.search(r"[玉王歩]", m["move"])]
     rows = []
-    for scene, (total, desc, fp, pp, weights) in S.items():
+    for scene, (_default_total, desc, fp, pp, weights) in S.items():
+        total = want[scene]
         per = {m: 0 for m in MOODS}
         ws = {m: weights.get(m, 1.0) for m in MOODS}
         tot = sum(ws.values())

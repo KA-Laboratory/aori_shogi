@@ -1,0 +1,126 @@
+{"id": "move-composed-0001", "scene": "move", "mood": "composed", "facts": "100手目。形勢=優勢（評価値+372）。私の手 △2七桂成 は悪手で約826点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0002", "scene": "move", "mood": "composed", "facts": "15手目。形勢=互角（評価値-144）。私の手 △3八銀 は悪手で約254点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0003", "scene": "move", "mood": "composed", "facts": "18手目。形勢=優勢（評価値+836）。私の手 △8八角成 は悪手で約746点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0004", "scene": "move", "mood": "composed", "facts": "57手目。形勢=互角（評価値-25）。私の手 △2四飛 は悪手で約215点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0005", "scene": "move", "mood": "composed", "facts": "49手目。形勢=互角（評価値+6）。私の手 △8五桂 は悪手で約220点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0006", "scene": "move", "mood": "composed", "facts": "91手目。形勢=劣勢（評価値-3000）。私の手 △6九玉 は最善。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0007", "scene": "move", "mood": "composed", "facts": "70手目。形勢=優勢（評価値+610）。私の手 △4一玉 は悪手で約295点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0008", "scene": "move", "mood": "composed", "facts": "86手目。形勢=優勢（評価値+304）。私の手 △8六桂打 は悪手で約444点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-composed-0009", "scene": "move", "mood": "composed", "facts": "100手目。形勢=劣勢（評価値-568）。私の手 △4八飛打 は悪手で約928点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0010", "scene": "move", "mood": "smug", "facts": "24手目。形勢=互角（評価値+80）。私の手 △1四歩 は悪手で約235点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0011", "scene": "move", "mood": "smug", "facts": "26手目。形勢=互角（評価値+33）。私の手 △9五歩 は悪手で約210点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0012", "scene": "move", "mood": "smug", "facts": "37手目。形勢=劣勢（評価値-3000）。私の手 △4六歩 は悪手で約134点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0013", "scene": "move", "mood": "smug", "facts": "27手目。形勢=劣勢（評価値-1241）。私の手 △1四歩 は悪手で約1249点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0014", "scene": "move", "mood": "smug", "facts": "32手目。形勢=互角（評価値-73）。私の手 △1五角 は悪手で約170点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0015", "scene": "move", "mood": "smug", "facts": "52手目。形勢=優勢（評価値+700）。私の手 △6五銀 は悪手で約682点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0016", "scene": "move", "mood": "smug", "facts": "73手目。形勢=劣勢（評価値-1028）。私の手 △5八玉 は悪手で約211点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-smug-0017", "scene": "move", "mood": "smug", "facts": "54手目。形勢=優勢（評価値+1362）。私の手 △8七歩打 は悪手で約304点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0018", "scene": "move", "mood": "rattled", "facts": "76手目。形勢=互角（評価値+108）。私の手 △1八馬 は悪手で約705点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0019", "scene": "move", "mood": "rattled", "facts": "81手目。形勢=優勢（評価値+3000）。私の手 △1一飛打 は最善。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0020", "scene": "move", "mood": "rattled", "facts": "76手目。形勢=互角（評価値+108）。私の手 △1八馬 は悪手で約705点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0021", "scene": "move", "mood": "rattled", "facts": "87手目。形勢=劣勢（評価値-1372）。私の手 △3三馬 は悪手で約406点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0022", "scene": "move", "mood": "rattled", "facts": "55手目。形勢=劣勢（評価値-3000）。私の手 △1八玉 は最善。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0023", "scene": "move", "mood": "rattled", "facts": "75手目。形勢=劣勢（評価値-1231）。私の手 △7六歩 は悪手で約433点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0024", "scene": "move", "mood": "rattled", "facts": "92手目。形勢=優勢（評価値+3000）。私の手 △5六玉 は悪手で約4308点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-rattled-0025", "scene": "move", "mood": "rattled", "facts": "119手目。形勢=劣勢（評価値-3000）。私の手 △5九玉 は最善。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0026", "scene": "move", "mood": "meltdown", "facts": "20手目。形勢=互角（評価値+205）。私の手 △8五歩打 は悪手で約158点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0027", "scene": "move", "mood": "meltdown", "facts": "34手目。形勢=優勢（評価値+481）。私の手 △8三角 は悪手で約277点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0028", "scene": "move", "mood": "meltdown", "facts": "57手目。形勢=互角（評価値-124）。私の手 △6四飛 は悪手で約386点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0029", "scene": "move", "mood": "meltdown", "facts": "30手目。形勢=優勢（評価値+996）。私の手 △2七歩打 は悪手で約444点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0030", "scene": "move", "mood": "meltdown", "facts": "35手目。形勢=互角（評価値-112）。私の手 △1六飛 は悪手で約177点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0031", "scene": "move", "mood": "meltdown", "facts": "32手目。形勢=互角（評価値+241）。私の手 △1五歩 は悪手で約506点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0032", "scene": "move", "mood": "meltdown", "facts": "79手目。形勢=劣勢（評価値-2568）。私の手 △6九玉 は悪手で約2694点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-meltdown-0033", "scene": "move", "mood": "meltdown", "facts": "88手目。形勢=劣勢（評価値-664）。私の手 △4六金 は悪手で約509点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0034", "scene": "move", "mood": "coverUp", "facts": "15手目。形勢=劣勢（評価値-1710）。私の手 △5五角 は悪手で約1602点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0035", "scene": "move", "mood": "coverUp", "facts": "146手目。形勢=優勢（評価値+3000）。私の手 △3七銀成 は悪手で約1844点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0036", "scene": "move", "mood": "coverUp", "facts": "32手目。形勢=優勢（評価値+358）。私の手 △5二金 は悪手で約287点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0037", "scene": "move", "mood": "coverUp", "facts": "109手目。形勢=劣勢（評価値-3000）。私の手 △6五玉 は悪手で約2444点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0038", "scene": "move", "mood": "coverUp", "facts": "30手目。形勢=互角（評価値+291）。私の手 △2七歩打 は悪手で約177点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0039", "scene": "move", "mood": "coverUp", "facts": "56手目。形勢=互角（評価値+278）。私の手 △4二金 は悪手で約173点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0040", "scene": "move", "mood": "coverUp", "facts": "91手目。形勢=劣勢（評価値-3000）。私の手 △3三金打 は最善。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "move-coverUp-0041", "scene": "move", "mood": "coverUp", "facts": "33手目。形勢=劣勢（評価値-1568）。私の手 △3七桂 は悪手で約1665点損。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-composed-0042", "scene": "taunt_hit", "mood": "composed", "facts": "私の直前の手 △8一金打 は悪手（約2452点損）。相手の煽りは図星。", "player": "本当に取られるのか？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-composed-0043", "scene": "taunt_hit", "mood": "composed", "facts": "私の直前の手 △3五歩打 は悪手（約604点損）。相手の煽りは図星。", "player": "君の言う通りか…", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-smug-0044", "scene": "taunt_hit", "mood": "smug", "facts": "私の直前の手 △5七銀 は悪手（約1861点損）。相手の煽りは図星。", "player": "金が取られたんだよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-smug-0045", "scene": "taunt_hit", "mood": "smug", "facts": "私の直前の手 △8三銀 は悪手（約335点損）。相手の煽りは図星。", "player": "もう失敗だ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-rattled-0046", "scene": "taunt_hit", "mood": "rattled", "facts": "私の直前の手 △5九玉 は悪手（約60点損）。相手の煽りは図星。", "player": "取られるのは確かにね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-rattled-0047", "scene": "taunt_hit", "mood": "rattled", "facts": "私の直前の手 △2八歩打 は悪手（約202点損）。相手の煽りは図星。", "player": "なんてやらんの？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-meltdown-0048", "scene": "taunt_hit", "mood": "meltdown", "facts": "私の直前の手 △5八角成 は悪手（約60点損）。相手の煽りは図星。", "player": "やっちまったな、君の言うとおりだね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-meltdown-0049", "scene": "taunt_hit", "mood": "meltdown", "facts": "私の直前の手 △5四桂打 は悪手（約972点損）。相手の煽りは図星。", "player": "お前、そんなの知ってるのか？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-coverUp-0050", "scene": "taunt_hit", "mood": "coverUp", "facts": "私の直前の手 △9五歩 は悪手（約356点損）。相手の煽りは図星。", "player": "それで、君の銀が散ってるぞ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_hit-coverUp-0051", "scene": "taunt_hit", "mood": "coverUp", "facts": "私の直前の手 △7八金 は悪手（約199点損）。相手の煽りは図星。", "player": "もう…どうしよう。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-composed-0052", "scene": "taunt_miss", "mood": "composed", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "君、何か隠してるのか？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-composed-0053", "scene": "taunt_miss", "mood": "composed", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "なんで浮いてるんだ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-smug-0054", "scene": "taunt_miss", "mood": "smug", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "その駒、間違っているよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-smug-0055", "scene": "taunt_miss", "mood": "smug", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "君、どうしてその手を選んだ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-rattled-0056", "scene": "taunt_miss", "mood": "rattled", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "君、何で君の歩が浮いてるんだ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-rattled-0057", "scene": "taunt_miss", "mood": "rattled", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "君の手、悪いよ！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-meltdown-0058", "scene": "taunt_miss", "mood": "meltdown", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "そ、そんなことないよ！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-coverUp-0059", "scene": "taunt_miss", "mood": "coverUp", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "こんなところで詰むよ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "taunt_miss-coverUp-0060", "scene": "taunt_miss", "mood": "coverUp", "facts": "私の直前の手はほぼ最善。相手の煽りは外れ。", "player": "君の戦術、バレてるよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-composed-0061", "scene": "praised", "mood": "composed", "facts": "形勢=対等。相手に褒められた9回目。", "player": "よくできたね！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-composed-0062", "scene": "praised", "mood": "composed", "facts": "形勢=微妙に優勢。相手に褒められた2回目。", "player": "君の戦略は凄い。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-smug-0063", "scene": "praised", "mood": "smug", "facts": "形勢=好調。相手に褒められた1回目。", "player": "いい感じだね！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-smug-0064", "scene": "praised", "mood": "smug", "facts": "形勢=+20。相手に褒められた1回目。", "player": "やっぱり君の棋力はすごい！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-rattled-0065", "scene": "praised", "mood": "rattled", "facts": "形勢=逆転。相手に褒められた（2回目）。", "player": "すごいね、君の戦術！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-rattled-0066", "scene": "praised", "mood": "rattled", "facts": "形勢=少し不安定。相手に褒められた2回目。", "player": "素晴らしい戦法だね！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-meltdown-0067", "scene": "praised", "mood": "meltdown", "facts": "形勢=揺れる。相手に褒められた（6回目）。", "player": "また上手くいったね！すごい戦術だ！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-coverUp-0068", "scene": "praised", "mood": "coverUp", "facts": "形勢=微妙。相手に褒められた5回目。", "player": "君、ほんとにいい戦法だね！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praised-coverUp-0069", "scene": "praised", "mood": "coverUp", "facts": "形勢=対等。相手に褒められた3回目。", "player": "助かるよ！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-composed-0070", "scene": "praise_suspicious", "mood": "composed", "facts": "相手に4回続けて褒められた。", "player": "君のその先読み、まるで風のように滑らかだね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-composed-0071", "scene": "praise_suspicious", "mood": "composed", "facts": "相手に5回続けて褒められた（4回以上）", "player": "その判断力、まるで星座を読むみたいに正確だよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-smug-0072", "scene": "praise_suspicious", "mood": "smug", "facts": "相手に5回続けて褒められた。", "player": "超すごい、超すごい、超すごい、超すごい！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-smug-0073", "scene": "praise_suspicious", "mood": "smug", "facts": "相手に6回続けて褒められた（4回以上）", "player": "君のその思考、まるで鏡の中に映る光のように美しいよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-rattled-0074", "scene": "praise_suspicious", "mood": "rattled", "facts": "相手に6回続けて褒められた。", "player": "やっぱり君の指し手、最高だね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-rattled-0075", "scene": "praise_suspicious", "mood": "rattled", "facts": "相手に4回続けて褒められた（4回以上）", "player": "君の一手一手、圧倒的だね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-meltdown-0076", "scene": "praise_suspicious", "mood": "meltdown", "facts": "相手に7回続けて褒められた。", "player": "君の戦術は本当に素晴らしいよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-coverUp-0077", "scene": "praise_suspicious", "mood": "coverUp", "facts": "相手に7回続けて褒められた（4回以上）", "player": "君の評価、私の手が上手いって言ってくれて感激だよ！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "praise_suspicious-coverUp-0078", "scene": "praise_suspicious", "mood": "coverUp", "facts": "相手にN回続けて褒められた（4回以上）", "player": "素晴らしい！君の動き、素敵だね！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-composed-0079", "scene": "blunder_self", "mood": "composed", "facts": "直前の手 △2六飛 は悪手（約-321点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-composed-0080", "scene": "blunder_self", "mood": "composed", "facts": "直前の手 △4二と は悪手（約-368点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-rattled-0081", "scene": "blunder_self", "mood": "rattled", "facts": "直前の手 △7四歩 は悪手（約-287点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-rattled-0082", "scene": "blunder_self", "mood": "rattled", "facts": "直前の手 △3六歩打 は悪手（約-705点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-meltdown-0083", "scene": "blunder_self", "mood": "meltdown", "facts": "直前の手 △7三角 は悪手（約-418点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-meltdown-0084", "scene": "blunder_self", "mood": "meltdown", "facts": "直前の手 △8八角 は悪手（約-232点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-coverUp-0085", "scene": "blunder_self", "mood": "coverUp", "facts": "直前の手 △3三歩成 は悪手（約-241点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-coverUp-0086", "scene": "blunder_self", "mood": "coverUp", "facts": "直前の手 △4八龍 は悪手（約-351点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_self-coverUp-0087", "scene": "blunder_self", "mood": "coverUp", "facts": "直前の手 △7六歩打 は悪手（約-271点損）。私は内心それに気づいている。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-composed-0088", "scene": "blunder_opponent", "mood": "composed", "facts": "相手の手 ▲6二金 は悪手（約+185点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-smug-0089", "scene": "blunder_opponent", "mood": "smug", "facts": "相手の手 ▲7七桂 は悪手（約+225点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-smug-0090", "scene": "blunder_opponent", "mood": "smug", "facts": "相手の手 ▲8六歩 は悪手（約+493点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-smug-0091", "scene": "blunder_opponent", "mood": "smug", "facts": "相手の手 ▲3二金 は悪手（約+356点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-rattled-0092", "scene": "blunder_opponent", "mood": "rattled", "facts": "相手の手 ▲8五飛 は悪手（約+160点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-meltdown-0093", "scene": "blunder_opponent", "mood": "meltdown", "facts": "相手の手 ▲6九金打 は悪手（約+1045点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "blunder_opponent-coverUp-0094", "scene": "blunder_opponent", "mood": "coverUp", "facts": "相手の手 ▲7七桂成 は悪手（約+237点得）。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-composed-0095", "scene": "question_dodge", "mood": "composed", "facts": "形勢=有利。相手に読みを聞かれた。教えない。", "player": "何を考えているんだ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-composed-0096", "scene": "question_dodge", "mood": "composed", "facts": "形勢=均衡。相手に読みを聞かれた。教えない。", "player": "次どこ指すんだよ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-smug-0097", "scene": "question_dodge", "mood": "smug", "facts": "形勢=僅差。相手に読みを聞かれた。教えない。", "player": "どうなるのかな？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-smug-0098", "scene": "question_dodge", "mood": "smug", "facts": "形勢＝対等。相手に読みを聞かれた。教えない。", "player": "次に何を打つの？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-rattled-0099", "scene": "question_dodge", "mood": "rattled", "facts": "形勢=相手に先手。相手に読みを聞かれた。教えない。", "player": "次、どこを指すの？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-rattled-0100", "scene": "question_dodge", "mood": "rattled", "facts": "形勢＝不利だが追いかける形勢。相手に読みを聞かれた。教えない。", "player": "次の手を教えてくれよ！", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-meltdown-0101", "scene": "question_dodge", "mood": "meltdown", "facts": "形勢=相手が有利。相手に読みを聞かれた。教えない。", "player": "次の指し手は？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-meltdown-0102", "scene": "question_dodge", "mood": "meltdown", "facts": "形勢=微妙。相手に読みを聞かれた。教えない。", "player": "次はどこへ？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-coverUp-0103", "scene": "question_dodge", "mood": "coverUp", "facts": "形勢=対局は長期。相手に読みを聞かれた。教えない。", "player": "次の指し手を教えてよ。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "question_dodge-coverUp-0104", "scene": "question_dodge", "mood": "coverUp", "facts": "形勢=持ち上がり。相手に読みを聞かれた。教えない。", "player": "次は何手だろう？", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "checkmate_threat-composed-0105", "scene": "checkmate_threat", "mood": "composed", "facts": "私の手 △5六銀 で詰めろがかかる。評価値+2000。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "checkmate_threat-smug-0106", "scene": "checkmate_threat", "mood": "smug", "facts": "私の手 △4五歩 で詰めろがかかる。評価値+2000。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "checkmate_threat-rattled-0107", "scene": "checkmate_threat", "mood": "rattled", "facts": "私の手 △6四香打 で詰めろがかかる。評価値+4000。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "checkmate_threat-meltdown-0108", "scene": "checkmate_threat", "mood": "meltdown", "facts": "私の手 △6四金打 で詰めろがかかる。評価値+4000。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "checkmate_threat-coverUp-0109", "scene": "checkmate_threat", "mood": "coverUp", "facts": "私の手 △2七歩打 で詰めろがかかる。評価値+1500。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "draw-composed-0110", "scene": "draw", "mood": "composed", "facts": "千日手による引き分け。", "player": "引き分けですね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "draw-smug-0111", "scene": "draw", "mood": "smug", "facts": "千日手。私はまだ指したかった。", "player": "持将棋だね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "draw-rattled-0112", "scene": "draw", "mood": "rattled", "facts": "千日手。形勢は互角のままだった。", "player": "千日手ですね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "draw-meltdown-0113", "scene": "draw", "mood": "meltdown", "facts": "持将棋による引き分け。実質私の優勢だったと主張。", "player": "これ、引き分けかな。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "draw-coverUp-0114", "scene": "draw", "mood": "coverUp", "facts": "持将棋（点数）による引き分け。", "player": "引き分けですね。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "win-composed-0115", "scene": "win", "mood": "composed", "facts": "相手が投了。私の勝ち。", "player": "負けました。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "win-composed-0116", "scene": "win", "mood": "composed", "facts": "相手が投了。大差での勝ち。", "player": "参りました。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "win-smug-0117", "scene": "win", "mood": "smug", "facts": "相手が投了。私は途中まで劣勢だった。", "player": "投了します。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "win-smug-0118", "scene": "win", "mood": "smug", "facts": "相手が投了。終盤で逆転した。", "player": "負けだ、強いな。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "win-coverUp-0119", "scene": "win", "mood": "coverUp", "facts": "相手が投了。接戦だった。", "player": "負けました。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "win-coverUp-0120", "scene": "win", "mood": "coverUp", "facts": "相手が投了。私は途中まで劣勢だった。", "player": "負けだ、強いな。", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "lose-composed-0121", "scene": "lose", "mood": "composed", "facts": "私が投了した。時間に追われた。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "lose-rattled-0122", "scene": "lose", "mood": "rattled", "facts": "私が投了した。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "lose-rattled-0123", "scene": "lose", "mood": "rattled", "facts": "私が投了した。序盤から一方的だった。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "lose-meltdown-0124", "scene": "lose", "mood": "meltdown", "facts": "私が投了した。最後は攻め合い負け。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "lose-meltdown-0125", "scene": "lose", "mood": "meltdown", "facts": "私が投了した。優勢から逆転された。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
+{"id": "lose-coverUp-0126", "scene": "lose", "mood": "coverUp", "facts": "私が投了した。", "player": "", "line": "", "flags": [], "keep": true, "source": "skeleton"}
