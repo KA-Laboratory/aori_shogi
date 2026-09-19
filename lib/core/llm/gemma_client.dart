@@ -13,6 +13,7 @@ import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 
 import '../dialogue/speaker.dart';
 import 'model_catalog.dart';
+import 'single_flight.dart';
 
 ModelType _modelType(LlmFamily f) => switch (f) {
   LlmFamily.gemmaIt => ModelType.gemmaIt,
@@ -92,6 +93,12 @@ class GemmaLlmClient implements LlmClient {
   InferenceModel? _model;
   var _seed = 1;
 
+  /// 生成を1つずつに絞る門。同時に2つ走らせると LiteRT-LM が落ちる（[SingleFlight]）。
+  final _gate = SingleFlight();
+
+  /// 重なって断った回数（開発用の目安）。
+  int get droppedWhileBusy => _gate.dropped;
+
   /// 直近の生成にかかった時間（受け入れ条件 p95 < 6秒 の計測用）。
   final List<Duration> timings = [];
 
@@ -110,6 +117,7 @@ class GemmaLlmClient implements LlmClient {
   Future<String?> generate({required String system, required String user}) async {
     final model = _model;
     if (model == null) return null;
+    if (!_gate.tryEnter()) return null;
     final started = DateTime.now();
     InferenceModelSession? session;
     try {
@@ -130,6 +138,7 @@ class GemmaLlmClient implements LlmClient {
       return null;
     } finally {
       await session?.close();
+      _gate.leave();
     }
   }
 

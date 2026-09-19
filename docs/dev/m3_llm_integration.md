@@ -127,6 +127,39 @@ LLM とは無関係で、**LLM を入れなくても落ちていた**。
 試し方: `tool\run_device.cmd`（APK を入れてモデルを push）→ アプリの「軍師の言葉」→
 「端末に置いたファイルから入れる」→「試し撃ち」。
 
+## 対局中に落ちた: 生成は同時に2つ走らせてはいけない（2026-09-19）
+
+実機（S24）で、AI対局を始めて一手指すと SIGSEGV で落ちた。**2回とも同じ所**。
+
+```
+Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x3a22656c6f7222d1
+  #00 libLiteRtLm.so  litert::lm::Conversation::GetSingleTurnText(json const&, OptionalArgs const&)+12
+  #01 libLiteRtLm.so  litert::lm::Conversation::SendMessageAsync(...)
+  #02 libLiteRtLm.so  litert_lm_conversation_send_message_stream+196
+  #03 [anon:dart-code]
+```
+
+壊れたアドレス `0x3a22656c6f7222d1` はバイトを並べ替えると `"role":` という**文字列**。
+つまりポインタではなく会話の JSON の中身を読んでいる。解放済みの会話を触っている。
+
+**試し撃ち（`BenchPage`）では落ちない。** あちらは1件ずつ順番に投げるから。
+対局中だけ落ちるのは `GameController._upgradeWithLlm` が `unawaited` で投げっぱなしに
+するため。開始の一言を生成している最中に指し手の一言が重なると、同じ `InferenceModel`
+の上で session が2つ走り、片方が閉じるともう片方が壊れる。
+
+直し方は `SingleFlight`（`lib/core/llm/single_flight.dart`）。走っている間は**待たせずに断る**。
+遅れて出てくるセリフに価値は無く、軍師は先に定型文を喋っているので、断られた回は
+その定型文のままになるだけで、対局は何も止まらない。断った回数は
+`GemmaLlmClient.droppedWhileBusy` に出る。
+
+確かめ方: `tool\dev_play_setup.cmd` → AIが後手 → ▲7六歩 → `tool\dev_alive.cmd`。
+直す前は2回とも落ち、直した後は3回とも生き残った。重なりの起きる間合いに依るので
+「3回通った」以上のことは言えないが、落ち方と筋は合っている。
+
+なお最初この落ち方を、**端末を触られてアプリが閉じられたのだと読み違えた。**
+`pidof` が空で、`adb logcat -b crash` を見て初めて落ちていたと分かった。
+画面から消えていたら、まず `tool\dev_alive.cmd` を見ること。
+
 ## 次の作業
 
 - [x] 実機で速さ（p95 4.7秒）・口調（崩れ0）・メモリ（548MB）を測った。
