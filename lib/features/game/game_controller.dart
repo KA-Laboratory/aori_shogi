@@ -435,8 +435,11 @@ class GameController extends Notifier<GameViewState> {
       LineTrigger.tauntMiss => '私の直前の手はほぼ最善。相手の煽りは外れ。',
       LineTrigger.blunderSelf => '直前の手 $move は悪手（約-${math.max(100, loss)}点損）。私は内心それに気づいている。',
       LineTrigger.blunderPlayer => '相手の手 $move は悪手（約+${math.max(100, gain)}点得）。',
-      LineTrigger.praised => '形勢=$stance。相手に褒められた。',
-      LineTrigger.praiseFlood || LineTrigger.praiseSuspicious => '相手に続けて褒められた。',
+      // 褒められた回数は事実として渡す。軍師の図に乗り方・怪しみ方は回数で変わるし、
+      // 学習データの事実もこの形で書いてある（docs/dev/m3_lora_pipeline.md）。
+      LineTrigger.praised => '形勢=$stance。相手に褒められた（${g.mind.praiseStreak}回目）。',
+      LineTrigger.praiseFlood ||
+      LineTrigger.praiseSuspicious => '相手に${g.mind.praiseStreak}回続けて褒められた。',
       LineTrigger.questionDodge => '形勢=$stance。相手に読みを聞かれた。教えない。',
       LineTrigger.slip => '口が滑る: ${vars['fact'] ?? ''}。',
       LineTrigger.dealSecret => '取引として明かす: ${vars['fact'] ?? ''}。',

@@ -57,6 +57,28 @@ def stance_mismatch(facts: str) -> bool:
     return m.group(1) != want
 
 
+# アプリ（game_controller.dart の _facts）が送る事実の型。ここに無い場面は見ない。
+# 型から外れた事実は、本番で来ない言い方を教えることになるので弾く。
+_W = "(優勢|互角|劣勢)"
+APP_SHAPE = {
+    "move": rf"^\d+手目。形勢={_W}（評価値[+-]\d+）。私の手 .+ (は最善。|は悪手で約\d+点損。)$",
+    # praised はアプリ側で praiseStreak が 3 未満のときだけ出るので、回数は 1 か 2 しか来ない
+    "praised": rf"^形勢={_W}。相手に褒められた（[12]回目）。$",
+    "praise_suspicious": r"^相手に\d+回続けて褒められた。$",
+    "question_dodge": rf"^形勢={_W}。相手に読みを聞かれた。教えない。$",
+    "taunt_miss": r"^私の直前の手はほぼ最善。相手の煽りは外れ。$",
+    "abuse": rf"^相手の発言は不適切。形勢={_W}。$",
+    "start": r"^対局開始。",
+    "win": r"^相手が投了。",
+    "lose": r"^私が投了した。",
+}
+
+
+def off_app_shape(scene: str, facts: str) -> bool:
+    pat = APP_SHAPE.get(scene)
+    return bool(pat) and not re.match(pat, facts)
+
+
 STANCE_WORD = re.compile(r"形勢=([^（(。]+)")
 APP_STANCE = {"優勢", "互角", "劣勢"}
 
@@ -95,9 +117,11 @@ def flags(r: dict, chk: Checker) -> list[str]:
         out.append("形勢と評価値が食い違い")
     odd = odd_stance_word(facts)
     if odd:
-        out.append(f"アプリが出さない形勢の言い方(任意):{odd}")
+        out.append(f"アプリが出さない形勢の言い方:{odd}")
     if "評価値±" in facts:
-        out.append("評価値の符号が±(任意)")
+        out.append("評価値の符号が±")
+    if off_app_shape(r["scene"], facts):
+        out.append("事実がアプリの型と違う")
     # 語尾の型チェックは廃止（動揺は丁寧・常体どちらでもよく、大混乱は叫びで語尾が定まらない）。
     # 口調は tone の mood_require / mood_banned が見る。
     mark = MOOD_MARK.get(mood)
