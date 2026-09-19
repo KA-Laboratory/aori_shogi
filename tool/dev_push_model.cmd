@@ -1,7 +1,8 @@
 @echo off
-rem .litertlm を実機に置く。引数は python\ からの相対パス。
-rem   tool\dev_push_model.cmd out\litertlm17d\model.litertlm
-rem 置いたあと、アプリの「モデル」画面で「端末に置いたファイルから入れる」を押す。
+rem Put a .litertlm on the device. Argument is a path relative to python\ .
+rem   tool\dev_push_model.cmd out\litertlm17g\model.litertlm
+rem Afterwards tap "install from a file on the device" on the model screen,
+rem because the app keeps its own registration (see docs/dev/m3_llm_integration.md).
 setlocal
 set ADB=%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe
 set S=R5CY545133H
