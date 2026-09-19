@@ -5,11 +5,13 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/dialogue/speaker.dart';
 import '../../core/llm/gemma_client.dart';
 import '../../core/llm/model_catalog.dart';
 import '../game/game_controller.dart';
+import 'bench_page.dart';
 
 class ModelPage extends ConsumerStatefulWidget {
   const ModelPage({super.key, required this.store});
@@ -79,6 +81,26 @@ class _ModelPageState extends ConsumerState<ModelPage> {
     }
   }
 
+  /// adb で push した `.litertlm` を入れる（開発用）。
+  /// 置き場所: /sdcard/Android/data/com.amkn.aori_shogi/files/gunshi.litertlm
+  Future<void> _installPushed() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final dir = await getExternalStorageDirectory();
+      final path = '${dir?.path}/gunshi.litertlm';
+      await widget.store.installFromFile(path, LlmFamily.qwen3);
+      await _swapSpeaker();
+    } on Object catch (e) {
+      if (mounted) setState(() => _error = '$e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+      await _refresh();
+    }
+  }
+
   /// 入れ替えたその場で軍師の口を差し替える（アプリの再起動は要らない）。
   Future<void> _swapSpeaker() async {
     final box = ref.read(gunshiSpeakerProvider.notifier);
@@ -130,6 +152,20 @@ class _ModelPageState extends ConsumerState<ModelPage> {
                 ),
               ),
             ),
+          const SizedBox(height: 24),
+          // 開発用: adb で push した .litertlm をそのまま入れて試す
+          Text('開発用', style: theme.textTheme.labelLarge),
+          const SizedBox(height: 4),
+          OutlinedButton(
+            onPressed: _busy ? null : _installPushed,
+            child: const Text('端末に置いたファイルから入れる'),
+          ),
+          OutlinedButton(
+            onPressed: _busy
+                ? null
+                : () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const BenchPage())),
+            child: const Text('試し撃ち（速さと口調を測る）'),
+          ),
           const SizedBox(height: 16),
           if (_ready)
             OutlinedButton.icon(

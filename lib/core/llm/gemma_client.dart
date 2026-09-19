@@ -45,6 +45,14 @@ class GunshiModelStore {
         .install();
   }
 
+  /// 端末に置いたファイルから入れる（開発用: adb で push した .litertlm を試すため）。
+  Future<void> installFromFile(String path, LlmFamily family) async {
+    await _ensureInit();
+    await FlutterGemma.installModel(modelType: _modelType(family), fileType: ModelFileType.litertlm)
+        .fromFile(path)
+        .install();
+  }
+
   /// 入っているモデルを消す（容量を戻す）。
   Future<void> removeAll() async {
     await _ensureInit();
@@ -114,15 +122,28 @@ class GemmaLlmClient implements LlmClient {
         maxOutputTokens: maxOutputTokens,
       );
       await session.addQueryChunk(Message.text(text: user, isUser: true));
-      final out = await session.getResponse();
+      final out = stripControlTokens(await session.getResponse());
       timings.add(DateTime.now().difference(started));
-      return out.trim().isEmpty ? null : out.trim();
+      return out.isEmpty ? null : out;
     } on Object {
       // 生成に失敗しても対局は止めない。呼び出し側が定型文に落とす。
       return null;
     } finally {
       await session?.close();
     }
+  }
+
+  /// 制御トークンを落とす。
+  ///
+  /// 実機（S24）で確かめたところ、Qwen3 の思考チャネルの印が本文に混ざって
+  /// 「<|channel>thought <channel|> 君、形勢がどうだ？」のような形で返ってくる。
+  /// 最後の制御トークンより後ろだけを本文として使う。
+  static String stripControlTokens(String s) {
+    final tokens = RegExp(r'<\|?[A-Za-z_]+\|?>').allMatches(s).toList();
+    if (tokens.isEmpty) return s.trim();
+    final tail = s.substring(tokens.last.end).trim();
+    // 制御トークンが末尾にあって本文が残らない場合は、印だけ落とす
+    return tail.isEmpty ? s.replaceAll(RegExp(r'<\|?[A-Za-z_]+\|?>'), '').trim() : tail;
   }
 
   Future<void> close() async {
