@@ -24,6 +24,9 @@ def main() -> None:
     ap.add_argument("--model", default="out/gunshi-merged")
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--temp", type=float, default=0.9)
+    ap.add_argument("--top_p", type=float, default=0.95)
+    ap.add_argument("--top_k", type=int, default=40)
     args = ap.parse_args()
 
     import torch
@@ -45,8 +48,8 @@ def main() -> None:
         ids = tok(prompt, return_tensors="pt").to(model.device)
         t0 = time.time()
         with torch.no_grad():
-            out = model.generate(**ids, max_new_tokens=80, do_sample=True, temperature=0.9, top_k=40,
-                                 pad_token_id=tok.eos_token_id)
+            out = model.generate(**ids, max_new_tokens=80, do_sample=True, temperature=args.temp,
+                                 top_p=args.top_p, top_k=args.top_k, pad_token_id=tok.eos_token_id)
         text = tok.decode(out[0][ids["input_ids"].shape[1]:], skip_special_tokens=True).strip()
         fixed = tone.rewrite(text, r["mood"])
         v = tone.violations(fixed, r["mood"])

@@ -62,14 +62,23 @@ class GunshiModelStore {
 
 /// 端末内LLMの口。[LlmSpeaker] から呼ばれる。
 class GemmaLlmClient implements LlmClient {
-  GemmaLlmClient({this.maxTokens = 1024, this.maxOutputTokens = 120, this.temperature = 0.9, this.topK = 40});
+  GemmaLlmClient({
+    this.maxTokens = 1024,
+    this.maxOutputTokens = 120,
+    this.temperature = 0.6,
+    this.topP = 0.9,
+    this.topK = 40,
+  });
 
   /// 文脈の広さ。`.litertlm` は 1024 未満だと確保に失敗する。
   final int maxTokens;
 
   /// 生成の長さ。セリフは1〜3文なのでごく短くてよい。
   final int maxOutputTokens;
+  /// 0.9 だと日本語が壊れることが追加学習後の試し打ちで分かったので 0.6。
+  /// （docs/dev/m3_lora_pipeline.md「試し打ちで分かったこと」）
   final double temperature;
+  final double topP;
   final int topK;
 
   InferenceModel? _model;
@@ -100,6 +109,7 @@ class GemmaLlmClient implements LlmClient {
         temperature: temperature,
         randomSeed: _seed++,
         topK: topK,
+        topP: topP,
         systemInstruction: system,
         maxOutputTokens: maxOutputTokens,
       );
