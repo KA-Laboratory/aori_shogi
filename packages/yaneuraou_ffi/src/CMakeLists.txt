@@ -28,8 +28,12 @@ list(TRANSFORM YO_SOURCES PREPEND "${YO}/")
 add_library(yaneuraou_ffi SHARED ${YO_SOURCES} "${NATIVE_DIR}/bridge/engine_bridge.cpp")
 set_target_properties(yaneuraou_ffi PROPERTIES OUTPUT_NAME "yaneuraou" CXX_STANDARD 17)
 target_include_directories(yaneuraou_ffi PRIVATE "${YO}" "${NATIVE_DIR}/bridge")
+# USE_PTHREADS: 探索スレッドを pthread で 8MB のスタックで作る（thread_win32_osx.h）。
+# これが無いと Android の既定（1MB）では深い探索でスタックが溢れて落ちる。
+# 実機 Galaxy S24 で「Cause: stack pointer is not in a rw map; likely due to stack overflow」
+# として再現した（2026-09-19）。エミュレータ(x86_64)では浅い探索で済んでいて出なかった。
 target_compile_definitions(yaneuraou_ffi PRIVATE
-  NDEBUG UNICODE NO_EXCEPTIONS USE_MAKEFILE YANEURAOU_ENGINE_NNUE
+  NDEBUG UNICODE NO_EXCEPTIONS USE_MAKEFILE YANEURAOU_ENGINE_NNUE USE_PTHREADS
   ENGINE_NAME_FROM_MAKEFILE=YaneuraOu_NNUE TARGET_CPU="${ANDROID_ABI}")
 # デバッグビルドでも探索は最適化する（-O0 だと極端に弱く遅い）。
 target_compile_options(yaneuraou_ffi PRIVATE -O3 -fno-exceptions -fno-rtti -fpermissive -w)
