@@ -102,6 +102,54 @@ class GunshiPanel extends ConsumerWidget {
   }
 }
 
+/// 軍師の持ちかけに答える行。**盤のすぐ上と会話欄の両方に出す。**
+///
+/// 提案が出ている間は盤が固まる（`GameController.tapSquare` が `_pending` で弾く）。
+/// 以前はこの行が会話欄にしか無く、会話欄は盤より下にあるので、スマホでは画面外だった。
+/// 指せないのに理由が見えないので、プレイヤーには「固まった」としか見えない。
+///
+/// 盤の上の分は [GunshiPanel] の中ではなくページ側（`game_page.dart`）に置いてある。
+/// 軍師パネルは `mind == null`（人間同士など）のとき丸ごと消えるので、
+/// その中に入れると出したいときに出ないことがある。
+class OfferRow extends ConsumerWidget {
+  const OfferRow({super.key, required this.keyName});
+
+  final String keyName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(gameControllerProvider);
+    final offer = s.pendingOffer;
+    if (offer == null) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    final ctl = ref.read(gameControllerProvider.notifier);
+    return Container(
+      key: ValueKey(keyName),
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(color: const Color(0xFFFFF8D6), borderRadius: BorderRadius.circular(8)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('軍師の提案：${offer.text}', style: theme.textTheme.bodySmall),
+          Text(
+            '答えるまで指せません',
+            style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              FilledButton(onPressed: () => ctl.respondOffer(true), child: const Text('受ける')),
+              const SizedBox(width: 6),
+              OutlinedButton(onPressed: () => ctl.respondOffer(false), child: const Text('断る')),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Meter extends StatelessWidget {
   const _Meter({required this.label, required this.value, required this.color, this.delta});
 
@@ -244,21 +292,7 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
                 },
               ),
             ),
-            if (s.pendingOffer != null)
-              Container(
-                key: const ValueKey('offer'),
-                margin: const EdgeInsets.only(top: 6),
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: const Color(0xFFFFF8D6), borderRadius: BorderRadius.circular(8)),
-                child: Row(
-                  children: [
-                    Expanded(child: Text('軍師の提案：${s.pendingOffer!.text}', style: theme.textTheme.bodySmall)),
-                    FilledButton(onPressed: () => ctl.respondOffer(true), child: const Text('受ける')),
-                    const SizedBox(width: 6),
-                    OutlinedButton(onPressed: () => ctl.respondOffer(false), child: const Text('断る')),
-                  ],
-                ),
-              ),
+            if (s.pendingOffer != null) const OfferRow(keyName: 'offer'),
             const SizedBox(height: 6),
             Text(hint, style: theme.textTheme.labelSmall),
             Row(

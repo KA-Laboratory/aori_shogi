@@ -42,8 +42,11 @@ class GamePage extends ConsumerWidget {
     final controller = ref.read(gameControllerProvider.notifier);
     final pos = s.position;
     final result = s.game.result;
+    // 提案が出ている間は盤が固まる。理由を出さないと「壊れた」に見える。
     final status = result != null
         ? result.label
+        : s.pendingOffer != null
+        ? '軍師の提案に答えてください'
         : '${s.game.moves.length + 1}手目 ${pos.turn.mark}${pos.turn.label}の番'
               '${pos.inCheck(pos.turn) ? '（王手）' : ''}';
 
@@ -94,6 +97,9 @@ class GamePage extends ConsumerWidget {
               child: ListView(
                 children: [
                   const GunshiPanel(),
+                  // 提案が出ている間は盤が固まるので、答える手段を盤のすぐ上に置く。
+                  // 会話欄にも同じ行があるが、あちらは盤より下でスマホでは画面外になる。
+                  if (s.pendingOffer != null) const OfferRow(keyName: 'offer-head'),
                   const SizedBox(height: 8),
                   KomadaiView(side: Side.white, label: s.mode.isAi(Side.white) ? '軍師' : null),
                   const SizedBox(height: 6),

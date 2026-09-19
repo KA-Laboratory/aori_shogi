@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -836,11 +837,24 @@ class GameController extends Notifier<GameViewState> {
     }
   }
 
+  /// 試験用に提案を立てる。本来は [_maybeOffer] が確率で出すので、狙って作れない。
+  @visibleForTesting
+  void debugSetOffer(OfferKind o) {
+    _pending = o;
+    _refresh();
+  }
+
   void respondOffer(bool accept) {
-    final g = _gunshi;
     final o = _pending;
-    if (g == null || o == null) return;
+    if (o == null) return;
+    // 提案は何があっても先に下ろす。ここを軍師の有無で早期 return にしていると、
+    // 軍師がいない状態で提案が残ったときに盤が固まったままになる。
     _pending = null;
+    final g = _gunshi;
+    if (g == null) {
+      _refresh();
+      return;
+    }
     _system('あなたは提案を${accept ? '受けた' : '断った'}：${o.text}');
     final m = g.mind;
     switch (o) {
