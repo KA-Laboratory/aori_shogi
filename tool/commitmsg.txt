@@ -1,16 +1,16 @@
-同じ文の繰り返しを Dart 側で落とす
+掃除したデータで学習し直し、.litertlm を作った（17d）
 
-LiteRT-LM のサンプラーには repetition penalty に当たる設定が無い
-（flutter_gemma_litertlm の native/litert_lm/include/engine.h、
-LiteRtLmSamplerParams は type / top_k / top_p / temperature / seed のみ）。
-実機の試し撃ちで「ふむ…空いていても私の歩は最善でございる。」が丸ごと
-2回並ぶことがあったので、生成側で抑えられない分を GemmaLlmClient で落とす。
+事実を揃えた 528件で現行レシピ（rank16 / lr1e-4 / 4ep）を学習。
+eval_loss 0.2636 → 0.2564、口調の崩れ 1/12 → 0/12、繰り返し 0/12。
+WSL2 で変換して python/out/litertlm17d/model.litertlm（1.90GB、1分4秒）。
 
-- GemmaLlmClient.dropRepeats: 同じ文の2度目を捨てる。末尾が途中で切れた
-  断片で、前に出た文の言い出しと同じものも捨てる。
-- train/sample.py: 繰り返しの本数も出す（Dart と同じ見方）。
-- tools/probe_gozaru.py: 学習データの「ござ〜」の活用を数える。データには
-  「ございます」しか無く、生成の「ございる」は LoRA が作った崩れだと分かった。
+端末が外れていたので実機での差し替えはまだ。繋いだら:
+  tool\dev_push_model.cmd out\litertlm17d\model.litertlm
+  tool\dev_bench.cmd
+
+- tool/dev_push_model.cmd: .litertlm を実機に置く（今まで手で打っていた）。
+- tool/wsl/convert17d.sh, tool/conv17d.cmd: 17d の変換。
+- docs/dev/m3_lora_pipeline.md に 17a/17c/17d の比較と残る傷を追記。
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01YJ8NQ3aySzJGF3xzWSk4Fr
