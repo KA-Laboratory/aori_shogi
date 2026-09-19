@@ -105,6 +105,31 @@ uv tool install litert-torch-nightly
 
 WSL2 なら学習（CUDA も使える）も変換も1台で完結し、数GBのモデルを運ぶ必要もなくなる。
 
+### WSL2 で実際に通した（2026-09-19）
+
+賢太郎さんが `wsl --install` を実行。Ubuntu 26.04.1 LTS、**24コア / 15GB / 955GB**。
+`uv` と `litert-torch-nightly`（＋PCで試し撃ちする `litert-lm`）を入れ、**1.7B の変換が 110秒で成功**。
+
+| | 素の Qwen3 0.6B | 追加学習した Qwen3 1.7B |
+|---|---|---|
+| 変換した場所 | クラウド 2コア8GB | **WSL2 24コア15GB** |
+| 時間 | 2分10秒 | **1分50秒** |
+| `.litertlm` | 661MB | **1.90GB** |
+
+できたファイルは `python/out/litertlm17/model.litertlm`。
+
+手順は `tool/wsl/` にスクリプトで置いた（Windows から `tool\wsl_run.cmd <名前>` で走る）。
+
+| スクリプト | すること |
+|---|---|
+| `check.sh` | WSL の素性（CPU・メモリ・ディスク・入っている道具） |
+| `setup.sh` | uv と litert-torch-nightly / litert-lm を入れる（1回だけ） |
+| `convert.sh` | マージ済みモデルを WSL 側にコピー → `.litertlm` に変換 → `python/out/litertlm17/` に置く |
+| `lm_try.sh` | できた `.litertlm` を PC 上で喋らせてみる（**CPU なので非常に遅い**。速さの判定には使えない） |
+
+注意: `/mnt/c` は遅いので、`convert.sh` はモデルを WSL のファイルシステム（`~/gunshi-convert`）に
+コピーしてから変換する。
+
 ## 試し打ちで分かったこと（2026-09-19、実測）
 
 530件のデータで実際に2本学習した（Windows の RTX 3070 Ti、bf16 + LoRA、4 epoch）。

@@ -45,3 +45,7 @@ app.*.map.json
 /android/app/release
 
 /tool/lexicon_src/
+
+# 学習・変換の成果物（大きいのでリポジトリには入れない）
+python/.venv-train/
+python/out/
