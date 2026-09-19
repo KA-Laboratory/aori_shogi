@@ -1,7 +1,9 @@
 @echo off
-rem Windows 側で git を動かす（Cowork の Linux VM から見ると改行差で全ファイルが変更扱いになる）。
+rem Windows side git (the Cowork Linux VM sees every file as modified, line endings).
 setlocal
 cd /d C:\Users\amake\Claude\Projects\aori_shogi
-git %* > %TEMP%\gitc.log 2>&1
+set LOG=%TEMP%\gitc_%RANDOM%.log
+git %* > "%LOG%" 2>&1
 echo GIT_EXIT=%ERRORLEVEL%
-type %TEMP%\gitc.log
+type "%LOG%"
+del "%LOG%"
