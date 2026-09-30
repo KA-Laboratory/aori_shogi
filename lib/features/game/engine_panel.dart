@@ -26,12 +26,23 @@ class EnginePanel extends ConsumerWidget {
         children: [
           Expanded(
             child: Text(
-              error == null ? 'AI対局には評価関数（約29MB）のダウンロードが必要です' : 'ダウンロード失敗: $error',
-              style: error == null ? null : TextStyle(color: theme.colorScheme.error),
+              error == null
+                  ? 'AI対局には評価関数が必要です。ダウンロード約29MB／展開後約64MB（64,217,066バイト）'
+                  : 'ダウンロード失敗: $error',
+              style: error == null
+                  ? null
+                  : TextStyle(color: theme.colorScheme.error),
             ),
           ),
-          TextButton(onPressed: engineCtl.download, child: const Text('ダウンロード')),
-          IconButton(tooltip: '再確認', onPressed: engineCtl.recheck, icon: const Icon(Icons.refresh)),
+          TextButton(
+            onPressed: engineCtl.download,
+            child: const Text('ダウンロード'),
+          ),
+          IconButton(
+            tooltip: '再確認',
+            onPressed: engineCtl.recheck,
+            icon: const Icon(Icons.refresh),
+          ),
         ],
       ),
       EngineDownloading(:final progress) => Row(
@@ -43,7 +54,10 @@ class EnginePanel extends ConsumerWidget {
       ),
       EngineStarting() => const Text('エンジン起動中…'),
       EngineReady() => const Text('エンジン準備完了（やねうら王 + Háo）'),
-      EngineFailed(:final message) => Text('エンジン起動失敗: $message', style: TextStyle(color: theme.colorScheme.error)),
+      EngineFailed(:final message) => Text(
+        'エンジン起動失敗: $message',
+        style: TextStyle(color: theme.colorScheme.error),
+      ),
     };
 
     final ready = status is EngineReady;
@@ -62,16 +76,32 @@ class EnginePanel extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DefaultTextStyle.merge(style: theme.textTheme.bodySmall, child: statusLine),
+            DefaultTextStyle.merge(
+              style: theme.textTheme.bodySmall,
+              child: statusLine,
+            ),
             const SizedBox(height: 6),
             SegmentedButton<OpponentMode>(
               key: const ValueKey('opponent'),
               showSelectedIcon: false,
               segments: [
-                const ButtonSegment(value: OpponentMode.human, label: Text('人間同士')),
-                const ButtonSegment(value: OpponentMode.aiWhite, label: Text('AIが後手')),
-                const ButtonSegment(value: OpponentMode.aiBlack, label: Text('AIが先手')),
-                if (kDebugMode) const ButtonSegment(value: OpponentMode.aiBoth, label: Text('AI同士')),
+                const ButtonSegment(
+                  value: OpponentMode.human,
+                  label: Text('人間同士'),
+                ),
+                const ButtonSegment(
+                  value: OpponentMode.aiWhite,
+                  label: Text('AIが後手'),
+                ),
+                const ButtonSegment(
+                  value: OpponentMode.aiBlack,
+                  label: Text('AIが先手'),
+                ),
+                if (kDebugMode)
+                  const ButtonSegment(
+                    value: OpponentMode.aiBoth,
+                    label: Text('AI同士'),
+                  ),
               ],
               selected: {game.mode},
               onSelectionChanged: (s) {
@@ -91,11 +121,19 @@ class EnginePanel extends ConsumerWidget {
                     value: gameCtl.timeControl.label,
                     isDense: true,
                     items: [
-                      for (final c in const [TimeControl.none, TimeControl.threeMinutes, TimeControl.tenMinutes])
+                      for (final c in const [
+                        TimeControl.none,
+                        TimeControl.threeMinutes,
+                        TimeControl.tenMinutes,
+                      ])
                         DropdownMenuItem(value: c.label, child: Text(c.label)),
                     ],
                     onChanged: (v) {
-                      for (final c in const [TimeControl.none, TimeControl.threeMinutes, TimeControl.tenMinutes]) {
+                      for (final c in const [
+                        TimeControl.none,
+                        TimeControl.threeMinutes,
+                        TimeControl.tenMinutes,
+                      ]) {
                         if (c.label == v) gameCtl.setTimeControl(c);
                       }
                     },
@@ -109,7 +147,9 @@ class EnginePanel extends ConsumerWidget {
                 ],
               ),
             ),
-            if (game.declaration != null && game.declaration!.canDeclare && !game.game.isOver)
+            if (game.declaration != null &&
+                game.declaration!.canDeclare &&
+                !game.game.isOver)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: FilledButton.tonal(
@@ -129,7 +169,10 @@ class EnginePanel extends ConsumerWidget {
                       key: const ValueKey('level'),
                       value: game.level,
                       isDense: true,
-                      items: [for (final l in SkillLevel.values) DropdownMenuItem(value: l, child: Text(l.label))],
+                      items: [
+                        for (final l in SkillLevel.values)
+                          DropdownMenuItem(value: l, child: Text(l.label)),
+                      ],
                       onChanged: (l) {
                         if (l != null) gameCtl.setLevel(l);
                       },
@@ -142,7 +185,11 @@ class EnginePanel extends ConsumerWidget {
                 padding: EdgeInsets.only(top: 6),
                 child: Row(
                   children: [
-                    SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+                    SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                     SizedBox(width: 8),
                     Text('AI思考中…'),
                   ],
@@ -153,7 +200,11 @@ class EnginePanel extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(searchText, style: theme.textTheme.bodySmall),
               ),
-            if (game.engineError != null) Text(game.engineError!, style: TextStyle(color: theme.colorScheme.error)),
+            if (game.engineError != null)
+              Text(
+                game.engineError!,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
           ],
         ),
       ),

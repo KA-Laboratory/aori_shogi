@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/shogi/shogi.dart';
+import '../settings/app_settings.dart';
 import 'game_controller.dart';
 import 'piece_painter.dart';
 
@@ -12,13 +13,19 @@ const _komadaiColor = Color(0xFFC9974F);
 typedef MoveCandidatesCallback = void Function(List<Move> candidates);
 
 class BoardView extends ConsumerWidget {
-  const BoardView({super.key, required this.onCandidates});
+  const BoardView({
+    super.key,
+    required this.onCandidates,
+    this.interactive = true,
+  });
 
   final MoveCandidatesCallback onCandidates;
+  final bool interactive;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(gameControllerProvider);
+    final settings = ref.watch(settingsProvider);
     final pos = s.position;
     final last = s.lastMove;
     final selected = switch (s.selection) {
@@ -37,47 +44,117 @@ class BoardView extends ConsumerWidget {
             colors: [Color(0xFFF0CF8A), _boardColor, Color(0xFFDDB05F)],
           ),
           border: Border.all(color: _lineColor, width: 2),
-          boxShadow: const [BoxShadow(color: Color(0x55000000), blurRadius: 6, offset: Offset(0, 3))],
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x55000000),
+              blurRadius: 6,
+              offset: Offset(0, 3),
+            ),
+          ],
         ),
         child: LayoutBuilder(
           builder: (context, c) {
-            final cell = c.maxWidth / 9;
+            final coordinates = settings.showCoordinates && c.maxWidth >= 324;
+            final gutter = coordinates ? 18.0 : 0.0;
+            final cell = (c.maxWidth - gutter) / 9;
             return Stack(
               children: [
                 // 星（3筋・6筋 × 三段・六段の交点）
                 for (final (x, y) in const [(3, 3), (6, 3), (3, 6), (6, 6)])
                   Positioned(
                     left: x * cell - 3,
-                    top: y * cell - 3,
+                    top: gutter + y * cell - 3,
                     child: Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(color: _lineColor, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                        color: _lineColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 for (var sq = 0; sq < 81; sq++)
                   Positioned(
                     left: (sq % 9) * cell,
-                    top: (sq ~/ 9) * cell,
+                    top: gutter + (sq ~/ 9) * cell,
                     width: cell,
                     height: cell,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        final cands = ref.read(gameControllerProvider.notifier).tapSquare(sq);
-                        if (cands.isNotEmpty) onCandidates(cands);
-                      },
-                      child: _Cell(
-                        key: ValueKey('sq$sq'),
-                        piece: pos.board[sq],
-                        size: cell,
-                        selected: selected == sq,
-                        target: s.legalTargets.contains(sq),
-                        lastMove: last?.to == sq,
-                        checked: checkedKing == sq,
+                    child: Semantics(
+                      container: true,
+                      label:
+                          '${'９８７６５４３２１'[sq % 9]}${'一二三四五六七八九'[sq ~/ 9]} ${pos.board[sq] == null ? '空きマス' : '${pos.board[sq]!.side.label} ${pos.board[sq]!.type.kifName}'}',
+                      selected: selected == sq,
+                      button: interactive,
+                      enabled: interactive,
+                      value: [
+                        if (selected == sq) '選択中',
+                        if (s.legalTargets.contains(sq)) '移動可能',
+                        if (checkedKing == sq) '王手',
+                        if (last?.to == sq && settings.highlightLastMove) '最終手',
+                      ].join('、'),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: !interactive
+                            ? null
+                            : () {
+                                final cands = ref
+                                    .read(gameControllerProvider.notifier)
+                                    .tapSquare(sq);
+                                if (cands.isNotEmpty) onCandidates(cands);
+                              },
+                        child: _Cell(
+                          key: ValueKey('sq$sq'),
+                          piece: pos.board[sq],
+                          size: cell,
+                          selected: selected == sq,
+                          target: s.legalTargets.contains(sq),
+                          lastMove:
+                              settings.highlightLastMove && last?.to == sq,
+                          checked: checkedKing == sq,
+                        ),
                       ),
                     ),
                   ),
+                if (coordinates) ...[
+                  for (var index = 0; index < 9; index++) ...[
+                    Positioned(
+                      left: index * cell,
+                      top: 0,
+                      width: cell,
+                      height: gutter,
+                      child: ExcludeSemantics(
+                        child: Center(
+                          child: Text(
+                            '${9 - index}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              height: 1,
+                              color: _lineColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 9 * cell,
+                      top: gutter + index * cell,
+                      width: gutter,
+                      height: cell,
+                      child: ExcludeSemantics(
+                        child: Center(
+                          child: Text(
+                            '一二三四五六七八九'[index],
+                            style: const TextStyle(
+                              fontSize: 10,
+                              height: 1,
+                              color: _lineColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ],
             );
           },
@@ -110,20 +187,81 @@ class _Cell extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: bg,
-        border: Border.all(color: _lineColor.withValues(alpha: 0.7), width: 0.6),
+        border: Border.all(
+          color: _lineColor.withValues(alpha: 0.7),
+          width: 0.6,
+        ),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          if (piece != null) ShogiPiece(type: piece!.type, side: piece!.side, size: size, highlighted: selected),
+          if (piece != null)
+            ShogiPiece(
+              type: piece!.type,
+              side: piece!.side,
+              size: size,
+              highlighted: selected,
+            ),
+          if (lastMove)
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: DecoratedBox(
+                  key: const ValueKey('last-move-outline'),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: _lineColor, width: 2),
+                  ),
+                ),
+              ),
+            ),
+          if (selected)
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFF125380), width: 3),
+                ),
+              ),
+            ),
+          if (checked) ...[
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(1),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF781C12),
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF781C12),
+                      width: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
           if (target)
             Container(
               width: size * 0.3,
               height: size * 0.3,
               decoration: BoxDecoration(
-                color: piece == null ? const Color(0x881E88E5) : Colors.transparent,
+                color: piece == null
+                    ? const Color(0x881E88E5)
+                    : Colors.transparent,
                 shape: BoxShape.circle,
-                border: piece == null ? null : Border.all(color: const Color(0xCC1E88E5), width: 3),
+                border: piece == null
+                    ? null
+                    : Border.all(color: const Color(0xCC1E88E5), width: 3),
               ),
             ),
         ],
@@ -155,61 +293,109 @@ class KomadaiView extends ConsumerWidget {
     // 後手の駒台は相手側から見た並び（右から）にする。
     final ordered = side == Side.white ? types : types.reversed.toList();
 
-    return LayoutBuilder(
-      builder: (context, c) {
-        final slot = (c.maxWidth - 16) / 8.5;
-        return Container(
-          height: slot + 20,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFFD7A860), _komadaiColor]),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: active ? const Color(0xFF1E88E5) : _lineColor, width: active ? 2 : 1),
+    return SizedBox(
+      height: 48,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFD7A860), _komadaiColor],
           ),
-          child: Row(
-            textDirection: side == Side.white ? TextDirection.rtl : TextDirection.ltr,
-            children: [
-              SizedBox(
-                width: slot * 1.1,
-                child: Text(
-                  '${side.mark}${label ?? side.label}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: const Color(0xFF2B1B08),
-                    fontWeight: active ? FontWeight.bold : FontWeight.normal,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: active ? const Color(0xFF125380) : _lineColor,
+            width: active ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          textDirection: side == Side.white
+              ? TextDirection.rtl
+              : TextDirection.ltr,
+          children: [
+            SizedBox(
+              width: 48,
+              child: Semantics(
+                label: '${side.label} ${label ?? ''} 持ち駒',
+                child: ExcludeSemantics(
+                  child: Text(
+                    '${side.mark}${label ?? side.label}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.2,
+                      color: const Color(0xFF2B1B08),
+                      fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
-              Expanded(
-                child: ordered.isEmpty
-                    ? const SizedBox()
-                    : Row(
-                        textDirection: side == Side.white ? TextDirection.rtl : TextDirection.ltr,
-                        children: [
-                          for (final t in ordered)
-                            GestureDetector(
-                              key: ValueKey('hand-${side.name}-${t.name}'),
-                              onTap: () => ref.read(gameControllerProvider.notifier).tapHand(side, t),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                reverse: side == Side.white,
+                child: Row(
+                  textDirection: side == Side.white
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
+                  children: [
+                    for (final type in ordered)
+                      Semantics(
+                        label:
+                            '${side.label}持ち駒${type.kifName}${pos.handCount(side, type)}枚',
+                        selected: selectedType == type,
+                        button: true,
+                        child: GestureDetector(
+                          key: ValueKey('hand-${side.name}-${type.name}'),
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => ref
+                              .read(gameControllerProvider.notifier)
+                              .tapHand(side, type),
+                          child: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: ExcludeSemantics(
                               child: Stack(
-                                clipBehavior: Clip.none,
+                                alignment: Alignment.center,
                                 children: [
-                                  ShogiPiece(type: t, side: side, size: slot, highlighted: selectedType == t),
-                                  if (pos.handCount(side, t) > 1)
+                                  ShogiPiece(
+                                    type: type,
+                                    side: side,
+                                    size: 40,
+                                    highlighted: selectedType == type,
+                                  ),
+                                  if (selectedType == type)
+                                    Positioned.fill(
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: const Color(0xFF125380),
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  if (pos.handCount(side, type) > 1)
                                     Positioned(
-                                      right: 0,
-                                      bottom: 0,
+                                      right: 1,
+                                      bottom: 1,
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 3,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFF2B1B08),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Text(
-                                          '${pos.handCount(side, t)}',
+                                          '${pos.handCount(side, type)}',
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 11,
+                                            height: 1.1,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -218,13 +404,16 @@ class KomadaiView extends ConsumerWidget {
                                 ],
                               ),
                             ),
-                        ],
+                          ),
+                        ),
                       ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

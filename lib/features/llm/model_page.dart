@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -29,6 +30,35 @@ class _ModelPageState extends ConsumerState<ModelPage> {
   String? _error;
   LlmModelSpec? _downloading;
 
+  bool _active(GameViewState state) =>
+      !state.game.isOver &&
+      (state.game.moves.isNotEmpty ||
+          state.mode != OpponentMode.human ||
+          state.thinking);
+
+  bool get _canChange => mounted && !_active(ref.read(gameControllerProvider));
+
+  Future<bool> _confirm(String title, String message, String action) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('取り消し'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(action),
+          ),
+        ],
+      ),
+    );
+    return mounted && confirmed == true && _canChange;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,11 +66,21 @@ class _ModelPageState extends ConsumerState<ModelPage> {
   }
 
   Future<void> _refresh() async {
+    if (!mounted) return;
     final ready = await widget.store.isReady().catchError((Object _) => false);
     if (mounted) setState(() => _ready = ready);
   }
 
   Future<void> _install(LlmModelSpec spec) async {
+    if (_busy || !_canChange || spec.url.isEmpty) return;
+    if (!await _confirm(
+      '${spec.label}を入れますか？',
+      '${spec.sizeText}の通信と保存領域を使います。Wi-Fiをおすすめします。',
+      'ダウンロード',
+    )) {
+      return;
+    }
+    if (!_canChange || _busy) return;
     setState(() {
       _busy = true;
       _percent = 0;
@@ -48,9 +88,12 @@ class _ModelPageState extends ConsumerState<ModelPage> {
       _downloading = spec;
     });
     try {
-      await widget.store.install(spec, onProgress: (p) {
-        if (mounted) setState(() => _percent = p);
-      });
+      await widget.store.install(
+        spec,
+        onProgress: (p) {
+          if (mounted) setState(() => _percent = p);
+        },
+      );
       await _swapSpeaker();
     } on Object catch (e) {
       if (mounted) setState(() => _error = '$e');
@@ -66,6 +109,15 @@ class _ModelPageState extends ConsumerState<ModelPage> {
   }
 
   Future<void> _remove() async {
+    if (_busy || !_canChange) return;
+    if (!await _confirm(
+      'モデルを削除しますか？',
+      'モデルを削除して定型文に戻します。対局と軍師の記憶は残ります。',
+      'モデルを削除',
+    )) {
+      return;
+    }
+    if (!_canChange || _busy) return;
     setState(() {
       _busy = true;
       _error = null;
@@ -84,12 +136,14 @@ class _ModelPageState extends ConsumerState<ModelPage> {
   /// adb で push した `.litertlm` を入れる（開発用）。
   /// 置き場所: /sdcard/Android/data/com.amkn.aori_shogi/files/gunshi.litertlm
   Future<void> _installPushed() async {
+    if (!kDebugMode || _busy || !_canChange) return;
     setState(() {
       _busy = true;
       _error = null;
     });
     try {
       final dir = await getExternalStorageDirectory();
+      if (!_canChange) return;
       final path = '${dir?.path}/gunshi.litertlm';
       await widget.store.installFromFile(path, LlmFamily.qwen3);
       await _swapSpeaker();
@@ -103,18 +157,28 @@ class _ModelPageState extends ConsumerState<ModelPage> {
 
   /// 入れ替えたその場で軍師の口を差し替える（アプリの再起動は要らない）。
   Future<void> _swapSpeaker() async {
-    final box = ref.read(gunshiSpeakerProvider.notifier);
+    if (!_canChange) return;
     final tone = ref.read(toneProfileProvider);
     final lines = ref.read(lineLibraryProvider);
     if (tone == null || lines == null) return;
     final llm = GemmaLlmClient();
     await llm.load().catchError((Object _) {});
-    box.set(llm.ready ? LlmSpeaker(client: llm, tone: tone, lines: lines) : null);
+    if (!_canChange) {
+      await llm.close();
+      return;
+    }
+    ref
+        .read(gunshiSpeakerProvider.notifier)
+        .set(
+          llm.ready ? LlmSpeaker(client: llm, tone: tone, lines: lines) : null,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final active = _active(ref.watch(gameControllerProvider));
+    final locked = _busy || active;
     return Scaffold(
       appBar: AppBar(title: const Text('軍師の言葉')),
       body: ListView(
@@ -125,6 +189,11 @@ class _ModelPageState extends ConsumerState<ModelPage> {
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
+          if (active)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 12),
+              child: Text('対局中は閲覧のみです。持ち時間は進み続けます。モデルの導入・削除は終局後にできます。'),
+            ),
           const Text(
             'モデルを入れると、軍師は場面ごとに言葉を選んで喋るようになります。'
             '入れなくても対局・煽り・雑談はそのまま遊べます。'
@@ -132,45 +201,83 @@ class _ModelPageState extends ConsumerState<ModelPage> {
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
-            Text('うまくいきませんでした: $_error', style: TextStyle(color: theme.colorScheme.error)),
+            Text(
+              'うまくいきませんでした: $_error',
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
           ],
           const SizedBox(height: 16),
           if (_busy && _downloading != null) ...[
-            Text('${_downloading!.label} を取得中… $_percent%'),
+            Text(
+              _percent >= 100
+                  ? 'モデルを確認しています'
+                  : '${_downloading!.label} を取得中… $_percent%',
+            ),
             const SizedBox(height: 8),
-            LinearProgressIndicator(value: _percent <= 0 ? null : _percent / 100),
+            LinearProgressIndicator(
+              value: _percent <= 0 ? null : _percent / 100,
+            ),
             const SizedBox(height: 16),
           ],
-          // 学習済みの軍師は URL が決まってから出す（それまでは開発用ボタンで入れる）
-          for (final spec in [if (gunshiFinetuned.url.isNotEmpty) gunshiFinetuned, ...gunshiModels])
+          if (gunshiFinetuned.url.isEmpty)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('学習済み軍師：配布準備中\n1.90GB。いまは他のモデル、または定型文で遊べます。'),
+              ),
+            ),
+          for (final spec in [
+            if (gunshiFinetuned.url.isNotEmpty) gunshiFinetuned,
+            ...gunshiModels,
+          ])
             Card(
-              child: ListTile(
-                title: Text('${spec.label}（${spec.sizeText}）'),
-                subtitle: Text(spec.note),
-                trailing: FilledButton(
-                  onPressed: _busy ? null : () => _install(spec),
-                  child: const Text('入れる'),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      '${spec.label}（${spec.sizeText}）',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(spec.note),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: locked ? null : () => _install(spec),
+                      child: const Text('入れる'),
+                    ),
+                  ],
                 ),
               ),
             ),
           const SizedBox(height: 24),
           // 開発用: adb で push した .litertlm をそのまま入れて試す
-          Text('開発用', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 4),
-          OutlinedButton(
-            onPressed: _busy ? null : _installPushed,
-            child: const Text('端末に置いたファイルから入れる'),
-          ),
-          OutlinedButton(
-            onPressed: _busy
-                ? null
-                : () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const BenchPage())),
-            child: const Text('試し撃ち（速さと口調を測る）'),
-          ),
+          if (kDebugMode) ...[
+            Text('開発用', style: theme.textTheme.labelLarge),
+            const SizedBox(height: 4),
+            OutlinedButton(
+              onPressed: locked ? null : _installPushed,
+              child: const Text('端末に置いたファイルから入れる'),
+            ),
+            OutlinedButton(
+              onPressed: locked
+                  ? null
+                  : () {
+                      if (!kDebugMode || !_canChange) return;
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const BenchPage(),
+                        ),
+                      );
+                    },
+              child: const Text('試し撃ち（速さと口調を測る）'),
+            ),
+          ],
           const SizedBox(height: 16),
           if (_ready)
             OutlinedButton.icon(
-              onPressed: _busy ? null : _remove,
+              onPressed: locked ? null : _remove,
               icon: const Icon(Icons.delete_outline),
               label: const Text('モデルを消して定型文に戻す'),
             ),

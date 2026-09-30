@@ -18,6 +18,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('2手目 △後手の番'), findsOneWidget);
 
+    await tester.tap(find.text('対局メニュー'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('待った'));
     await tester.pump();
     expect(find.text('1手目 ▲先手の番'), findsOneWidget);

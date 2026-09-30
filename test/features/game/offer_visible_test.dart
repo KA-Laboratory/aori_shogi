@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// そのとき答える手段が画面に見えていないと、プレイヤーには「壊れた」としか見えない。
 /// 実機でこれを踏んで、盤を何度タップしても動かず、理由も出なかった。
 void main() {
-  testWidgets('提案が出たら、盤より上に答える手段が出る', (tester) async {
+  testWidgets('提案が出たら、盤の近くに返答待ちと答える手段が出る', (tester) async {
     tester.view.physicalSize = const Size(1080, 2000);
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
@@ -23,7 +23,7 @@ void main() {
 
     // 盤のすぐ上（軍師パネル）に出ていること。スクロールせずに見えるのが肝心。
     expect(find.byKey(const ValueKey('offer-head')), findsOneWidget);
-    expect(find.text('答えるまで指せません'), findsWidgets);
+    expect(find.textContaining('答えるまで指せません'), findsWidgets);
     // 指せない理由が盤の下の状態表示にも出ること
     expect(find.text('軍師の提案に答えてください'), findsOneWidget);
   });

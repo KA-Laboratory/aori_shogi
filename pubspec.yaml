@@ -43,6 +43,9 @@ dependencies:
   # 端末内LLM（M3）。モデルが無くてもテンプレートで遊べる作りにしてある。
   flutter_gemma: ^1.8.3
   flutter_gemma_litertlm: ^1.6.4
+  audioplayers: ^6.5.1
+  package_info_plus: ^10.2.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +75,17 @@ flutter:
     - assets/lines/
     - assets/lexicon/
     - assets/dev/
+    - assets/gunshi/
+    - assets/audio/
+    - assets/fonts/OFL.txt
+
+  fonts:
+    - family: NotoSansJP
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSansJP-Bold.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:
